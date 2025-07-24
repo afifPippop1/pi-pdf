@@ -5,7 +5,6 @@ import PdfViewer from "../molecules/PdfViewer.client";
 
 export default function EditorPage() {
   const [file, setFile] = useState<File>();
-  const [buffer, setBuffer] = useState<ArrayBuffer>();
   const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
 
   async function onChange(files: FileList | null) {
@@ -23,21 +22,14 @@ export default function EditorPage() {
       const copiedPages = await pdfDoc.copyPages(doc, doc.getPageIndices());
       copiedPages.forEach((page) => pdfDoc.addPage(page));
     }
-    const doc = await pdfDoc.save();
-    setBuffer(doc.buffer);
     setPdfDoc(pdfDoc);
   }
 
   async function removePage(page: number = 1) {
     if (!pdfDoc) return;
-    const pageCountBefore = pdfDoc.getPageCount();
     pdfDoc?.removePage(page);
-    const pageCountAfter = pdfDoc.getPageCount();
-    console.log("Before: %d", pageCountBefore);
-    console.log("After: %d", pageCountAfter);
     const modifiedPdfBytes = await pdfDoc.save();
     const newPdfDoc = await PDFDocument.load(modifiedPdfBytes);
-    // setBuffer(modifiedPdfBytes);
     setPdfDoc(newPdfDoc);
   }
 
@@ -76,7 +68,7 @@ export default function EditorPage() {
 
       <button onClick={() => removePage()}>Remove page 2</button>
       <button onClick={save}>Save</button>
-      <PdfViewer buffer={buffer} />
+      <PdfViewer doc={pdfDoc} />
     </div>
   );
 }
