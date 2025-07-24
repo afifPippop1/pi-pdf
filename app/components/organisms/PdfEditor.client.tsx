@@ -14,6 +14,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 interface PDFEditorProps {
   doc?: PDFDocument;
+  onRemovePage?: (page: number) => void;
 }
 
 export default function PDFEditor(props: PDFEditorProps) {
@@ -30,8 +31,8 @@ export default function PDFEditor(props: PDFEditorProps) {
 
   return (
     <Document file={buffer} className="flex gap-8">
-      <PDFThumbnail doc={props.doc} />
-      <div className="flex flex-col gap-8">
+      <PDFThumbnail doc={props.doc} onRemovePage={props.onRemovePage} />
+      <div className="flex flex-col gap-8 overflow-auto">
         <PDFPageViewer doc={props.doc} />
       </div>
     </Document>

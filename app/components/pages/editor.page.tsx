@@ -1,6 +1,6 @@
 import { PDFDocument } from "pdf-lib";
 import { useState } from "react";
-import FileUpload from "../atoms/file-upload.atom";
+import FileUpload from "../atoms/FileUpload";
 import PDFEditor from "../organisms/PdfEditor.client";
 
 export default function EditorPage() {
@@ -66,9 +66,8 @@ export default function EditorPage() {
         ))}
       </div>
 
-      <button onClick={() => removePage()}>Remove page 2</button>
       <button onClick={save}>Save</button>
-      <PDFEditor doc={pdfDoc} />
+      <PDFEditor doc={pdfDoc} onRemovePage={removePage} />
     </div>
   );
 }
