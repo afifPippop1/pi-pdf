@@ -1,9 +1,11 @@
+import { PDFDocument } from "pdf-lib";
 import { useState } from "react";
 import FileUpload from "../atoms/file-upload.atom";
-import { PDFDocument } from "pdf-lib";
+import PdfViewer from "../molecules/PdfViewer.client";
 
 export default function EditorPage() {
   const [file, setFile] = useState<File>();
+  const [buffer, setBuffer] = useState<ArrayBuffer>();
   const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
 
   async function onChange(files: FileList | null) {
@@ -21,6 +23,8 @@ export default function EditorPage() {
       const copiedPages = await pdfDoc.copyPages(doc, doc.getPageIndices());
       copiedPages.forEach((page) => pdfDoc.addPage(page));
     }
+    const doc = await pdfDoc.save();
+    setBuffer(doc.buffer);
     setPdfDoc(pdfDoc);
   }
 
@@ -33,6 +37,7 @@ export default function EditorPage() {
     console.log("After: %d", pageCountAfter);
     const modifiedPdfBytes = await pdfDoc.save();
     const newPdfDoc = await PDFDocument.load(modifiedPdfBytes);
+    // setBuffer(modifiedPdfBytes);
     setPdfDoc(newPdfDoc);
   }
 
@@ -64,13 +69,14 @@ export default function EditorPage() {
       <div>{file.name}</div>
       {/* Render page list */}
       <div>
-        {pdfDoc.getPages().map((page, idx) => (
-          <div key={idx}>{idx + 1}</div>
+        {pdfDoc.getPageIndices().map((page) => (
+          <div key={page}>{page + 1}</div>
         ))}
       </div>
 
       <button onClick={() => removePage()}>Remove page 2</button>
       <button onClick={save}>Save</button>
+      <PdfViewer buffer={buffer} />
     </div>
   );
 }
