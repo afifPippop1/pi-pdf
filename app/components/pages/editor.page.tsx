@@ -6,7 +6,7 @@ import PDFEditor from "../organisms/PdfEditor.client";
 export default function EditorPage() {
   const [file, setFile] = useState<File>();
   const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
-  const [bytes, setBytes] = useState<ArrayBuffer>();
+  const [buffer, setBuffer] = useState<ArrayBuffer>();
 
   async function onChange(files: FileList | null) {
     if (!files) return;
@@ -23,7 +23,7 @@ export default function EditorPage() {
       const copiedPages = await pdfDoc.copyPages(doc, doc.getPageIndices());
       copiedPages.forEach((page) => pdfDoc.addPage(page));
     }
-    setBytes((await pdfDoc.save()).buffer);
+    setBuffer((await pdfDoc.save()).buffer);
     setPdfDoc(pdfDoc);
   }
 
@@ -32,7 +32,7 @@ export default function EditorPage() {
     pdfDoc.removePage(page);
     const modifiedPdfBytes = await pdfDoc.save();
     const newPdfDoc = await PDFDocument.load(modifiedPdfBytes);
-    setBytes((await newPdfDoc.save()).buffer);
+    setBuffer((await newPdfDoc.save()).buffer);
     setPdfDoc(newPdfDoc);
   }
 
@@ -50,8 +50,7 @@ export default function EditorPage() {
     setTimeout(() => URL.revokeObjectURL(downloadLink.href), 100);
   }
 
-  // if (!file || !pdfDoc) {
-  if (!bytes || !file || !pdfDoc) {
+  if (!buffer || !file || !pdfDoc) {
     return (
       <div>
         <h3>Editor Page</h3>
@@ -65,7 +64,7 @@ export default function EditorPage() {
       <div>{file.name}</div>
 
       <button onClick={save}>Save</button>
-      <PDFEditor doc={pdfDoc} buffer={bytes} onRemovePage={removePage} />
+      <PDFEditor doc={pdfDoc} buffer={buffer} onRemovePage={removePage} />
     </div>
   );
 }
