@@ -1,7 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 import { useState } from "react";
 import FileUpload from "../atoms/file-upload.atom";
-import PdfViewer from "../molecules/PdfViewer.client";
+import PDFEditor from "../organisms/PdfEditor.client";
 
 export default function EditorPage() {
   const [file, setFile] = useState<File>();
@@ -27,7 +27,7 @@ export default function EditorPage() {
 
   async function removePage(page: number = 1) {
     if (!pdfDoc) return;
-    pdfDoc?.removePage(page);
+    pdfDoc.removePage(page);
     const modifiedPdfBytes = await pdfDoc.save();
     const newPdfDoc = await PDFDocument.load(modifiedPdfBytes);
     setPdfDoc(newPdfDoc);
@@ -68,7 +68,7 @@ export default function EditorPage() {
 
       <button onClick={() => removePage()}>Remove page 2</button>
       <button onClick={save}>Save</button>
-      <PdfViewer doc={pdfDoc} />
+      <PDFEditor doc={pdfDoc} />
     </div>
   );
 }
