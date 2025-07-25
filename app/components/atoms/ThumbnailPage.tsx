@@ -9,11 +9,5 @@ interface ThumbnailPageProps {
 const ThumbnailWidth = 100;
 
 export default function ThumbnailPage({ page, pageIndex }: ThumbnailPageProps) {
-  return (
-    <Thumbnail
-      pageIndex={pageIndex}
-      width={ThumbnailWidth}
-      canvasBackground="#8f9e9a"
-    />
-  );
+  return <Thumbnail pageIndex={pageIndex} width={ThumbnailWidth} />;
 }
