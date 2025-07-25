@@ -82,17 +82,13 @@ export default function EditorPage() {
   }
 
   return (
-    <div>
-      <div className="mb-4">
-        <div>{file.name}</div>
-        <div className="flex gap-4">
-          <FileUpload accept=".pdf" onChange={addFile} multiple>
-            <Button>Add file</Button>
-          </FileUpload>
-          <Button onClick={save}>Save</Button>
-        </div>
-      </div>
-      <PDFEditor doc={pdfDoc} buffer={buffer} onRemovePage={removePage} />
-    </div>
+    <PDFEditor
+      doc={pdfDoc}
+      buffer={buffer}
+      onRemovePage={removePage}
+      onSave={save}
+      onAdd={addFile}
+      fileName={file.name}
+    />
   );
 }
