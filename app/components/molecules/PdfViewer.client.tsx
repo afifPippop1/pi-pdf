@@ -26,7 +26,6 @@ function PageItem({ doc, pageIndex }: PageItemProps) {
       pageIndex={pageIndex}
       width={width}
       height={height}
-      canvasBackground="#8f9e9a"
       renderTextLayer={false}
       renderAnnotationLayer={false}
     />
