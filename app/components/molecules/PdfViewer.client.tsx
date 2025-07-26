@@ -9,7 +9,9 @@ interface PdfViewerProps {
 export default function PDFPageViewer(props: PdfViewerProps) {
   return props.doc
     ?.getPageIndices()
-    .map((pageIndex) => <PageItem pageIndex={pageIndex} doc={props.doc} />);
+    .map((pageIndex) => (
+      <PageItem key={pageIndex} pageIndex={pageIndex} doc={props.doc} />
+    ));
 }
 
 interface PageItemProps extends PdfViewerProps {

@@ -1,8 +1,7 @@
-import { bytesFor, PDFDocument } from "pdf-lib";
-import { useMemo, useState } from "react";
+import { PDFDocument } from "pdf-lib";
+import { useState } from "react";
 import FileUpload from "../molecules/FileUpload";
 import PDFEditor from "../organisms/PdfEditor.client";
-import { Button } from "../atoms/Button";
 
 export default function EditorPage() {
   const [file, setFile] = useState<File>();
@@ -89,6 +88,11 @@ export default function EditorPage() {
       onSave={save}
       onAdd={addFile}
       fileName={file.name}
+      onStateSave={async (buffer) => {
+        const newDoc = await PDFDocument.load(buffer);
+        setBuffer(buffer);
+        setPdfDoc(newDoc);
+      }}
     />
   );
 }
