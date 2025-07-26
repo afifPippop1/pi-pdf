@@ -4,17 +4,19 @@ import { Page } from "react-pdf";
 
 interface PdfViewerProps {
   doc?: PDFDocument;
+  removedPages: Record<number, boolean>;
 }
 
 export default function PDFPageViewer(props: PdfViewerProps) {
   return props.doc
     ?.getPageIndices()
+    .filter((pageIndex) => !(pageIndex in props.removedPages))
     .map((pageIndex) => (
       <PageItem key={pageIndex} pageIndex={pageIndex} doc={props.doc} />
     ));
 }
 
-interface PageItemProps extends PdfViewerProps {
+interface PageItemProps extends Omit<PdfViewerProps, "removedPages"> {
   pageIndex: number;
 }
 

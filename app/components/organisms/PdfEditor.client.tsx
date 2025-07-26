@@ -3,11 +3,10 @@ import "react-pdf/dist/Page/TextLayer.css";
 
 import { ColorTypes, PDFDocument } from "pdf-lib";
 import { Document, pdfjs } from "react-pdf";
+import { Button } from "../atoms/Button";
+import FileUpload from "../molecules/FileUpload";
 import PDFPageViewer from "../molecules/PdfViewer.client";
 import PDFThumbnail from "../molecules/Thumbnail.client";
-import FileUpload from "../molecules/FileUpload";
-import { Button } from "../atoms/Button";
-import { useLayoutEffect } from "react";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -17,11 +16,12 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 interface PDFEditorProps {
   doc: PDFDocument;
   buffer: ArrayBuffer;
-  onRemovePage?: (page: number) => void;
+  onRemovePage?: (page: number, index: number) => void;
   onSave?: () => void;
   onAdd?: (files: FileList | null) => void;
   onStateSave: (buffer: ArrayBuffer) => void;
   fileName: string;
+  removedPages: Record<number, boolean>;
 }
 
 export default function PDFEditor(props: PDFEditorProps) {
@@ -60,9 +60,13 @@ export default function PDFEditor(props: PDFEditorProps) {
       </div>
 
       <Document file={props.buffer} className="flex gap-8">
-        <PDFThumbnail doc={props.doc} onRemovePage={props.onRemovePage} />
+        <PDFThumbnail
+          doc={props.doc}
+          onRemovePage={props.onRemovePage}
+          removedPages={props.removedPages}
+        />
         <div className="flex flex-col gap-8 overflow-auto">
-          <PDFPageViewer doc={props.doc} />
+          <PDFPageViewer doc={props.doc} removedPages={props.removedPages} />
         </div>
       </Document>
     </div>

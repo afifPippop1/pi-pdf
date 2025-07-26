@@ -3,19 +3,36 @@ import { useState } from "react";
 import FileUpload from "../molecules/FileUpload";
 import PDFEditor from "../organisms/PdfEditor.client";
 
+// TODO
+// The shape or addition should only be add to canvas first
+// When user save later it will be really applied to the PDF Document
+
 export default function EditorPage() {
   const [file, setFile] = useState<File>();
+  const [mainDoc, setMainDoc] = useState<PDFDocument>();
   const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
   const [buffer, setBuffer] = useState<ArrayBuffer>();
+  const [removedPages, setRemovedPages] = useState<Record<number, boolean>>({});
+
+  function reset() {
+    setMainDoc(undefined);
+    setBuffer(undefined);
+    setPdfDoc(undefined);
+    setRemovedPages({});
+  }
+
+  async function setDoc(doc: PDFDocument) {
+    const copy = await doc.copy();
+    setMainDoc(copy);
+    setBuffer((await copy.save()).buffer);
+    setPdfDoc(doc);
+  }
 
   async function mergePDF(files: File[]) {
-    const newDoc = await PDFDocument.create();
+    let newDoc = await PDFDocument.create();
     if (pdfDoc) {
-      const copiedPages = await newDoc.copyPages(
-        pdfDoc,
-        pdfDoc.getPageIndices()
-      );
-      copiedPages.forEach((page) => newDoc.addPage(page));
+      const buff = (await pdfDoc.save()).buffer;
+      newDoc = await PDFDocument.load(buff);
     }
     for (let file of files) {
       const arrayBuffer = await file.arrayBuffer();
@@ -23,8 +40,7 @@ export default function EditorPage() {
       const copiedPages = await newDoc.copyPages(doc, doc.getPageIndices());
       copiedPages.forEach((page) => newDoc.addPage(page));
     }
-    setBuffer((await newDoc.save()).buffer);
-    setPdfDoc(newDoc);
+    setDoc(newDoc);
   }
 
   function getFiles(files: FileList | null): File[] {
@@ -44,13 +60,11 @@ export default function EditorPage() {
     await mergePDF(f);
   }
 
-  async function removePage(page: number = 1) {
+  async function removePage(page: number, index: number) {
     if (!pdfDoc) return;
-    pdfDoc.removePage(page);
-    const modifiedPdfBytes = await pdfDoc.save();
-    const newPdfDoc = await PDFDocument.load(modifiedPdfBytes);
-    setBuffer((await newPdfDoc.save()).buffer);
-    setPdfDoc(newPdfDoc);
+    pdfDoc.removePage(index);
+    await pdfDoc.save();
+    setRemovedPages((pages) => ({ ...pages, [page]: true }));
   }
 
   async function save() {
@@ -68,10 +82,11 @@ export default function EditorPage() {
   }
 
   async function addFile(files: FileList | null) {
+    reset();
     await mergePDF(getFiles(files));
   }
 
-  if (!buffer || !file || !pdfDoc) {
+  if (!buffer || !file || !pdfDoc || !mainDoc) {
     return (
       <div>
         <h3>Editor Page</h3>
@@ -82,17 +97,18 @@ export default function EditorPage() {
 
   return (
     <PDFEditor
-      doc={pdfDoc}
+      doc={mainDoc}
       buffer={buffer}
       onRemovePage={removePage}
       onSave={save}
       onAdd={addFile}
       fileName={file.name}
       onStateSave={async (buffer) => {
-        const newDoc = await PDFDocument.load(buffer);
-        setBuffer(buffer);
-        setPdfDoc(newDoc);
+        // const newDoc = await PDFDocument.load(buffer);
+        // setBuffer(buffer);
+        // setPdfDoc(newDoc);
       }}
+      removedPages={removedPages}
     />
   );
 }
