@@ -3,111 +3,102 @@ import { useState } from "react";
 import FileUpload from "../molecules/FileUpload";
 import PDFEditor from "../organisms/PdfEditor.client";
 
-// TODO
-// The shape or addition should only be add to canvas first
-// When user save later it will be really applied to the PDF Document
-
 export default function EditorPage() {
-  const [file, setFile] = useState<File>();
-  const [mainDoc, setMainDoc] = useState<PDFDocument>();
-  const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
-  const [buffer, setBuffer] = useState<ArrayBuffer>();
+  const [uploadedFile, setUploadedFile] = useState<File>();
+  const [editableDoc, setEditableDoc] = useState<PDFDocument>();
+  const [sourceDoc, setSourceDoc] = useState<PDFDocument>();
+  const [pdfBuffer, setPdfBuffer] = useState<ArrayBuffer>();
   const [removedPages, setRemovedPages] = useState<Record<number, boolean>>({});
 
-  function reset() {
-    setMainDoc(undefined);
-    setBuffer(undefined);
-    setPdfDoc(undefined);
+  function resetState() {
+    setEditableDoc(undefined);
+    setSourceDoc(undefined);
+    setPdfBuffer(undefined);
     setRemovedPages({});
   }
 
-  async function setDoc(doc: PDFDocument) {
-    const copy = await doc.copy();
-    setMainDoc(copy);
-    setBuffer((await copy.save()).buffer);
-    setPdfDoc(doc);
+  async function applyMergedPdf(doc: PDFDocument) {
+    const editableCopy = await doc.copy();
+    const savedBuffer = (await editableCopy.save()).buffer;
+    setEditableDoc(editableCopy);
+    setPdfBuffer(savedBuffer);
+    setSourceDoc(doc);
   }
 
-  async function mergePDF(files: File[]) {
-    let newDoc = await PDFDocument.create();
-    if (pdfDoc) {
-      const buff = (await pdfDoc.save()).buffer;
-      newDoc = await PDFDocument.load(buff);
+  async function mergeFilesIntoPdf(files: File[]) {
+    let mergedDoc = await PDFDocument.create();
+
+    if (sourceDoc) {
+      const originalBuffer = (await sourceDoc.save()).buffer;
+      mergedDoc = await PDFDocument.load(originalBuffer);
     }
-    for (let file of files) {
+
+    for (const file of files) {
       const arrayBuffer = await file.arrayBuffer();
-      const doc = await PDFDocument.load(arrayBuffer);
-      const copiedPages = await newDoc.copyPages(doc, doc.getPageIndices());
-      copiedPages.forEach((page) => newDoc.addPage(page));
+      const loadedDoc = await PDFDocument.load(arrayBuffer);
+      const copiedPages = await mergedDoc.copyPages(
+        loadedDoc,
+        loadedDoc.getPageIndices()
+      );
+      copiedPages.forEach((page) => mergedDoc.addPage(page));
     }
-    setDoc(newDoc);
+
+    await applyMergedPdf(mergedDoc);
   }
 
-  function getFiles(files: FileList | null): File[] {
-    const f: File[] = [];
-    if (files) {
-      for (let file of files) {
-        f.push(file);
-      }
-    }
-    return f;
+  function toFileArray(fileList: FileList | null): File[] {
+    return fileList ? Array.from(fileList) : [];
   }
 
-  async function onChange(files: FileList | null) {
-    const f = getFiles(files);
-
-    setFile(f?.[0]);
-    await mergePDF(f);
+  async function handleUpload(files: FileList | null) {
+    const fileArray = toFileArray(files);
+    setUploadedFile(fileArray[0]);
+    await mergeFilesIntoPdf(fileArray);
   }
 
-  async function removePage(page: number, index: number) {
-    if (!pdfDoc) return;
-    pdfDoc.removePage(index);
-    await pdfDoc.save();
-    setRemovedPages((pages) => ({ ...pages, [page]: true }));
+  async function handleAddFile(files: FileList | null) {
+    resetState();
+    await mergeFilesIntoPdf(toFileArray(files));
   }
 
-  async function save() {
-    if (!pdfDoc) return;
-    const modifiedPdfBytes = await pdfDoc.save();
-    const blob = new Blob([modifiedPdfBytes], { type: "application/pdf" });
-
-    const downloadLink = document.createElement("a");
-    downloadLink.href = URL.createObjectURL(blob);
-    downloadLink.download = `edited-${file?.name || "document"}`;
-    downloadLink.click();
-
-    // Optional: Revoke the object URL later to free memory
-    setTimeout(() => URL.revokeObjectURL(downloadLink.href), 100);
+  async function handleRemovePage(pageNum: number, pageIndex: number) {
+    if (!sourceDoc) return;
+    sourceDoc.removePage(pageIndex);
+    setRemovedPages((prev) => ({ ...prev, [pageNum]: true }));
   }
 
-  async function addFile(files: FileList | null) {
-    reset();
-    await mergePDF(getFiles(files));
+  async function handleSave() {
+    if (!sourceDoc) return;
+
+    const pdfBytes = await sourceDoc.save();
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `edited-${uploadedFile?.name || "document"}`;
+    link.click();
+
+    setTimeout(() => URL.revokeObjectURL(link.href), 100);
   }
 
-  if (!buffer || !file || !pdfDoc || !mainDoc) {
+  if (!pdfBuffer || !uploadedFile || !editableDoc || !sourceDoc) {
     return (
       <div>
         <h3>Editor Page</h3>
-        <FileUpload accept=".pdf" onChange={onChange} multiple />
+        <FileUpload accept=".pdf" onChange={handleUpload} multiple />
       </div>
     );
   }
 
   return (
     <PDFEditor
-      doc={mainDoc}
-      buffer={buffer}
-      onRemovePage={removePage}
-      onSave={save}
-      onAdd={addFile}
-      fileName={file.name}
-      onStateSave={async (buffer) => {
-        // const newDoc = await PDFDocument.load(buffer);
-        // setBuffer(buffer);
-        // setPdfDoc(newDoc);
-      }}
+      doc={editableDoc}
+      buffer={pdfBuffer}
+      onRemovePage={handleRemovePage}
+      onSave={handleSave}
+      onAdd={handleAddFile}
+      fileName={uploadedFile.name}
+      onStateSave={async (_buffer) => {}}
       removedPages={removedPages}
     />
   );
