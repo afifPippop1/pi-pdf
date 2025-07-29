@@ -46,7 +46,7 @@ export default function PDFEditor(props: PDFEditorProps) {
   }
 
   return (
-    <div>
+    <div className="relative">
       {/* NAVBAR */}
       <div className="mb-4">
         <div>{props.fileName}</div>

@@ -2,17 +2,20 @@ import { PDFDocument } from "pdf-lib";
 import { useState } from "react";
 import FileUpload from "../molecules/FileUpload";
 import PDFEditor from "../organisms/PdfEditor.client";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { setPDFDoc } from "~/store/slices/editorSlice";
 
 export default function EditorPage() {
   const [uploadedFile, setUploadedFile] = useState<File>();
   const [editableDoc, setEditableDoc] = useState<PDFDocument>();
-  const [sourceDoc, setSourceDoc] = useState<PDFDocument>();
   const [pdfBuffer, setPdfBuffer] = useState<ArrayBuffer>();
   const [removedPages, setRemovedPages] = useState<Record<number, boolean>>({});
+  const dispatch = useAppDispatch();
+  const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
 
   function resetState() {
     setEditableDoc(undefined);
-    setSourceDoc(undefined);
+    dispatch(setPDFDoc(null));
     setPdfBuffer(undefined);
     setRemovedPages({});
   }
@@ -22,14 +25,14 @@ export default function EditorPage() {
     const savedBuffer = (await editableCopy.save()).buffer;
     setEditableDoc(editableCopy);
     setPdfBuffer(savedBuffer);
-    setSourceDoc(doc);
+    dispatch(setPDFDoc(doc));
   }
 
   async function mergeFilesIntoPdf(files: File[]) {
     let mergedDoc = await PDFDocument.create();
 
-    if (sourceDoc) {
-      const originalBuffer = (await sourceDoc.save()).buffer;
+    if (pdfDoc) {
+      const originalBuffer = (await pdfDoc.save()).buffer;
       mergedDoc = await PDFDocument.load(originalBuffer);
     }
 
@@ -62,15 +65,15 @@ export default function EditorPage() {
   }
 
   async function handleRemovePage(pageNum: number, pageIndex: number) {
-    if (!sourceDoc) return;
-    sourceDoc.removePage(pageIndex);
+    if (!pdfDoc) return;
+    pdfDoc.removePage(pageIndex);
     setRemovedPages((prev) => ({ ...prev, [pageNum]: true }));
   }
 
   async function handleSave() {
-    if (!sourceDoc) return;
+    if (!pdfDoc) return;
 
-    const pdfBytes = await sourceDoc.save();
+    const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
 
     const link = document.createElement("a");
@@ -81,7 +84,7 @@ export default function EditorPage() {
     setTimeout(() => URL.revokeObjectURL(link.href), 100);
   }
 
-  if (!pdfBuffer || !uploadedFile || !editableDoc || !sourceDoc) {
+  if (!pdfBuffer || !uploadedFile || !editableDoc || !pdfDoc) {
     return (
       <div>
         <h3>Editor Page</h3>
@@ -91,17 +94,15 @@ export default function EditorPage() {
   }
 
   return (
-    <>
-      <PDFEditor
-        doc={editableDoc}
-        buffer={pdfBuffer}
-        onRemovePage={handleRemovePage}
-        onSave={handleSave}
-        onAdd={handleAddFile}
-        fileName={uploadedFile.name}
-        onStateSave={async (_buffer) => {}}
-        removedPages={removedPages}
-      />
-    </>
+    <PDFEditor
+      doc={editableDoc}
+      buffer={pdfBuffer}
+      onRemovePage={handleRemovePage}
+      onSave={handleSave}
+      onAdd={handleAddFile}
+      fileName={uploadedFile.name}
+      onStateSave={async (_buffer) => {}}
+      removedPages={removedPages}
+    />
   );
 }
