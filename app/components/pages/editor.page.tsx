@@ -91,15 +91,17 @@ export default function EditorPage() {
   }
 
   return (
-    <PDFEditor
-      doc={editableDoc}
-      buffer={pdfBuffer}
-      onRemovePage={handleRemovePage}
-      onSave={handleSave}
-      onAdd={handleAddFile}
-      fileName={uploadedFile.name}
-      onStateSave={async (_buffer) => {}}
-      removedPages={removedPages}
-    />
+    <>
+      <PDFEditor
+        doc={editableDoc}
+        buffer={pdfBuffer}
+        onRemovePage={handleRemovePage}
+        onSave={handleSave}
+        onAdd={handleAddFile}
+        fileName={uploadedFile.name}
+        onStateSave={async (_buffer) => {}}
+        removedPages={removedPages}
+      />
+    </>
   );
 }
