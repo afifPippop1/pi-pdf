@@ -1,6 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 import { useMemo } from "react";
 import { Page } from "react-pdf";
+import { useAppSelector } from "~/store/hooks";
 
 interface PdfViewerProps {
   doc?: PDFDocument;
@@ -8,12 +9,10 @@ interface PdfViewerProps {
 }
 
 export default function PDFPageViewer(props: PdfViewerProps) {
-  return props.doc
-    ?.getPageIndices()
-    .filter((pageIndex) => !(pageIndex in props.removedPages))
-    .map((pageIndex) => (
-      <PageItem key={pageIndex} pageIndex={pageIndex} doc={props.doc} />
-    ));
+  const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
+  const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
+  if (!pdfDoc) return null;
+  return <PageItem pageIndex={activePageIndex} doc={pdfDoc} />;
 }
 
 interface PageItemProps extends Omit<PdfViewerProps, "removedPages"> {

@@ -1,20 +1,20 @@
 import { PDFDocument } from "pdf-lib";
 import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { setPDFDoc, setReadonlyDoc } from "~/store/slices/editorSlice";
 import FileUpload from "../molecules/FileUpload";
 import PDFEditor from "../organisms/PdfEditor.client";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { setPDFDoc } from "~/store/slices/editorSlice";
 
 export default function EditorPage() {
   const [uploadedFile, setUploadedFile] = useState<File>();
-  const [editableDoc, setEditableDoc] = useState<PDFDocument>();
   const [pdfBuffer, setPdfBuffer] = useState<ArrayBuffer>();
   const [removedPages, setRemovedPages] = useState<Record<number, boolean>>({});
   const dispatch = useAppDispatch();
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
+  const readonlyDoc = useAppSelector((s) => s.editor.pdfDoc);
 
   function resetState() {
-    setEditableDoc(undefined);
+    dispatch(setReadonlyDoc(null));
     dispatch(setPDFDoc(null));
     setPdfBuffer(undefined);
     setRemovedPages({});
@@ -23,9 +23,9 @@ export default function EditorPage() {
   async function applyMergedPdf(doc: PDFDocument) {
     const editableCopy = await doc.copy();
     const savedBuffer = (await editableCopy.save()).buffer;
-    setEditableDoc(editableCopy);
     setPdfBuffer(savedBuffer);
     dispatch(setPDFDoc(doc));
+    dispatch(setReadonlyDoc(doc));
   }
 
   async function mergeFilesIntoPdf(files: File[]) {
@@ -84,7 +84,7 @@ export default function EditorPage() {
     setTimeout(() => URL.revokeObjectURL(link.href), 100);
   }
 
-  if (!pdfBuffer || !uploadedFile || !editableDoc || !pdfDoc) {
+  if (!pdfBuffer || !uploadedFile || !readonlyDoc || !pdfDoc) {
     return (
       <div>
         <h3>Editor Page</h3>
@@ -95,7 +95,7 @@ export default function EditorPage() {
 
   return (
     <PDFEditor
-      doc={editableDoc}
+      doc={readonlyDoc}
       buffer={pdfBuffer}
       onRemovePage={handleRemovePage}
       onSave={handleSave}

@@ -59,7 +59,7 @@ export default function PDFEditor(props: PDFEditorProps) {
         </div>
       </div>
 
-      <Document file={props.buffer} className="flex gap-8">
+      <Document file={props.buffer} className="flex flex-col gap-8">
         <PDFThumbnail
           doc={props.doc}
           onRemovePage={props.onRemovePage}

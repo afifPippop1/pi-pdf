@@ -20,10 +20,11 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
       return getDefaultMiddleware({
         serializableCheck: {
           ignoredActions: [
-            "whiteboard/updateElement",
-            "whiteboard/setElements",
+            "editor/setActivePageIndex",
+            "editor/setPDFDoc",
+            "editor/setReadonlyDoc",
           ],
-          ignoredPaths: ["whiteboard.elements"],
+          ignoredPaths: ["editor.pdfDoc"],
         },
       });
     },

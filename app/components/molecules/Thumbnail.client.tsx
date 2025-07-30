@@ -1,4 +1,6 @@
 import { PDFDocument } from "pdf-lib";
+import { useAppDispatch } from "~/store/hooks";
+import { setActivePageIndex } from "~/store/slices/editorSlice";
 import ThumbnailPage from "../atoms/ThumbnailPage";
 import ContextMenu, { type Option } from "./ContextMenu";
 
@@ -9,8 +11,9 @@ interface PDFThumbnailProps {
 }
 
 export default function PDFThumbnail(props: PDFThumbnailProps) {
+  const dispatch = useAppDispatch();
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex gap-4">
       {props.doc
         .getPageIndices()
         .filter((pageIndex) => !(pageIndex in props.removedPages))
@@ -31,7 +34,13 @@ export default function PDFThumbnail(props: PDFThumbnailProps) {
                 props.onRemovePage?.(option.value as number, index)
               }
             >
-              <ThumbnailPage pageIndex={pageIndex} page={page} />
+              <ThumbnailPage
+                pageIndex={pageIndex}
+                page={page}
+                onItemClick={({ pageIndex }) => {
+                  dispatch(setActivePageIndex(pageIndex));
+                }}
+              />
             </ContextMenu>
           );
         })}
