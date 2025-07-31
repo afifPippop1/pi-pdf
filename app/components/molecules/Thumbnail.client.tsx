@@ -1,6 +1,6 @@
 import { PDFDocument } from "pdf-lib";
 import { useAppDispatch } from "~/store/hooks";
-import { setActivePageIndex } from "~/store/slices/editorSlice";
+import { setActivePage } from "~/store/slices/editorSlice";
 import ThumbnailPage from "../atoms/ThumbnailPage";
 import ContextMenu, { type Option } from "./ContextMenu";
 
@@ -38,7 +38,7 @@ export default function PDFThumbnail(props: PDFThumbnailProps) {
                 pageIndex={pageIndex}
                 page={page}
                 onItemClick={({ pageIndex }) => {
-                  dispatch(setActivePageIndex(pageIndex));
+                  dispatch(setActivePage(pageIndex));
                 }}
               />
             </ContextMenu>

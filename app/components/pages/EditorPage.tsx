@@ -1,22 +1,31 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { useDispatch } from "react-redux";
 import { useAppSelector } from "~/store/hooks";
+import { setActivePage, setPDFDoc } from "~/store/slices/editorSlice";
+import { Button } from "../atoms/Button";
+import ContextMenu, { type Option } from "../molecules/ContextMenu";
 import { PdfViewer } from "../molecules/DocViewer.client";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
-import { Button } from "../atoms/Button";
+
+function getPageFromIndex(index: number): number {
+  return index + 1;
+}
 
 export function EditorPage() {
-  const files = useAppSelector((s) => s.editor.files);
   const [blob, setBlob] = React.useState<Uint8Array>();
-  const [page, setPage] = React.useState<number>(1);
+  const activePage = useAppSelector((s) => s.editor.activePage);
+  const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (files.length) {
+  React.useEffect(() => {
+    if (pdfDoc) {
       (async function () {
-        setBlob(new Uint8Array(await files[0].arrayBuffer()));
+        const buffer = await pdfDoc.save();
+        setBlob(buffer);
       })();
     }
-  }, [files]);
+  }, [pdfDoc]);
 
   return (
     <div className="h-screen w-screen bg-[#EDEDED] overflow-hidden flex flex-col">
@@ -27,14 +36,45 @@ export function EditorPage() {
         ) : (
           <>
             <div className="flex gap-4">
-              {[1, 2, 3].map((page) => (
-                <Button key={page} onClick={() => setPage(page)}>
-                  {page}
-                </Button>
-              ))}
+              {pdfDoc?.getPageIndices().map((index) => {
+                const options: Option[] = [
+                  {
+                    label: "Remove",
+                    value: index,
+                  },
+                ];
+                return (
+                  <ContextMenu
+                    key={index}
+                    options={options}
+                    onChange={async () => {
+                      if (pdfDoc.getPageCount() === 1) {
+                        dispatch(setPDFDoc(null));
+                        setBlob(undefined);
+                      } else {
+                        if (activePage === getPageFromIndex(index)) {
+                          dispatch(setActivePage(index));
+                        }
+                        pdfDoc.removePage(index);
+                        const buffer = await pdfDoc.save();
+                        setBlob(buffer);
+                      }
+                    }}
+                  >
+                    <Button
+                      key={index}
+                      onClick={() =>
+                        dispatch(setActivePage(getPageFromIndex(index)))
+                      }
+                    >
+                      {getPageFromIndex(index)}
+                    </Button>
+                  </ContextMenu>
+                );
+              })}
             </div>
             <div className="flex justify-center">
-              <PdfViewer pdfData={blob} page={page} />
+              <PdfViewer pdfData={blob} page={activePage} />
             </div>
           </>
         )}

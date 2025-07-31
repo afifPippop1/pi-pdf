@@ -10,7 +10,7 @@ interface PdfViewerProps {
 
 export default function PDFPageViewer(props: PdfViewerProps) {
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
-  const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
+  const activePageIndex = useAppSelector((s) => s.editor.activePage);
   if (!pdfDoc) return null;
   return <PageItem pageIndex={activePageIndex} doc={pdfDoc} />;
 }

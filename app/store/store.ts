@@ -20,7 +20,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
       return getDefaultMiddleware({
         serializableCheck: {
           ignoredActions: [
-            "editor/setActivePageIndex",
+            "editor/setActivePage",
             "editor/setPDFDoc",
             "editor/setReadonlyDoc",
             "editor/setFiles",
