@@ -1,15 +1,17 @@
-import { useEffect, useRef } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import { useEffect, useRef } from "react";
+import { PDFViewer } from "~/constants";
+import { getPageFromIndex } from "~/utils";
 
 // Set the worker manually
 pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
 
 interface PdfViewerProps {
   pdfData: Uint8Array;
-  page?: number;
+  pageIndex?: number;
 }
 
-export function PdfViewer({ pdfData, page = 1 }: PdfViewerProps) {
+export function PdfViewer({ pdfData, pageIndex = 0 }: PdfViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
 
@@ -17,8 +19,8 @@ export function PdfViewer({ pdfData, page = 1 }: PdfViewerProps) {
     const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfData) });
 
     loadingTask.promise.then((pdf) => {
-      pdf.getPage(page).then((page) => {
-        const viewport = page.getViewport({ scale: 1.5 });
+      pdf.getPage(getPageFromIndex(pageIndex)).then((page) => {
+        const viewport = page.getViewport({ scale: PDFViewer.SCALE });
         const canvas = canvasRef.current;
         if (!canvas) return;
         const context = canvas.getContext("2d");
@@ -48,7 +50,7 @@ export function PdfViewer({ pdfData, page = 1 }: PdfViewerProps) {
     return () => {
       renderTaskRef.current?.cancel();
     };
-  }, [pdfData, page]);
+  }, [pdfData, pageIndex]);
 
   return <canvas ref={canvasRef} />;
 }

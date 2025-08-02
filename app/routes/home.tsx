@@ -1,4 +1,3 @@
-import EditorPage from "~/components/pages/editor.page";
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
@@ -6,5 +5,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Editor() {
-  return <EditorPage />;
+  return <div>home</div>;
 }

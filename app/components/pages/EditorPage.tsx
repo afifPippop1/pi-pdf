@@ -1,22 +1,21 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "~/store/hooks";
-import { setActivePage, setPDFDoc } from "~/store/slices/editorSlice";
+import { setActivePageIndex, setPDFDoc } from "~/store/slices/editorSlice";
+import { getDocumentSize, getPageFromIndex } from "~/utils";
 import { Button } from "../atoms/Button";
 import ContextMenu, { type Option } from "../molecules/ContextMenu";
-import { PdfViewer } from "../molecules/DocViewer.client";
+import { PdfViewer } from "../molecules/PDFViewer.client";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
 
-function getPageFromIndex(index: number): number {
-  return index + 1;
-}
-
 export function EditorPage() {
   const [blob, setBlob] = React.useState<Uint8Array>();
-  const activePage = useAppSelector((s) => s.editor.activePage);
+  const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
+
+  const docSize = getDocumentSize(pdfDoc, activePageIndex);
 
   React.useLayoutEffect(() => {
     if (pdfDoc) {
@@ -52,9 +51,9 @@ export function EditorPage() {
                         dispatch(setPDFDoc(null));
                         setBlob(undefined);
                       } else {
-                        if (activePage === getPageFromIndex(index)) {
-                          if (activePage !== 1) {
-                            dispatch(setActivePage(index));
+                        if (activePageIndex === index) {
+                          if (activePageIndex !== 0) {
+                            dispatch(setActivePageIndex(index - 1));
                           }
                         }
                         pdfDoc.removePage(index);
@@ -65,9 +64,7 @@ export function EditorPage() {
                   >
                     <Button
                       key={index}
-                      onClick={() =>
-                        dispatch(setActivePage(getPageFromIndex(index)))
-                      }
+                      onClick={() => dispatch(setActivePageIndex(index))}
                     >
                       {getPageFromIndex(index)}
                     </Button>
@@ -76,7 +73,14 @@ export function EditorPage() {
               })}
             </div>
             <div className="flex justify-center">
-              <PdfViewer pdfData={blob} page={activePage} />
+              <div className="relative">
+                <PdfViewer pdfData={blob} pageIndex={activePageIndex} />
+                <canvas
+                  className="absolute top-0 left-0 right-0 bg-red-400 opacity-40"
+                  width={docSize.width}
+                  height={docSize.height}
+                />
+              </div>
             </div>
           </>
         )}
