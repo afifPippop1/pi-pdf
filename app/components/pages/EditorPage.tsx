@@ -18,7 +18,7 @@ export function EditorPage() {
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (pdfDoc) {
       (async function () {
         const buffer = await pdfDoc.save();
@@ -53,7 +53,9 @@ export function EditorPage() {
                         setBlob(undefined);
                       } else {
                         if (activePage === getPageFromIndex(index)) {
-                          dispatch(setActivePage(index));
+                          if (activePage !== 1) {
+                            dispatch(setActivePage(index));
+                          }
                         }
                         pdfDoc.removePage(index);
                         const buffer = await pdfDoc.save();
