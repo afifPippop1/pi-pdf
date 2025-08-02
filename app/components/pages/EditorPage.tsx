@@ -1,30 +1,20 @@
-import React from "react";
 import { useDispatch } from "react-redux";
+import { useDocBuffer } from "~/hooks/useDocBuffer";
 import { useAppSelector } from "~/store/hooks";
 import { setActivePageIndex, setPDFDoc } from "~/store/slices/editorSlice";
 import { getDocumentSize, getPageFromIndex } from "~/utils";
 import { Button } from "../atoms/Button";
 import ContextMenu, { type Option } from "../molecules/ContextMenu";
-import { PdfViewer } from "../molecules/PDFViewer.client";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
+import { PdfViewer } from "../molecules/PDFViewer.client";
+import { Whiteboard } from "../molecules/Whiteboard";
 
 export function EditorPage() {
-  const [blob, setBlob] = React.useState<Uint8Array>();
+  const { blob, setBlob } = useDocBuffer();
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
-
-  const docSize = getDocumentSize(pdfDoc, activePageIndex);
-
-  React.useLayoutEffect(() => {
-    if (pdfDoc) {
-      (async function () {
-        const buffer = await pdfDoc.save();
-        setBlob(buffer);
-      })();
-    }
-  }, [pdfDoc]);
 
   return (
     <div className="h-screen w-screen bg-[#EDEDED] overflow-hidden flex flex-col">
@@ -75,11 +65,7 @@ export function EditorPage() {
             <div className="flex justify-center">
               <div className="relative">
                 <PdfViewer pdfData={blob} pageIndex={activePageIndex} />
-                <canvas
-                  className="absolute top-0 left-0 right-0 bg-red-400 opacity-40"
-                  width={docSize.width}
-                  height={docSize.height}
-                />
+                <Whiteboard />
               </div>
             </div>
           </>

@@ -1,0 +1,18 @@
+import React from "react";
+import { useAppSelector } from "~/store/hooks";
+
+export function useDocBuffer() {
+  const [blob, setBlob] = React.useState<Uint8Array>();
+  const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
+
+  React.useLayoutEffect(() => {
+    if (pdfDoc) {
+      (async function () {
+        const buffer = await pdfDoc.save();
+        setBlob(buffer);
+      })();
+    }
+  }, [pdfDoc]);
+
+  return { blob, setBlob };
+}

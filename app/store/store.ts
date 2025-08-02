@@ -24,8 +24,10 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
             "editor/setPDFDoc",
             "editor/setReadonlyDoc",
             "editor/setFiles",
+            "editor/setElements",
+            "editor/updateElement",
           ],
-          ignoredPaths: ["editor.pdfDoc", "editor.files"],
+          ignoredPaths: ["editor.pdfDoc", "editor.files", "editor.elements"],
         },
       });
     },
