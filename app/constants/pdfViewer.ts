@@ -1,3 +1,3 @@
 export const PDFViewer = {
-  SCALE: 1.5,
+  SCALE: 1,
 } as const;

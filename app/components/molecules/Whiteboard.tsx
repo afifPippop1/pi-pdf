@@ -6,17 +6,14 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { updateElement as updateElementStore } from "~/store/slices/editorSlice";
 import type { Element } from "~/types";
 import type { Action } from "~/types/action";
-import { getDocumentSize } from "~/utils";
-import { adjustElementCoordinates } from "~/utils/adjustElementCoordinates";
-import { adjustmentRequired } from "~/utils/adjustmentRequired";
-import { createElement } from "~/utils/createElement";
-import { drawElement } from "~/utils/drawElement";
-import { updateElement } from "~/utils/updateElement";
-
-// let selectedElement: Element | null = null;
-// function setSelectedElement(el: Element | null) {
-//   selectedElement = el;
-// }
+import {
+  adjustElementCoordinates,
+  adjustmentRequired,
+  createElement,
+  drawElement,
+  getDocumentSize,
+  updateElement,
+} from "~/utils";
 
 export interface WhiteboardProps {}
 

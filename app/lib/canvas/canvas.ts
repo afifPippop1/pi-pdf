@@ -20,7 +20,7 @@ export class Canvas {
     this.ctx.fillStyle = "#ffffff";
 
     // Draw filled rectangle (x, y, width, height)
-    this.ctx.fillRect(element.x1, element.y1, element.width, element.height);
+    this.ctx.fillRect(element.x, element.y, element.width, element.height);
 
     // Set stroke color and line width (optional)
     // this.ctx.strokeStyle = "red";
