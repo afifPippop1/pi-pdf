@@ -44,13 +44,15 @@ function getHandlePoints(el: Element) {
 }
 
 function drawBullet(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  const size = 12;
+  const radius = 6;
+  const startAngle = 0; // 0deg
+  const endAngle = 2 * Math.PI; //so it will be 360deg
   ctx.save();
   ctx.fillStyle = "#007bff"; // blue
   ctx.strokeStyle = "#fff"; // white border
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.arc(x, y, size / 2, 0, 2 * Math.PI);
+  ctx.arc(x, y, radius, startAngle, endAngle);
   ctx.fill();
   ctx.stroke();
   ctx.restore();

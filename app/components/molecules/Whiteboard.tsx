@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
 import { actions, toolTypes } from "~/constants";
+import { useDrag } from "~/hooks/useDrag";
 import { canvas } from "~/lib/canvas";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { updateElement as updateElementStore } from "~/store/slices/editorSlice";
@@ -28,6 +29,7 @@ export function Whiteboard(props: WhiteboardProps) {
   const docSize = getDocumentSize(pdfDoc, activePageIndex);
   const [action, setAction] = useState<Action | null>(null);
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
+  const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
   const dispatch = useAppDispatch();
 
   useLayoutEffect(() => {
@@ -77,6 +79,16 @@ export function Whiteboard(props: WhiteboardProps) {
       setSelectedElement(element);
       dispatch(updateElementStore(element));
     }
+
+    if (!toolType && selectedElement) {
+      setAction(actions.DRAGGING);
+      canvas.style.cursor = "grab";
+
+      const offsetX = x - selectedElement.x1;
+      const offsetY = y - selectedElement.y1;
+
+      setDragOffset({ x: offsetX, y: offsetY });
+    }
   }
 
   function handleMouseUp(event: React.MouseEvent<HTMLCanvasElement>) {
@@ -109,6 +121,7 @@ export function Whiteboard(props: WhiteboardProps) {
 
     setAction(null);
     setSelectedElement(null);
+    resetDrag();
   }
 
   function handleMouseMove(event: React.MouseEvent<HTMLCanvasElement>) {
@@ -135,6 +148,31 @@ export function Whiteboard(props: WhiteboardProps) {
           elements
         );
       }
+    } else if (action === actions.DRAGGING) {
+      if (!selectedElement) return;
+      const index = elements.findIndex((el) => el.id === selectedElement.id);
+      if (index === -1) return;
+
+      const element = elements[index];
+      const width = element.x2 - element.x1;
+      const height = element.y2 - element.y1;
+
+      const newX1 = x - dragOffset.x;
+      const newY1 = y - dragOffset.y;
+      const newX2 = newX1 + width;
+      const newY2 = newY1 + height;
+
+      updateElement(
+        {
+          ...element,
+          x1: newX1,
+          y1: newY1,
+          x2: newX2,
+          y2: newY2,
+          index,
+        },
+        elements
+      );
     } else {
       const isHovering = elements.some((el) => isPointInElement(x, y, el));
       canvas.style.cursor = isHovering ? "pointer" : "default";
@@ -142,7 +180,7 @@ export function Whiteboard(props: WhiteboardProps) {
   }
 
   function handleClick(event: React.MouseEvent<HTMLCanvasElement>) {
-    if (action !== actions.DRAWING) {
+    if (!action) {
       const { clientX, clientY } = event;
       const canvas = event.currentTarget;
       const rect = canvas.getBoundingClientRect();
