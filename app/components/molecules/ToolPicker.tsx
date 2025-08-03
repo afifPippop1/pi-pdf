@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import type { ReactNode } from "react";
 import type { IconType } from "react-icons";
 import { FaRegSquare } from "react-icons/fa6";
+import { LuMousePointer2 } from "react-icons/lu";
 import { toolTypes } from "~/constants";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { setToolType } from "~/store/slices/editorSlice";
@@ -9,14 +9,15 @@ import type { ToolType } from "~/types";
 
 export function ToolPicker() {
   return (
-    <div className="min-h-24 rounded-e-md bg-grey-400 absolute left-0 top-1/2 p-2 flex flex-col items-center justify-center">
+    <div className="min-h-24 rounded-e-md bg-grey-400 absolute left-0 top-1/2 p-2 flex flex-col items-center justify-center gap-4">
+      <ToolItem type={null} icon={LuMousePointer2} />
       <ToolItem type={toolTypes.RECTANGLE} icon={FaRegSquare} />
     </div>
   );
 }
 
 interface ToolItemProps {
-  type: ToolType;
+  type: ToolType | null;
   icon: IconType;
 }
 
