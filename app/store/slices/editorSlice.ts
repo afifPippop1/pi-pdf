@@ -17,8 +17,7 @@ const initialState: EditorState = {
   readonlyDoc: null,
   files: [],
   elements: [],
-  // toolType: null,
-  toolType: "RECTANGLE",
+  toolType: null,
 };
 
 const editorSlice = createSlice({

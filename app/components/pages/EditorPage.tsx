@@ -9,6 +9,7 @@ import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
 import { PdfViewer } from "../molecules/PDFViewer.client";
 import { Whiteboard } from "../molecules/Whiteboard";
+import { ToolPicker } from "../molecules/ToolPicker";
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
@@ -68,7 +69,7 @@ export function EditorPage() {
                 <Whiteboard />
               </div>
             </div>
-            <div className="min-h-24 w-8 rounded-e-md bg-grey-400 absolute left-0 top-1/2"></div>
+            <ToolPicker />
           </>
         )}
       </div>
