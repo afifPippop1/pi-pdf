@@ -3,8 +3,10 @@ import { useEffect, useRef } from "react";
 import { PDFViewer } from "~/constants";
 import { getPageFromIndex } from "~/utils";
 
-// Set the worker manually
-pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 interface PdfViewerProps {
   pdfData: Uint8Array;
