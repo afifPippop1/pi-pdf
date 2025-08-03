@@ -8,3 +8,5 @@ export * from "./createElement";
 export * from "./drawElement";
 export * from "./updateElement";
 export * from "./savePdfDoc";
+export * from "./isPointInElement";
+export * from "./drawHighlight";

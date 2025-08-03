@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
 import { actions, toolTypes } from "~/constants";
 import { canvas } from "~/lib/canvas";
@@ -11,7 +11,9 @@ import {
   adjustmentRequired,
   createElement,
   drawElement,
+  drawHighlight,
   getDocumentSize,
+  isPointInElement,
   updateElement,
 } from "~/utils";
 
@@ -38,9 +40,17 @@ export function Whiteboard(props: WhiteboardProps) {
 
       elements.forEach((element) => {
         drawElement({ canvas: cvs, context: ctx, element });
+
+        if (
+          element.id === selectedElement?.id &&
+          !!ctx &&
+          action !== actions.DRAWING
+        ) {
+          drawHighlight(ctx, element);
+        }
       });
     }
-  }, [elements]);
+  }, [elements, selectedElement, action]);
 
   function handleMouseDown(event: React.MouseEvent<HTMLCanvasElement>) {
     const { clientX, clientY } = event;
@@ -49,6 +59,10 @@ export function Whiteboard(props: WhiteboardProps) {
 
     const x = clientX - rect.left;
     const y = clientY - rect.top;
+
+    if (toolType) {
+      canvas.style.cursor = "default";
+    }
 
     if (toolType === toolTypes.RECTANGLE) {
       setAction(actions.DRAWING);
@@ -98,7 +112,6 @@ export function Whiteboard(props: WhiteboardProps) {
   }
 
   function handleMouseMove(event: React.MouseEvent<HTMLCanvasElement>) {
-    if (!selectedElement) return;
     const { clientX, clientY } = event;
     const canvas = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
@@ -106,6 +119,7 @@ export function Whiteboard(props: WhiteboardProps) {
     const x = clientX - rect.left;
     const y = clientY - rect.top;
     if (action === actions.DRAWING) {
+      if (!selectedElement) return;
       const index = elements.findIndex(
         (element) => element.id === selectedElement?.id
       );
@@ -121,6 +135,30 @@ export function Whiteboard(props: WhiteboardProps) {
           elements
         );
       }
+    } else {
+      const isHovering = elements.some((el) => isPointInElement(x, y, el));
+      canvas.style.cursor = isHovering ? "pointer" : "default";
+    }
+  }
+
+  function handleClick(event: React.MouseEvent<HTMLCanvasElement>) {
+    if (action !== actions.DRAWING) {
+      const { clientX, clientY } = event;
+      const canvas = event.currentTarget;
+      const rect = canvas.getBoundingClientRect();
+
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      const coveringElements = elements.filter((el) =>
+        isPointInElement(x, y, el)
+      );
+      if (coveringElements.length) {
+        const lastElement = coveringElements[coveringElements.length - 1];
+        setSelectedElement(lastElement);
+      } else {
+        setSelectedElement(null);
+      }
     }
   }
 
@@ -133,6 +171,7 @@ export function Whiteboard(props: WhiteboardProps) {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
+      onClick={handleClick}
     />
   );
 }
