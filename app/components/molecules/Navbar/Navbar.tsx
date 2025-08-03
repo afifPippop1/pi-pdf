@@ -10,6 +10,7 @@ export function Navbar({}: NavbarProps) {
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const elements = useAppSelector((s) => s.editor.elements);
+
   async function handleSave() {
     if (!pdfDoc) return;
     const page = pdfDoc.getPage(activePageIndex);

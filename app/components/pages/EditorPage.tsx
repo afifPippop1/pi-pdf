@@ -19,7 +19,7 @@ export function EditorPage() {
   return (
     <div className="h-screen w-screen bg-[#EDEDED] overflow-hidden flex flex-col">
       <Navbar />
-      <div className="overflow-auto flex-1 flex-col items-stretch pt-8">
+      <div className="overflow-auto flex-1 flex-col items-stretch pt-8 relative">
         {!blob ? (
           <EmptyFile />
         ) : (
@@ -68,6 +68,7 @@ export function EditorPage() {
                 <Whiteboard />
               </div>
             </div>
+            <div className="min-h-24 w-8 rounded-e-md bg-grey-400 absolute left-0 top-1/2"></div>
           </>
         )}
       </div>
