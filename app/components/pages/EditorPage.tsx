@@ -1,21 +1,42 @@
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { PDFViewer } from "~/constants";
 import { useDocBuffer } from "~/hooks/useDocBuffer";
 import { useAppSelector } from "~/store/hooks";
 import { setActivePageIndex, setPDFDoc } from "~/store/slices/editorSlice";
-import { getDocumentSize, getPageFromIndex } from "~/utils";
+import { getPageFromIndex } from "~/utils";
 import { Button } from "../atoms/Button";
 import ContextMenu, { type Option } from "../molecules/ContextMenu";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
 import { PdfViewer } from "../molecules/PDFViewer.client";
-import { Whiteboard } from "../molecules/Whiteboard";
 import { ToolPicker } from "../molecules/ToolPicker";
+import { Whiteboard } from "../molecules/Whiteboard";
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
+  const [zoom, setZoom] = useState<number>(PDFViewer.SCALE); // e.g., 1 = 100%
+
+  useEffect(() => {
+    function handleWheel(event: WheelEvent) {
+      if (event.ctrlKey) {
+        event.preventDefault(); // Prevent browser zoom
+        const zoomDelta = -event.deltaY * 0.001;
+        setZoom((prevZoom) => Math.min(Math.max(prevZoom + zoomDelta, 0.1), 3));
+      }
+    }
+
+    const document = window.document;
+    if (document)
+      document.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      if (document) document.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
 
   return (
     <div className="h-screen w-screen bg-[#EDEDED] overflow-hidden flex flex-col">
@@ -65,8 +86,12 @@ export function EditorPage() {
             </div>
             <div className="flex justify-center">
               <div className="relative">
-                <PdfViewer pdfData={blob} pageIndex={activePageIndex} />
-                <Whiteboard />
+                <PdfViewer
+                  pdfData={blob}
+                  pageIndex={activePageIndex}
+                  scale={zoom}
+                />
+                <Whiteboard scale={zoom} />
               </div>
             </div>
             <ToolPicker />
