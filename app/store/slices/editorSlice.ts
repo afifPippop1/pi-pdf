@@ -7,7 +7,7 @@ interface EditorState {
   pdfDoc: PDFDocument | null;
   readonlyDoc: PDFDocument | null;
   files: File[];
-  elements: Element[];
+  elements: Element[][];
   toolType: ToolType | null;
 }
 
@@ -29,9 +29,15 @@ const editorSlice = createSlice({
     },
     setPDFDoc(state, action: PayloadAction<PDFDocument | null>) {
       state.pdfDoc = action.payload;
-    },
-    setReadonlyDoc(state, action: PayloadAction<PDFDocument | null>) {
-      state.readonlyDoc = action.payload;
+      if (action.payload) {
+        const length = action.payload?.getPageIndices().length;
+        if (length) {
+          const elements = Array(length).fill([] as Element[]);
+          state.elements = elements;
+        }
+      } else {
+        state.elements = [];
+      }
     },
     setFiles(state, action: PayloadAction<File[]>) {
       state.files = action.payload;
@@ -40,17 +46,24 @@ const editorSlice = createSlice({
       state.toolType = action.payload;
     },
     updateElement(state, action: PayloadAction<Element>) {
+      if (state.activePageIndex === null) return;
       const { id } = action.payload;
 
-      const index = state.elements.findIndex((el) => el.id === id);
+      const index = state.elements[state.activePageIndex].findIndex(
+        (el) => el.id === id
+      );
       if (index === -1) {
-        state.elements.push(action.payload);
+        state.elements[state.activePageIndex].push(action.payload);
       } else {
-        state.elements[index] = action.payload;
+        state.elements[state.activePageIndex][index] = action.payload;
       }
     },
-    setElements(state, action: PayloadAction<Element[]>) {
+    setElements(state, action: PayloadAction<Element[][]>) {
       state.elements = action.payload;
+    },
+    setActivePageElements(state, action: PayloadAction<Element[]>) {
+      if (state.activePageIndex === null) return;
+      state.elements[state.activePageIndex] = action.payload;
     },
   },
 });
@@ -58,10 +71,10 @@ const editorSlice = createSlice({
 export const {
   setActivePageIndex,
   setPDFDoc,
-  setReadonlyDoc,
   setFiles,
   setToolType,
   updateElement,
   setElements,
+  setActivePageElements,
 } = editorSlice.actions;
 export default editorSlice;

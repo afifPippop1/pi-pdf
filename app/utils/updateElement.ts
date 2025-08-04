@@ -1,5 +1,5 @@
 import { toolTypes } from "~/constants";
-import { setElements } from "~/store/slices/editorSlice";
+import { setActivePageElements } from "~/store/slices/editorSlice";
 import { store } from "~/store/store";
 import type { Element } from "~/types";
 import { createElement } from "./createElement";
@@ -23,7 +23,7 @@ export function updateElement(
 
       elementsCopy[index] = updateElement;
 
-      store.dispatch(setElements(elementsCopy));
+      store.dispatch(setActivePageElements(elementsCopy));
       break;
     }
     default:

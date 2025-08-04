@@ -1,5 +1,6 @@
 import React, {
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent,
@@ -10,7 +11,7 @@ import { useDrag } from "~/hooks/useDrag";
 import { canvas } from "~/lib/canvas";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
-  setElements,
+  setActivePageElements,
   setToolType,
   updateElement as updateElementStore,
 } from "~/store/slices/editorSlice";
@@ -36,11 +37,19 @@ export function Whiteboard({ scale }: WhiteboardProps) {
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const toolType = useAppSelector((s) => s.editor.toolType);
-  const elements = useAppSelector((s) => s.editor.elements);
+  const el = useAppSelector((s) => s.editor.elements);
   const docSize = getDocumentSize(pdfDoc, activePageIndex, scale);
   const [action, setAction] = useState<Action | null>(null);
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
   const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
+  const elements = useMemo(
+    () => el[activePageIndex] || [],
+    [el, activePageIndex]
+  );
+  const activeElementIndex = useMemo(
+    () => elements.findIndex((element) => element.id === selectedElement?.id),
+    [elements, activePageIndex]
+  );
 
   const dispatch = useAppDispatch();
 
@@ -150,17 +159,14 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     const y = clientY - rect.top;
     if (action === actions.DRAWING) {
       if (!selectedElement) return;
-      const index = elements.findIndex(
-        (element) => element.id === selectedElement?.id
-      );
-      if (index !== -1) {
-        const element = elements[index];
+      if (activeElementIndex !== -1) {
+        const element = elements[activeElementIndex];
         updateElement(
           {
             ...element,
             x2: x,
             y2: y,
-            index,
+            index: activeElementIndex,
           },
           elements
         );
@@ -221,7 +227,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
   function handleKeyDown(event: KeyboardEvent<HTMLCanvasElement>) {
     if (["Backspace", "Delete"].includes(event.key) && selectedElement) {
       dispatch(
-        setElements(
+        setActivePageElements(
           elements.filter((element) => element.id !== selectedElement.id)
         )
       );

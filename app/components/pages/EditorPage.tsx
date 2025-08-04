@@ -3,7 +3,11 @@ import { useDispatch } from "react-redux";
 import { PDFViewer } from "~/constants";
 import { useDocBuffer } from "~/hooks/useDocBuffer";
 import { useAppSelector } from "~/store/hooks";
-import { setActivePageIndex, setPDFDoc } from "~/store/slices/editorSlice";
+import {
+  setActivePageIndex,
+  setElements,
+  setPDFDoc,
+} from "~/store/slices/editorSlice";
 import { getPageFromIndex } from "~/utils";
 import { Button } from "../atoms/Button";
 import ContextMenu, { type Option } from "../molecules/ContextMenu";
@@ -16,6 +20,7 @@ import { Whiteboard } from "../molecules/Whiteboard";
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
+  const elements = useAppSelector((s) => s.editor.elements);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
   const [zoom, setZoom] = useState<number>(PDFViewer.SCALE); // e.g., 1 = 100%
@@ -69,6 +74,8 @@ export function EditorPage() {
                           }
                         }
                         pdfDoc.removePage(index);
+                        const el = elements.filter((_, idx) => idx !== index);
+                        dispatch(setElements(el));
                         const buffer = await pdfDoc.save();
                         setBlob(buffer);
                       }
