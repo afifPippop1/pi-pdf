@@ -1,10 +1,13 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
 import { actions, toolTypes } from "~/constants";
 import { useDrag } from "~/hooks/useDrag";
 import { canvas } from "~/lib/canvas";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { updateElement as updateElementStore } from "~/store/slices/editorSlice";
+import {
+  setToolType,
+  updateElement as updateElementStore,
+} from "~/store/slices/editorSlice";
 import type { Element } from "~/types";
 import type { Action } from "~/types/action";
 import {
@@ -18,6 +21,10 @@ import {
   updateElement,
 } from "~/utils";
 
+const ZOOM_STEP = 0.1;
+const MIN_ZOOM = 0.2;
+const MAX_ZOOM = 3;
+
 export interface WhiteboardProps {}
 
 export function Whiteboard(props: WhiteboardProps) {
@@ -30,7 +37,40 @@ export function Whiteboard(props: WhiteboardProps) {
   const [action, setAction] = useState<Action | null>(null);
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
   const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
+  const [zoom, setZoom] = useState(1); // e.g., 1 = 100%
+
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    console.log(zoom);
+  }, [zoom]);
+
+  useEffect(() => {
+    function handleWheel(event: WheelEvent) {
+      if (event.ctrlKey) {
+        event.preventDefault(); // Prevent browser zoom
+        const zoomDelta = -event.deltaY * 0.001;
+        setZoom((prevZoom) => Math.min(Math.max(prevZoom + zoomDelta, 0.1), 3));
+      }
+    }
+
+    const document = window.document;
+    if (document)
+      document.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      if (document) document.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
+  function handleWheel(event: React.WheelEvent<HTMLCanvasElement>) {
+    event.preventDefault();
+    const zoomDirection = event.deltaY < 0 ? 1 : -1;
+    setZoom((prevZoom) => {
+      const newZoom = prevZoom + zoomDirection * ZOOM_STEP;
+      return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, newZoom));
+    });
+  }
 
   useLayoutEffect(() => {
     const c = ref.current;
@@ -122,6 +162,7 @@ export function Whiteboard(props: WhiteboardProps) {
     setAction(null);
     setSelectedElement(null);
     resetDrag();
+    dispatch(setToolType(null));
   }
 
   function handleMouseMove(event: React.MouseEvent<HTMLCanvasElement>) {
