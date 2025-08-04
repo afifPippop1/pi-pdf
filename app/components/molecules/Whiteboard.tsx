@@ -30,9 +30,10 @@ import {
 
 export interface WhiteboardProps {
   scale: number;
+  readyToRender?: boolean;
 }
 
-export function Whiteboard({ scale }: WhiteboardProps) {
+export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
   const ref = useRef<HTMLCanvasElement>(null);
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
@@ -54,6 +55,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
   const dispatch = useAppDispatch();
 
   useLayoutEffect(() => {
+    if (!readyToRender) return;
     const c = ref.current;
     const cvs = canvas(c);
 
@@ -77,7 +79,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
       });
       ctx?.restore();
     }
-  }, [elements, selectedElement, action, scale]);
+  }, [elements, selectedElement, action, scale, readyToRender]);
 
   function handleMouseDown(event: React.MouseEvent<HTMLCanvasElement>) {
     const { clientX, clientY } = event;

@@ -11,12 +11,14 @@ interface PdfViewerProps {
   pdfData: Uint8Array;
   pageIndex?: number;
   scale?: number;
+  onPdfRendered: () => void;
 }
 
 export function PdfViewer({
   pdfData,
   pageIndex = 0,
   scale = 1,
+  onPdfRendered,
 }: PdfViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
@@ -25,7 +27,7 @@ export function PdfViewer({
     const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfData) });
 
     loadingTask.promise.then((pdf) => {
-      pdf.getPage(getPageFromIndex(pageIndex)).then((page) => {
+      pdf.getPage(getPageFromIndex(pageIndex)).then(async (page) => {
         const viewport = page.getViewport({ scale: scale });
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -44,11 +46,13 @@ export function PdfViewer({
 
         renderTaskRef.current = renderTask;
 
-        renderTask.promise.catch((err) => {
-          if (err?.name !== "RenderingCancelledException") {
-            console.error("Render error:", err);
-          }
-        });
+        renderTask.promise
+          .then(() => onPdfRendered())
+          .catch((err) => {
+            if (err?.name !== "RenderingCancelledException") {
+              console.error("Render error:", err);
+            }
+          });
       });
     });
 

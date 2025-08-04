@@ -24,11 +24,13 @@ export function EditorPage() {
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
   const [zoom, setZoom] = useState<number>(PDFViewer.SCALE); // e.g., 1 = 100%
+  const [pdfReady, setPdfReady] = useState(false);
 
   useEffect(() => {
     function handleWheel(event: WheelEvent) {
       if (event.ctrlKey) {
         event.preventDefault(); // Prevent browser zoom
+        setPdfReady(false);
         const zoomDelta = -event.deltaY * 0.001;
         setZoom((prevZoom) => Math.min(Math.max(prevZoom + zoomDelta, 0.1), 3));
       }
@@ -97,8 +99,9 @@ export function EditorPage() {
                   pdfData={blob}
                   pageIndex={activePageIndex}
                   scale={zoom}
+                  onPdfRendered={() => setPdfReady(true)}
                 />
-                <Whiteboard scale={zoom} />
+                <Whiteboard scale={zoom} readyToRender={pdfReady} />
               </div>
             </div>
             <ToolPicker />
