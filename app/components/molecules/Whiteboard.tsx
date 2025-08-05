@@ -199,7 +199,9 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
         elements
       );
     } else {
-      const isHovering = elements.some((el) => isPointInElement(x, y, el));
+      const isHovering = elements.some((el) =>
+        isPointInElement(x, y, el, scale)
+      );
       canvas.style.cursor = isHovering ? "pointer" : "default";
     }
   }
@@ -214,7 +216,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
       const y = clientY - rect.top;
 
       const coveringElements = elements.filter((el) =>
-        isPointInElement(x, y, el)
+        isPointInElement(x, y, el, scale)
       );
       if (coveringElements.length) {
         const lastElement = coveringElements[coveringElements.length - 1];
