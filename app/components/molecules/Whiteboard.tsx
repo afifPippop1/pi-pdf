@@ -66,6 +66,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
       ctx?.save();
       ctx?.scale(scale, scale);
 
+
       elements.forEach((element) => {
         drawElement({ canvas: cvs, context: ctx, element });
 
@@ -93,7 +94,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
       canvas.style.cursor = "default";
     }
 
-    if (toolType === toolTypes.RECTANGLE) {
+    if (toolType === toolTypes.RECTANGLE || toolType === toolTypes.LINE) {
       setAction(actions.DRAWING);
       const element = createElement({
         x1: x,
