@@ -1,5 +1,5 @@
 import type { Drawable } from "../shape";
-import { Rectangle } from "../shape";
+import { Line, Rectangle } from "../shape";
 
 export class Canvas {
   constructor(private canvas: HTMLCanvasElement) {}
@@ -14,6 +14,21 @@ export class Canvas {
     if (element instanceof Rectangle) {
       return this.drawRect(element);
     }
+    if (element instanceof Line) {
+      return this.drawLine(element);
+    }
+  }
+
+  private drawLine(element: Line) {
+    this.ctx.beginPath();
+    // Set a start-point
+    this.ctx.moveTo(element.x1, element.y1);
+
+    // Set an end-point
+    this.ctx.lineTo(element.x2, element.y2);
+
+    // Stroke it (Do the Drawing)
+    this.ctx.stroke();
   }
 
   private drawRect(element: Rectangle) {

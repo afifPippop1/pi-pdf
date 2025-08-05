@@ -21,6 +21,15 @@ function generateRectangle({
   return generator.rectangle(x1, y1, x2 - x1, y2 - y1);
 }
 
+function generateLine({
+  x1,
+  x2,
+  y1,
+  y2,
+}: Pick<CreateElementProps, "x1" | "x2" | "y1" | "y2">) {
+  return generator.line(x1, y1, x2, y2);
+}
+
 export function createElement({
   x1,
   x2,
@@ -34,9 +43,9 @@ export function createElement({
     case toolTypes.RECTANGLE:
       element = generateRectangle({ x1, x2, y1, y2 });
       break;
-    // case toolTypes.LINE:
-    //   // roughElement = generateLine({ x1, x2, y1, y2 });
-    //   break;
+    case toolTypes.LINE:
+      element = generateLine({ x1, x2, y1, y2 });
+      break;
     default:
       throw new Error("Something went wrong when creating element");
   }
