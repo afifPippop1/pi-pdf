@@ -4,6 +4,15 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-primary: #5a827e;
+
+  /* GReY */
+  --color-grey-400: #7c8db0;
+}
+
+@layer utilities {
+  .bg-grey-400 {
+    background-color: theme(--color-grey-400);
+  }
 }
 
 html,

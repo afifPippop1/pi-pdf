@@ -22,9 +22,12 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
           ignoredActions: [
             "editor/setActivePageIndex",
             "editor/setPDFDoc",
-            "editor/setReadonlyDoc",
+            "editor/setFiles",
+            "editor/setElements",
+            "editor/updateElement",
+            "editor/setActivePageElements",
           ],
-          ignoredPaths: ["editor.pdfDoc"],
+          ignoredPaths: ["editor.pdfDoc", "editor.files", "editor.elements"],
         },
       });
     },

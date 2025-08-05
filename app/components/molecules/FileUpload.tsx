@@ -1,4 +1,5 @@
-import React, { useRef, type ReactNode } from "react";
+import React, { type ReactNode } from "react";
+import { useFileUpload } from "~/hooks/useFileUpload";
 import { Button } from "../atoms/Button";
 
 interface FileUploadProps
@@ -17,23 +18,19 @@ export default function FileUpload({
   children = <DefaultFileUploadButton />,
   ...props
 }: FileUploadProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const handleButtonClick = () => {
-    fileInputRef.current?.click();
-  };
+  const { onChange: handleChange, onClick, ref } = useFileUpload();
 
   return (
     <div>
       <input
         {...props}
-        onChange={(e) => {
-          onChange?.(e.target.files);
-        }}
+        onChange={onChange && handleChange(onChange)}
         type="file"
         className="hidden"
-        ref={fileInputRef}
+        accept="application/pdf"
+        ref={ref}
       />
-      <div onClick={handleButtonClick}>{children}</div>
+      <div onClick={onClick}>{children}</div>
     </div>
   );
 }
