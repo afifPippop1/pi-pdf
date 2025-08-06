@@ -1,4 +1,5 @@
 import { ColorTypes } from "pdf-lib";
+import { FaPlus } from "react-icons/fa6";
 import { Button } from "~/components/atoms/Button";
 import { Line, Rectangle } from "~/lib/shape";
 import { useAppSelector } from "~/store/hooks";
@@ -61,10 +62,14 @@ export function Navbar({}: NavbarProps) {
     <div className="flex justify-between bg-white px-32 py-4">
       {/* Menu list */}
       <div className="flex gap-4">
-        <NavbarMenuItem>File</NavbarMenuItem>
-        <NavbarMenuItem>Edit</NavbarMenuItem>
-        <NavbarMenuItem>View</NavbarMenuItem>
-        <NavbarMenuItem>Help</NavbarMenuItem>
+        <NavbarMenuItem label="File">
+          <div className="flex flex-col items-stretch">
+            <button className="flex items-center justify-start cursor-pointer gap-2">
+              <FaPlus />
+              Add file
+            </button>
+          </div>
+        </NavbarMenuItem>
       </div>
       {/* Action */}
       <div className="flex gap-4">

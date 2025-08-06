@@ -36,7 +36,7 @@ export default function ContextMenu(props: ContextMenuProps) {
 
       {show && (
         <ul
-          className="absolute z-50 bg-black shadow-lg border rounded-md w-48 py-1"
+          className="absolute z-50 bg-white shadow-lg border rounded-md w-48 py-1"
           style={{ top: position.y, left: position.x }}
         >
           {props.options.map((option, index) => (
