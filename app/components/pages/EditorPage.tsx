@@ -14,7 +14,6 @@ import ContextMenu, {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-  type Option,
 } from "../molecules/ContextMenu";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
@@ -40,51 +39,41 @@ export function EditorPage() {
         ) : (
           <>
             <div className="flex gap-4">
-              {pdfDoc?.getPageIndices().map((index) => {
-                const options: Option[] = [
-                  {
-                    label: "Remove",
-                    value: index,
-                  },
-                ];
-                return (
-                  <ContextMenu key={index}>
-                    <ContextMenuTrigger>
-                      <Button
-                        key={index}
-                        onClick={() => dispatch(setActivePageIndex(index))}
-                      >
-                        {getPageFromIndex(index)}
-                      </Button>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent>
-                      <ContextMenuItem
-                        onClick={async () => {
-                          if (pdfDoc.getPageCount() === 1) {
-                            dispatch(setPDFDoc(null));
-                            setBlob(undefined);
-                          } else {
-                            if (activePageIndex === index) {
-                              if (activePageIndex !== 0) {
-                                dispatch(setActivePageIndex(index - 1));
-                              }
+              {pdfDoc?.getPageIndices().map((index) => (
+                <ContextMenu key={index}>
+                  <ContextMenuTrigger>
+                    <Button
+                      key={index}
+                      onClick={() => dispatch(setActivePageIndex(index))}
+                    >
+                      {getPageFromIndex(index)}
+                    </Button>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      onClick={async () => {
+                        if (pdfDoc.getPageCount() === 1) {
+                          dispatch(setPDFDoc(null));
+                          setBlob(undefined);
+                        } else {
+                          if (activePageIndex === index) {
+                            if (activePageIndex !== 0) {
+                              dispatch(setActivePageIndex(index - 1));
                             }
-                            pdfDoc.removePage(index);
-                            const el = elements.filter(
-                              (_, idx) => idx !== index
-                            );
-                            dispatch(setElements(el));
-                            const buffer = await pdfDoc.save();
-                            setBlob(buffer);
                           }
-                        }}
-                      >
-                        Remove
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-                );
-              })}
+                          pdfDoc.removePage(index);
+                          const el = elements.filter((_, idx) => idx !== index);
+                          dispatch(setElements(el));
+                          const buffer = await pdfDoc.save();
+                          setBlob(buffer);
+                        }
+                      }}
+                    >
+                      Remove
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              ))}
             </div>
             <div className="flex justify-center">
               <div className="relative">
