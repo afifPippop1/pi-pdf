@@ -1,9 +1,8 @@
-import { ColorTypes } from "pdf-lib";
 import { FaPlus } from "react-icons/fa6";
 import { Button } from "~/components/atoms/Button";
-import { Line, Rectangle } from "~/lib/shape";
 import { useAppSelector } from "~/store/hooks";
-import { savePdfDoc } from "~/utils";
+import { drawElementsOnPdfDoc, savePdfDoc } from "~/utils";
+import FileUpload from "../FileUpload";
 import NavbarMenu, {
   NavbarMenuContent,
   NavbarMenuItem,
@@ -14,51 +13,13 @@ interface NavbarProps {}
 
 export function Navbar({}: NavbarProps) {
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
-  const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const elements = useAppSelector((s) => s.editor.elements);
 
   async function handleSave() {
     if (!pdfDoc) return;
-    const page = pdfDoc.getPage(activePageIndex);
-    const pageHeight = page.getHeight();
-    elements[activePageIndex].forEach(({ element }) => {
-      if (element instanceof Rectangle) {
-        const { x, y, width, height } = element;
-        pdfDoc.getPage(activePageIndex).drawRectangle({
-          x,
-          y: pageHeight - y - height,
-          height,
-          width,
-          color: {
-            type: ColorTypes.RGB,
-            blue: 255,
-            green: 255,
-            red: 255,
-          },
-        });
-      }
-      if (element instanceof Line) {
-        const { x1, y1, x2, y2 } = element;
-        pdfDoc.getPage(activePageIndex).drawLine({
-          start: {
-            x: x1,
-            y: pageHeight - y1,
-          },
-          end: {
-            x: x2,
-            y: pageHeight - y2,
-          },
-          color: {
-            type: ColorTypes.RGB,
-            blue: 0,
-            green: 0,
-            red: 0,
-          },
-        });
-      }
-    });
+    const doc = await drawElementsOnPdfDoc(elements, pdfDoc);
 
-    const url = await savePdfDoc(pdfDoc);
+    const url = await savePdfDoc(doc);
     window.open(url);
   }
 
@@ -69,10 +30,12 @@ export function Navbar({}: NavbarProps) {
         <NavbarMenu>
           <NavbarMenuTrigger>File</NavbarMenuTrigger>
           <NavbarMenuContent>
-            <NavbarMenuItem>
-              <FaPlus />
-              Add file
-            </NavbarMenuItem>
+            <FileUpload>
+              <NavbarMenuItem>
+                <FaPlus />
+                Add file
+              </NavbarMenuItem>
+            </FileUpload>
           </NavbarMenuContent>
         </NavbarMenu>
       </div>
