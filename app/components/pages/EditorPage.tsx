@@ -16,6 +16,7 @@ import { Navbar } from "../molecules/Navbar";
 import { PdfViewer } from "../molecules/PDFViewer.client";
 import { ToolPicker } from "../molecules/ToolPicker";
 import { Whiteboard } from "../molecules/Whiteboard";
+import { useZoom } from "~/hooks/useZoom";
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
@@ -23,27 +24,8 @@ export function EditorPage() {
   const elements = useAppSelector((s) => s.editor.elements);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
-  const [zoom, setZoom] = useState<number>(PDFViewer.SCALE); // e.g., 1 = 100%
   const [pdfReady, setPdfReady] = useState(false);
-
-  useEffect(() => {
-    function handleWheel(event: WheelEvent) {
-      if (event.ctrlKey) {
-        event.preventDefault(); // Prevent browser zoom
-        setPdfReady(false);
-        const zoomDelta = -event.deltaY * 0.001;
-        setZoom((prevZoom) => Math.min(Math.max(prevZoom + zoomDelta, 0.1), 3));
-      }
-    }
-
-    const document = window.document;
-    if (document)
-      document.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => {
-      if (document) document.removeEventListener("wheel", handleWheel);
-    };
-  }, []);
+  const { zoom } = useZoom({ onChange: () => setPdfReady(false) });
 
   return (
     <div className="h-screen w-screen bg-[#EDEDED] overflow-hidden flex flex-col">
