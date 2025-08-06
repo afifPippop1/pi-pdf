@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { PDFViewer } from "~/constants";
 
+const WHEEL_EVENT = "wheel";
+
 export function useZoom({ onChange }: { onChange?: () => void } = {}) {
   const [zoom, setZoom] = useState<number>(PDFViewer.SCALE);
 
@@ -21,10 +23,10 @@ export function useZoom({ onChange }: { onChange?: () => void } = {}) {
 
     const document = window.document;
     if (document)
-      document.addEventListener("wheel", handleWheel, { passive: false });
+      document.addEventListener(WHEEL_EVENT, handleWheel, { passive: false });
 
     return () => {
-      if (document) document.removeEventListener("wheel", handleWheel);
+      if (document) document.removeEventListener(WHEEL_EVENT, handleWheel);
     };
   }, []);
 

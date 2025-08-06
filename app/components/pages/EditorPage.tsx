@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { PDFViewer } from "~/constants";
 import { useDocBuffer } from "~/hooks/useDocBuffer";
+import { useZoom } from "~/hooks/useZoom";
 import { useAppSelector } from "~/store/hooks";
 import {
   setActivePageIndex,
@@ -16,7 +16,6 @@ import { Navbar } from "../molecules/Navbar";
 import { PdfViewer } from "../molecules/PDFViewer.client";
 import { ToolPicker } from "../molecules/ToolPicker";
 import { Whiteboard } from "../molecules/Whiteboard";
-import { useZoom } from "~/hooks/useZoom";
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
