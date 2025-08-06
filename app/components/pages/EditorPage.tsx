@@ -10,7 +10,12 @@ import {
 } from "~/store/slices/editorSlice";
 import { getPageFromIndex } from "~/utils";
 import { Button } from "../atoms/Button";
-import ContextMenu, { type Option } from "../molecules/ContextMenu";
+import ContextMenu, {
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  type Option,
+} from "../molecules/ContextMenu";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
 import { PdfViewer } from "../molecules/PDFViewer.client";
@@ -43,33 +48,40 @@ export function EditorPage() {
                   },
                 ];
                 return (
-                  <ContextMenu
-                    key={index}
-                    options={options}
-                    onChange={async () => {
-                      if (pdfDoc.getPageCount() === 1) {
-                        dispatch(setPDFDoc(null));
-                        setBlob(undefined);
-                      } else {
-                        if (activePageIndex === index) {
-                          if (activePageIndex !== 0) {
-                            dispatch(setActivePageIndex(index - 1));
+                  <ContextMenu key={index}>
+                    <ContextMenuTrigger>
+                      <Button
+                        key={index}
+                        onClick={() => dispatch(setActivePageIndex(index))}
+                      >
+                        {getPageFromIndex(index)}
+                      </Button>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                      <ContextMenuItem
+                        onClick={async () => {
+                          if (pdfDoc.getPageCount() === 1) {
+                            dispatch(setPDFDoc(null));
+                            setBlob(undefined);
+                          } else {
+                            if (activePageIndex === index) {
+                              if (activePageIndex !== 0) {
+                                dispatch(setActivePageIndex(index - 1));
+                              }
+                            }
+                            pdfDoc.removePage(index);
+                            const el = elements.filter(
+                              (_, idx) => idx !== index
+                            );
+                            dispatch(setElements(el));
+                            const buffer = await pdfDoc.save();
+                            setBlob(buffer);
                           }
-                        }
-                        pdfDoc.removePage(index);
-                        const el = elements.filter((_, idx) => idx !== index);
-                        dispatch(setElements(el));
-                        const buffer = await pdfDoc.save();
-                        setBlob(buffer);
-                      }
-                    }}
-                  >
-                    <Button
-                      key={index}
-                      onClick={() => dispatch(setActivePageIndex(index))}
-                    >
-                      {getPageFromIndex(index)}
-                    </Button>
+                        }}
+                      >
+                        Remove
+                      </ContextMenuItem>
+                    </ContextMenuContent>
                   </ContextMenu>
                 );
               })}

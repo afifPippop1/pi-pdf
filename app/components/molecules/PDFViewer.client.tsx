@@ -31,7 +31,7 @@ export function PdfViewer({
         const viewport = page.getViewport({ scale: scale });
         const canvas = canvasRef.current;
         if (!canvas) return;
-        const context = canvas.getContext("2d");
+        const context = canvas.getContext("2d", { willReadFrequently: true });
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 

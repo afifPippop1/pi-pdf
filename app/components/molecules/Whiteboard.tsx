@@ -60,12 +60,11 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
     const cvs = canvas(c);
 
     if (c) {
-      const ctx = c.getContext("2d");
+      const ctx = c.getContext("2d", { willReadFrequently: true });
       ctx?.clearRect(0, 0, c.width, c.height);
 
       ctx?.save();
       ctx?.scale(scale, scale);
-
 
       elements.forEach((element) => {
         drawElement({ canvas: cvs, context: ctx, element });

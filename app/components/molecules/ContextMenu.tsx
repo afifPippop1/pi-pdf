@@ -1,4 +1,11 @@
-import { useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 type Primitive = string | number | boolean;
 
@@ -9,52 +16,92 @@ export interface Option {
 
 interface ContextMenuProps {
   children: ReactNode;
-  options: Option[];
-  onChange?: (option: Option) => void;
+}
+
+interface IContextMenuContext {
+  show: boolean;
+  setShow: (show: boolean) => void;
+}
+
+const ContextMenuContext = createContext<IContextMenuContext>({
+  show: false,
+  setShow() {},
+});
+
+function useContextMenu() {
+  return useContext(ContextMenuContext);
 }
 
 export default function ContextMenu(props: ContextMenuProps) {
+  const contextRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setPosition({ x: e.pageX, y: e.pageY });
-    setShow(true);
-  };
-
-  const handleClick = () => setShow(false);
 
   useEffect(() => {
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
+    function handleClickOutside(event: MouseEvent | Event) {
+      if (
+        contextRef.current &&
+        !contextRef.current.contains(event.target as Node)
+      ) {
+        setShow(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
-    <div onContextMenu={handleContextMenu}>
-      {props.children}
+    <ContextMenuContext.Provider value={{ show, setShow }}>
+      <div className="relative inline-block" ref={contextRef}>
+        {props.children}
+      </div>
+    </ContextMenuContext.Provider>
+  );
+}
 
-      {show && (
-        <ul
-          className="absolute z-50 bg-white shadow-lg border rounded-md w-48 py-1"
-          style={{ top: position.y, left: position.x }}
-        >
-          {props.options.map((option, index) => (
-            <li
-              key={index}
-              className="px-4 py-2 cursor-pointer hover:opacity-80"
-              // @ts-ignore
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                props.onChange?.(option);
-              }}
-            >
-              {option.label}
-            </li>
-          ))}
-        </ul>
-      )}
+export function ContextMenuTrigger({ children }: { children: ReactNode }) {
+  const { setShow } = useContextMenu();
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShow(true);
+  };
+  return <div onContextMenu={handleContextMenu}>{children}</div>;
+}
+
+export function ContextMenuContent({ children }: { children: ReactNode }) {
+  const { show, setShow } = useContextMenu();
+  return (
+    <div
+      id="popoverPanel"
+      className={
+        show
+          ? "absolute z-10 mt-2 min-w-48 rounded-md shadow-lg bg-white"
+          : "absolute z-10 mt-2 min-w-48 rounded-md shadow-lg bg-white hidden"
+      }
+      onClick={() => setShow(false)}
+    >
+      <div className="p-4 text-sm text-gray-700">{children}</div>
+    </div>
+  );
+}
+
+export function ContextMenuItem({
+  children,
+  onClick,
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+}) {
+  const { setShow } = useContextMenu();
+  function handleClick() {
+    setShow(false);
+    onClick?.();
+  }
+  return (
+    <div onClick={handleClick} className="select-none cursor-pointer">
+      {children}
     </div>
   );
 }
