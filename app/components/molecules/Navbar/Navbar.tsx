@@ -4,7 +4,11 @@ import { Button } from "~/components/atoms/Button";
 import { Line, Rectangle } from "~/lib/shape";
 import { useAppSelector } from "~/store/hooks";
 import { savePdfDoc } from "~/utils";
-import { NavbarMenuItem } from "./MenuItem";
+import NavbarMenu, {
+  NavbarMenuContent,
+  NavbarMenuItem,
+  NavbarMenuTrigger,
+} from "./NavbarMenu";
 
 interface NavbarProps {}
 
@@ -62,14 +66,15 @@ export function Navbar({}: NavbarProps) {
     <div className="flex justify-between bg-white px-32 py-4">
       {/* Menu list */}
       <div className="flex gap-4">
-        <NavbarMenuItem label="File">
-          <div className="flex flex-col items-stretch">
-            <button className="flex items-center justify-start cursor-pointer gap-2">
+        <NavbarMenu>
+          <NavbarMenuTrigger>File</NavbarMenuTrigger>
+          <NavbarMenuContent>
+            <NavbarMenuItem>
               <FaPlus />
               Add file
-            </button>
-          </div>
-        </NavbarMenuItem>
+            </NavbarMenuItem>
+          </NavbarMenuContent>
+        </NavbarMenu>
       </div>
       {/* Action */}
       <div className="flex gap-4">
