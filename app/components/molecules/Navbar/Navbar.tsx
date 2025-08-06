@@ -1,7 +1,7 @@
 import { FaPlus } from "react-icons/fa6";
 import { Button } from "~/components/atoms/Button";
 import { useAppSelector } from "~/store/hooks";
-import { drawElementsOnPdfDoc, savePdfDoc } from "~/utils";
+import { drawElementsOnPdfDoc, savePdfAsURL } from "~/utils";
 import FileUpload from "../FileUpload";
 import NavbarMenu, {
   NavbarMenuContent,
@@ -19,7 +19,7 @@ export function Navbar({}: NavbarProps) {
     if (!pdfDoc) return;
     const doc = await drawElementsOnPdfDoc(elements, pdfDoc);
 
-    const url = await savePdfDoc(doc);
+    const url = await savePdfAsURL(doc);
     window.open(url);
   }
 
@@ -27,17 +27,7 @@ export function Navbar({}: NavbarProps) {
     <div className="flex justify-between bg-white px-32 py-4">
       {/* Menu list */}
       <div className="flex gap-4">
-        <NavbarMenu>
-          <NavbarMenuTrigger>File</NavbarMenuTrigger>
-          <NavbarMenuContent>
-            <FileUpload>
-              <NavbarMenuItem>
-                <FaPlus />
-                Add file
-              </NavbarMenuItem>
-            </FileUpload>
-          </NavbarMenuContent>
-        </NavbarMenu>
+        <FileMenu />
       </div>
       {/* Action */}
       <div className="flex gap-4">
@@ -49,5 +39,21 @@ export function Navbar({}: NavbarProps) {
         </Button>
       </div>
     </div>
+  );
+}
+
+function FileMenu() {
+  return (
+    <NavbarMenu>
+      <NavbarMenuTrigger>File</NavbarMenuTrigger>
+      <NavbarMenuContent>
+        <FileUpload>
+          <NavbarMenuItem>
+            <FaPlus />
+            Add file
+          </NavbarMenuItem>
+        </FileUpload>
+      </NavbarMenuContent>
+    </NavbarMenu>
   );
 }
