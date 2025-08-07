@@ -6,7 +6,6 @@ interface EditorState {
   activePageIndex: number;
   pdfDoc: PDFDocument | null;
   readonlyDoc: PDFDocument | null;
-  files: File[];
   elements: Element[][];
   toolType: ToolType | null;
 }
@@ -15,7 +14,6 @@ const initialState: EditorState = {
   activePageIndex: 0,
   pdfDoc: null,
   readonlyDoc: null,
-  files: [],
   elements: [],
   toolType: null,
 };
@@ -38,9 +36,6 @@ const editorSlice = createSlice({
       } else {
         state.elements = [];
       }
-    },
-    setFiles(state, action: PayloadAction<File[]>) {
-      state.files = action.payload;
     },
     setToolType: (state, action: PayloadAction<ToolType | null>) => {
       state.toolType = action.payload;
@@ -71,7 +66,6 @@ const editorSlice = createSlice({
 export const {
   setActivePageIndex,
   setPDFDoc,
-  setFiles,
   setToolType,
   updateElement,
   setElements,

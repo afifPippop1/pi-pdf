@@ -1,7 +1,12 @@
 import { FaPlus } from "react-icons/fa6";
 import { Button } from "~/components/atoms/Button";
 import { useAppSelector } from "~/store/hooks";
-import { drawElementsOnPdfDoc, savePdfAsURL } from "~/utils";
+import {
+  drawElementsOnPdfDoc,
+  normalizeFileList,
+  savePdfAsURL,
+  setPDFDoc,
+} from "~/utils";
 import FileUpload from "../FileUpload";
 import NavbarMenu, {
   NavbarMenuContent,
@@ -43,11 +48,17 @@ export function Navbar({}: NavbarProps) {
 }
 
 function FileMenu() {
+  async function handleChange(files: FileList | null) {
+    const f = normalizeFileList(files);
+    if (f.length) {
+      setPDFDoc(f);
+    }
+  }
   return (
     <NavbarMenu>
       <NavbarMenuTrigger>File</NavbarMenuTrigger>
       <NavbarMenuContent>
-        <FileUpload>
+        <FileUpload onChange={handleChange} multiple>
           <NavbarMenuItem>
             <FaPlus />
             Add file
