@@ -7,19 +7,28 @@ import { createElement } from "./createElement";
 type UpdateElementProps = Pick<
   Element,
   "id" | "type" | "x1" | "x2" | "y1" | "y2"
-> & {
-  index: number;
-};
+> &
+  Partial<Pick<Element, "pdfCoordinate">> & {
+    index: number;
+  };
 
 export function updateElement(
-  { id, index, type, x1, x2, y1, y2 }: UpdateElementProps,
+  { id, index, type, x1, x2, y1, y2, pdfCoordinate }: UpdateElementProps,
   elements: Element[]
 ) {
   const elementsCopy = [...elements];
   switch (type) {
     case toolTypes.LINE:
     case toolTypes.RECTANGLE: {
-      const updateElement = createElement({ id, type, x1, x2, y1, y2 });
+      const updateElement = createElement({
+        id,
+        type,
+        x1,
+        x2,
+        y1,
+        y2,
+        pdfCoordinate,
+      });
 
       elementsCopy[index] = updateElement;
 

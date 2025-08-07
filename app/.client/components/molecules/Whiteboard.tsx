@@ -1,3 +1,4 @@
+import * as pdfjsLib from "pdfjs-dist";
 import React, {
   useLayoutEffect,
   useMemo,
@@ -29,11 +30,16 @@ import {
 } from "~/utils";
 
 export interface WhiteboardProps {
+  buffer: Uint8Array;
   scale: number;
   readyToRender?: boolean;
 }
 
-export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
+export function Whiteboard({
+  buffer,
+  scale,
+  readyToRender = true,
+}: WhiteboardProps) {
   const ref = useRef<HTMLCanvasElement>(null);
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
@@ -85,7 +91,6 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
     const { clientX, clientY } = event;
     const canvas = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
-
     const x = clientX - rect.left;
     const y = clientY - rect.top;
 
@@ -129,6 +134,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
           const coordinates = adjustElementCoordinates(element);
           if (coordinates) {
             const { x1, x2, y1, y2 } = coordinates;
+
             updateElement(
               {
                 id: element.id,

@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { EditorCanvas } from "~/.client/components/molecules/EditorCanvas";
 import { useDocBuffer } from "~/hooks/useDocBuffer";
-import { useZoom } from "~/hooks/useZoom";
 import { useAppSelector } from "~/store/hooks";
 import {
   setActivePageIndex,
@@ -16,10 +15,8 @@ import ContextMenu, {
   ContextMenuTrigger,
 } from "../molecules/ContextMenu";
 import EmptyFile from "../molecules/EmptyFile";
-import { Navbar } from "../molecules/Navbar";
-import { PdfViewer } from "../molecules/PDFViewer.client";
+import { Navbar } from "../../.client/components/molecules/Navbar";
 import { ToolPicker } from "../molecules/ToolPicker";
-import { Whiteboard } from "../molecules/Whiteboard";
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
@@ -27,8 +24,6 @@ export function EditorPage() {
   const elements = useAppSelector((s) => s.editor.elements);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
-  const [pdfReady, setPdfReady] = useState(false);
-  const { zoom } = useZoom({ onChange: () => setPdfReady(false) });
 
   return (
     <div className="h-screen w-screen bg-[#EDEDED] overflow-hidden flex flex-col">
@@ -76,15 +71,7 @@ export function EditorPage() {
               ))}
             </div>
             <div className="flex justify-center">
-              <div className="relative">
-                <PdfViewer
-                  pdfData={blob}
-                  pageIndex={activePageIndex}
-                  scale={zoom}
-                  onPdfRendered={() => setPdfReady(true)}
-                />
-                <Whiteboard scale={zoom} readyToRender={pdfReady} />
-              </div>
+              <EditorCanvas buffer={blob} />
             </div>
             <ToolPicker />
           </>

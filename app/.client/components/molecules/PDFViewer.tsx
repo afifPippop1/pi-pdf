@@ -2,11 +2,6 @@ import * as pdfjsLib from "pdfjs-dist";
 import { useEffect, useRef } from "react";
 import { getPageFromIndex } from "~/utils";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
-
 interface PdfViewerProps {
   pdfData: Uint8Array;
   pageIndex?: number;
@@ -27,8 +22,9 @@ export function PdfViewer({
     const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfData) });
 
     loadingTask.promise.then((pdf) => {
-      pdf.getPage(getPageFromIndex(pageIndex)).then(async (page) => {
+      pdf.getPage(getPageFromIndex(pageIndex)).then((page) => {
         const viewport = page.getViewport({ scale: scale });
+        const pdfX1Y1 = viewport.convertToPdfPoint(0, 1);
         const canvas = canvasRef.current;
         if (!canvas) return;
         const context = canvas.getContext("2d", { willReadFrequently: true });

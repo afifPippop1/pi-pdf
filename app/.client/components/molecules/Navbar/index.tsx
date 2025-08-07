@@ -1,3 +1,4 @@
+import * as pdfjsLib from "pdfjs-dist";
 import { FaPlus } from "react-icons/fa6";
 import { Button } from "~/components/atoms/Button";
 import { useAppSelector } from "~/store/hooks";
@@ -7,12 +8,17 @@ import {
   savePdfAsURL,
   setPDFDoc,
 } from "~/utils";
-import FileUpload from "../FileUpload";
+import FileUpload from "../../../../components/molecules/FileUpload";
 import NavbarMenu, {
   NavbarMenuContent,
   NavbarMenuItem,
   NavbarMenuTrigger,
 } from "./NavbarMenu";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 interface NavbarProps {}
 

@@ -1,23 +1,32 @@
 import { ColorTypes, PDFDocument } from "pdf-lib";
+import * as pdfjsLib from "pdfjs-dist";
+import { PDFViewer } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
 import type { Element } from "~/types";
+import { getPdfCoordinate } from "./getPdfCoordinate";
 
 export async function drawElementsOnPdfDoc(
   elements: Element[][],
   doc: PDFDocument
 ): Promise<PDFDocument> {
-  const pdfDoc = await PDFDocument.load(await doc.save());
-  pdfDoc.getPageIndices().map((index) => {
-    const page = pdfDoc.getPage(index);
-    const pageHeight = page.getHeight();
-    elements[index].forEach(({ element }) => {
-      if (element instanceof Rectangle) {
-        const { x, y, width, height } = element;
+  const buffer = await doc.save();
+  const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
+
+  const pdfDoc = await PDFDocument.load(buffer);
+  for (const index of pdfDoc.getPageIndices()) {
+    for (const element of elements[index]) {
+      const pdfCoordinate = await getPdfCoordinate(
+        loadingTask,
+        index,
+        PDFViewer.SCALE,
+        element
+      );
+      if (element.element instanceof Rectangle) {
         pdfDoc.getPage(index).drawRectangle({
-          x,
-          y: pageHeight - y - height,
-          height,
-          width,
+          x: pdfCoordinate.x1,
+          y: pdfCoordinate.y1,
+          height: Math.abs(pdfCoordinate.y2 - pdfCoordinate.y1),
+          width: Math.abs(pdfCoordinate.x2 - pdfCoordinate.x1),
           color: {
             type: ColorTypes.RGB,
             blue: 255,
@@ -26,16 +35,15 @@ export async function drawElementsOnPdfDoc(
           },
         });
       }
-      if (element instanceof Line) {
-        const { x1, y1, x2, y2 } = element;
+      if (element.element instanceof Line) {
         pdfDoc.getPage(index).drawLine({
           start: {
-            x: x1,
-            y: pageHeight - y1,
+            x: pdfCoordinate.x1,
+            y: pdfCoordinate.y1,
           },
           end: {
-            x: x2,
-            y: pageHeight - y2,
+            x: pdfCoordinate.x2,
+            y: pdfCoordinate.y2,
           },
           color: {
             type: ColorTypes.RGB,
@@ -45,7 +53,7 @@ export async function drawElementsOnPdfDoc(
           },
         });
       }
-    });
-  });
+    }
+  }
   return pdfDoc;
 }

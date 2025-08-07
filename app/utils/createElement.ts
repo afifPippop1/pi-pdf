@@ -1,6 +1,6 @@
 import { toolTypes } from "~/constants";
 import { shapeGenerator, type Drawable } from "~/lib/shape";
-import type { Element, ToolType } from "~/types";
+import type { Coordinate2D, Element, ToolType } from "~/types";
 
 const generator = shapeGenerator();
 
@@ -11,6 +11,7 @@ type CreateElementProps = {
   y2: number;
   type: ToolType;
   id: string;
+  pdfCoordinate?: Coordinate2D;
 };
 function generateRectangle({
   x1,
@@ -37,6 +38,7 @@ export function createElement({
   y2,
   type,
   id,
+  pdfCoordinate,
 }: CreateElementProps): Element {
   let element: Drawable;
   switch (type) {
@@ -58,5 +60,11 @@ export function createElement({
     x2,
     y1,
     y2,
+    pdfCoordinate: pdfCoordinate || {
+      x1,
+      x2,
+      y1,
+      y2,
+    },
   };
 }
