@@ -12,5 +12,4 @@ export interface Element extends Coordinate2D {
   id: string;
   element: Drawable;
   type: ToolType;
-  pdfCoordinate: Coordinate2D;
 }

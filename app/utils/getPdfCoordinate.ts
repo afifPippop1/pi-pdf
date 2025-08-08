@@ -2,6 +2,7 @@ import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import type { Coordinate2D, Element } from "~/types";
 import { getPageFromIndex } from "./getPageFromIndex";
 import { toolTypes } from "~/constants";
+import { adjustElementCoordinates } from "./adjustElementCoordinates";
 
 export function getPdfCoordinate(
   loadingTask: PDFDocumentLoadingTask,
@@ -22,11 +23,18 @@ export function getPdfCoordinate(
           element.x2,
           element.y1
         );
-        pdfCoordinate = {
+        const adjustedCoordniate = adjustElementCoordinates({
+          ...element,
           x1: pdfX1,
           x2: pdfX2,
           y1: pdfY1,
           y2: pdfY2,
+        });
+        pdfCoordinate = {
+          x1: adjustedCoordniate?.x1 || 0,
+          x2: adjustedCoordniate?.x2 || 0,
+          y1: adjustedCoordniate?.y1 || 0,
+          y2: adjustedCoordniate?.y2 || 0,
         };
       } else if (element.type === toolTypes.LINE) {
         const [pdfX1, pdfY1] = viewport.convertToPdfPoint(
