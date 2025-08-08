@@ -14,6 +14,7 @@ function drawText(
 ) {
   ctx.textBaseline = "top";
   ctx.font = "24px sans-serif";
+  ctx.fillStyle = "black";
   ctx.fillText(element.text, element.x1, element.y1);
 }
 

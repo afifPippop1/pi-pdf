@@ -137,13 +137,15 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
     }
 
     if (!toolType && selectedElement) {
-      setAction(actions.DRAGGING);
-      canvas.style.cursor = "grab";
+      if (isPointInElement(x, y, selectedElement, scale)) {
+        setAction(actions.DRAGGING);
+        canvas.style.cursor = "grab";
 
-      const offsetX = x - selectedElement.x1;
-      const offsetY = y - selectedElement.y1;
+        const offsetX = x - selectedElement.x1;
+        const offsetY = y - selectedElement.y1;
 
-      setDragOffset({ x: offsetX, y: offsetY });
+        setDragOffset({ x: offsetX, y: offsetY });
+      }
     }
   }
 
@@ -174,6 +176,8 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
             }
           }
         }
+        reset();
+      } else if (action === actions.DRAGGING) {
         reset();
       }
     }
@@ -309,7 +313,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
           className="absolute z-50"
           ref={textareaRef}
           style={{
-            top: (selectedElement?.y1 || 0) - 3,
+            top: selectedElement?.y1,
             left: selectedElement?.x1,
             margin: 0,
             padding: 0,

@@ -1,6 +1,6 @@
 import { ColorTypes, PDFDocument } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
-import { PDFViewer } from "~/constants";
+import { PDFViewer, toolTypes } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
 import type { Element } from "~/types";
 import { getPdfCoordinate } from "./getPdfCoordinate";
@@ -53,6 +53,13 @@ export async function drawElementsOnPdfDoc(
             },
           });
         }
+      } else if (element.type === toolTypes.TEXT) {
+        pdfDoc.getPage(index).drawText(element.text, {
+          x: pdfCoordinate.x1,
+          // TODO: FINDOUT this -18
+          y: pdfCoordinate.y1 - 18,
+          size: 24,
+        });
       }
     }
   }
