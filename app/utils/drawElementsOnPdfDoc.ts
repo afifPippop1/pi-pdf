@@ -1,4 +1,4 @@
-import { ColorTypes, PDFDocument } from "pdf-lib";
+import { ColorTypes, degrees, PDFDocument } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import { PDFViewer, toolTypes } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
@@ -54,11 +54,25 @@ export async function drawElementsOnPdfDoc(
           });
         }
       } else if (element.type === toolTypes.TEXT) {
-        pdfDoc.getPage(index).drawText(element.text, {
-          x: pdfCoordinate.x1,
-          // TODO: FINDOUT this -18
-          y: pdfCoordinate.y1 - 18,
+        const page = pdfDoc.getPage(index);
+        const angle = page.getRotation().angle;
+        const rotate =
+          angle === 90 || angle === 270 ? degrees(angle) : undefined;
+        const x =
+          angle === 90 || angle === 270
+            ? pdfCoordinate.x1 + 18
+            : pdfCoordinate.x1;
+        // TODO: FINDOUT this -18
+        const y =
+          angle === 90 || angle === 270
+            ? pdfCoordinate.y1
+            : pdfCoordinate.y1 - 18;
+        page.drawText(element.text, {
+          x,
+          y,
           size: 24,
+
+          rotate,
         });
       }
     }
