@@ -1,15 +1,35 @@
+import type { toolTypes } from "~/constants";
 import type { Drawable } from "~/lib/shape";
-import type { ToolType } from "./toolType";
 
 export interface Coordinate2D {
   x1: number;
-  x2: number;
   y1: number;
+  x2: number;
   y2: number;
 }
 
-export interface Element extends Coordinate2D {
-  id: string;
+export interface LineElement extends Coordinate2D {
   element: Drawable;
-  type: ToolType;
+  type: typeof toolTypes.LINE;
 }
+
+export interface RectangleElement extends Coordinate2D {
+  element: Drawable;
+  type: typeof toolTypes.RECTANGLE;
+}
+
+export interface ShapeElement extends Coordinate2D {
+  element: Drawable;
+  type: typeof toolTypes.LINE | typeof toolTypes.RECTANGLE;
+}
+
+export interface TextElement extends Pick<Coordinate2D, "x1" | "y1"> {
+  type: typeof toolTypes.TEXT;
+  text: string;
+}
+
+export type ElementType = LineElement | RectangleElement | TextElement;
+
+export type Element<T extends ElementType = ElementType> = T & {
+  id: string;
+};

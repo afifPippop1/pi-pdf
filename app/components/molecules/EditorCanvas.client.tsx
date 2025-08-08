@@ -26,7 +26,7 @@ export function EditorCanvas(props: EditorCanvasProps) {
         scale={zoom}
         onPdfRendered={() => setPdfReady(true)}
       />
-      <Whiteboard scale={zoom} readyToRender={pdfReady} buffer={props.buffer} />
+      <Whiteboard scale={zoom} readyToRender={pdfReady} />
     </div>
   );
 }
