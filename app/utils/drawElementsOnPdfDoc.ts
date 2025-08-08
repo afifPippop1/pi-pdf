@@ -1,18 +1,16 @@
 import { ColorTypes, PDFDocument } from "pdf-lib";
-import * as pdfjsLib from "pdfjs-dist";
+import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import { PDFViewer } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
 import type { Element } from "~/types";
 import { getPdfCoordinate } from "./getPdfCoordinate";
 
 export async function drawElementsOnPdfDoc(
+  loadingTask: PDFDocumentLoadingTask,
   elements: Element[][],
   doc: PDFDocument
 ): Promise<PDFDocument> {
-  const buffer = await doc.save();
-  const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
-
-  const pdfDoc = await PDFDocument.load(buffer);
+  const pdfDoc = await doc.copy();
   for (const index of pdfDoc.getPageIndices()) {
     for (const element of elements[index]) {
       const pdfCoordinate = await getPdfCoordinate(

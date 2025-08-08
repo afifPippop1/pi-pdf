@@ -1,4 +1,3 @@
-import * as pdfjsLib from "pdfjs-dist";
 import React, {
   useLayoutEffect,
   useMemo,

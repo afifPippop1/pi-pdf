@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { EditorCanvas } from "~/.client/components/molecules/EditorCanvas";
+import { EditorCanvas } from "~/components/molecules/EditorCanvas.client";
 import { useDocBuffer } from "~/hooks/useDocBuffer";
 import { useAppSelector } from "~/store/hooks";
 import {
@@ -15,8 +15,9 @@ import ContextMenu, {
   ContextMenuTrigger,
 } from "../molecules/ContextMenu";
 import EmptyFile from "../molecules/EmptyFile";
-import { Navbar } from "../../.client/components/molecules/Navbar";
+import { Navbar } from "../molecules/Navbar";
 import { ToolPicker } from "../molecules/ToolPicker";
+import { Suspense } from "react";
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
@@ -30,7 +31,9 @@ export function EditorPage() {
       <Navbar />
       <div className="overflow-auto flex-1 flex-col items-stretch pt-8 relative">
         {!blob ? (
-          <EmptyFile />
+          <>
+            <EmptyFile />
+          </>
         ) : (
           <>
             <div className="flex gap-4">
@@ -71,7 +74,9 @@ export function EditorPage() {
               ))}
             </div>
             <div className="flex justify-center">
-              <EditorCanvas buffer={blob} />
+              <Suspense>
+                <EditorCanvas buffer={blob} />
+              </Suspense>
             </div>
             <ToolPicker />
           </>
