@@ -10,3 +10,6 @@ export * from "./updateElement";
 export * from "./savePdfDoc";
 export * from "./isPointInElement";
 export * from "./drawHighlight";
+export * from "./drawElementsOnPdfDoc";
+export * from "./setPDFDoc";
+export * from "./getPdfCoordinate";

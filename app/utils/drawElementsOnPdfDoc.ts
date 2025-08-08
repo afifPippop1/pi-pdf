@@ -1,0 +1,57 @@
+import { ColorTypes, PDFDocument } from "pdf-lib";
+import type { PDFDocumentLoadingTask } from "pdfjs-dist";
+import { PDFViewer } from "~/constants";
+import { Line, Rectangle } from "~/lib/shape";
+import type { Element } from "~/types";
+import { getPdfCoordinate } from "./getPdfCoordinate";
+
+export async function drawElementsOnPdfDoc(
+  loadingTask: PDFDocumentLoadingTask,
+  elements: Element[][],
+  doc: PDFDocument
+): Promise<PDFDocument> {
+  const pdfDoc = await doc.copy();
+  for (const index of pdfDoc.getPageIndices()) {
+    for (const element of elements[index]) {
+      const pdfCoordinate = await getPdfCoordinate(
+        loadingTask,
+        index,
+        PDFViewer.SCALE,
+        element
+      );
+      if (element.element instanceof Rectangle) {
+        pdfDoc.getPage(index).drawRectangle({
+          x: pdfCoordinate.x1,
+          y: pdfCoordinate.y1,
+          height: Math.abs(pdfCoordinate.y2 - pdfCoordinate.y1),
+          width: Math.abs(pdfCoordinate.x2 - pdfCoordinate.x1),
+          color: {
+            type: ColorTypes.RGB,
+            blue: 255,
+            green: 255,
+            red: 255,
+          },
+        });
+      }
+      if (element.element instanceof Line) {
+        pdfDoc.getPage(index).drawLine({
+          start: {
+            x: pdfCoordinate.x1,
+            y: pdfCoordinate.y1,
+          },
+          end: {
+            x: pdfCoordinate.x2,
+            y: pdfCoordinate.y2,
+          },
+          color: {
+            type: ColorTypes.RGB,
+            blue: 0,
+            green: 0,
+            red: 0,
+          },
+        });
+      }
+    }
+  }
+  return pdfDoc;
+}

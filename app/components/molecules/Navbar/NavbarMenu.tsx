@@ -6,27 +6,27 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { PopoverArrow } from "../atoms/PopoverArrow";
+import { PopoverArrow } from "~/components/atoms/PopoverArrow";
 
-interface ContextMenuProps {
+interface NavbarMenuProps {
   children: ReactNode;
 }
 
-interface IContextMenuContext {
+interface INavbarMenuContext {
   show: boolean;
   setShow: (show: boolean) => void;
 }
 
-const ContextMenuContext = createContext<IContextMenuContext>({
+const NavbarMenuContext = createContext<INavbarMenuContext>({
   show: false,
   setShow() {},
 });
 
-function useContextMenu() {
-  return useContext(ContextMenuContext);
+function useNavbarMenu() {
+  return useContext(NavbarMenuContext);
 }
 
-export default function ContextMenu(props: ContextMenuProps) {
+export default function NavbarMenu(props: NavbarMenuProps) {
   const contextRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
 
@@ -47,54 +47,64 @@ export default function ContextMenu(props: ContextMenuProps) {
   }, []);
 
   return (
-    <ContextMenuContext.Provider value={{ show, setShow }}>
+    <NavbarMenuContext.Provider value={{ show, setShow }}>
       <div className="relative inline-block" ref={contextRef}>
         {props.children}
       </div>
-    </ContextMenuContext.Provider>
+    </NavbarMenuContext.Provider>
   );
 }
 
-export function ContextMenuTrigger({ children }: { children: ReactNode }) {
-  const { setShow } = useContextMenu();
-  const handleContextMenu = (e: React.MouseEvent) => {
+export function NavbarMenuTrigger({ children }: { children: ReactNode }) {
+  const { setShow } = useNavbarMenu();
+  const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setShow(true);
   };
-  return <div onContextMenu={handleContextMenu}>{children}</div>;
+  return (
+    <div
+      onClick={handleClick}
+      className="flex items-center justify-center cursor-pointer text-primary select-none h-full"
+    >
+      {children}
+    </div>
+  );
 }
 
-export function ContextMenuContent({ children }: { children: ReactNode }) {
-  const { show } = useContextMenu();
+export function NavbarMenuContent({ children }: { children: ReactNode }) {
+  const { show } = useNavbarMenu();
   return (
     <div
       id="popoverPanel"
       className={
         show
-          ? "absolute z-10 mt-2 min-w-48 rounded-md shadow-lg bg-white"
+          ? "absolute z-10 mt-2 min-w-48 rounded-md shadow-xl bg-gray-50"
           : "hidden"
       }
     >
-      <PopoverArrow />
+      <PopoverArrow fill="#f9fafb" />
       <div className="p-4 text-sm text-gray-700">{children}</div>
     </div>
   );
 }
 
-export function ContextMenuItem({
+export function NavbarMenuItem({
   children,
   onClick,
 }: {
   children: ReactNode;
   onClick?: () => void;
 }) {
-  const { setShow } = useContextMenu();
+  const { setShow } = useNavbarMenu();
   function handleClick() {
     setShow(false);
     onClick?.();
   }
   return (
-    <div onClick={handleClick} className="select-none cursor-pointer">
+    <div
+      onClick={handleClick}
+      className="select-none cursor-pointer flex items-center gap-2"
+    >
       {children}
     </div>
   );
