@@ -51,6 +51,14 @@ export function getPdfCoordinate(
           y1: pdfY1,
           y2: pdfY2,
         };
+      } else if (element.type === toolTypes.TEXT) {
+        const [x1, y1] = viewport.convertToPdfPoint(element.x1, element.y1);
+        pdfCoordinate = {
+          x1,
+          x2: 0,
+          y1,
+          y2: 0,
+        };
       }
       return pdfCoordinate;
     });

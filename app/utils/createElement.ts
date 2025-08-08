@@ -1,70 +1,90 @@
 import { toolTypes } from "~/constants";
-import { shapeGenerator, type Drawable } from "~/lib/shape";
-import type { Coordinate2D, Element, ToolType } from "~/types";
+import { shapeGenerator } from "~/lib/shape";
+import type {
+  Element,
+  ElementType,
+  LineElement,
+  RectangleElement,
+} from "~/types";
 
 const generator = shapeGenerator();
 
-type CreateElementProps = {
+type RectangleProps = {
+  type: typeof toolTypes.RECTANGLE;
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
+  id: string;
+};
+type LineProps = {
+  type: typeof toolTypes.LINE;
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
+  id: string;
+};
+type TextProps = {
+  type: typeof toolTypes.TEXT;
   x1: number;
   y1: number;
-  x2: number;
-  y2: number;
-  type: ToolType;
   id: string;
-  pdfCoordinate?: Coordinate2D;
+  text: string;
 };
+
+type CreateElementProps = RectangleProps | LineProps | TextProps;
+
+// type CreateElementProps<T extends ElementType> = Omit<Element<T>, "element">;
+
 function generateRectangle({
   x1,
   x2,
   y1,
   y2,
-}: Pick<CreateElementProps, "x1" | "x2" | "y1" | "y2">) {
+}: Omit<RectangleProps, "id" | "type">) {
   return generator.rectangle(x1, y1, x2 - x1, y2 - y1);
 }
 
-function generateLine({
-  x1,
-  x2,
-  y1,
-  y2,
-}: Pick<CreateElementProps, "x1" | "x2" | "y1" | "y2">) {
+function generateLine({ x1, x2, y1, y2 }: Omit<LineProps, "id" | "type">) {
   return generator.line(x1, y1, x2, y2);
 }
 
-export function createElement({
-  x1,
-  x2,
-  y1,
-  y2,
-  type,
-  id,
-  pdfCoordinate,
-}: CreateElementProps): Element {
-  let element: Drawable;
-  switch (type) {
-    case toolTypes.RECTANGLE:
-      element = generateRectangle({ x1, x2, y1, y2 });
-      break;
-    case toolTypes.LINE:
-      element = generateLine({ x1, x2, y1, y2 });
-      break;
-    default:
-      throw new Error("Something went wrong when creating element");
-  }
-
-  return {
-    id,
-    element,
-    type,
-    x1,
-    x2,
-    y1,
-    y2,
-    pdfCoordinate: pdfCoordinate || {
+export function createElement(props: CreateElementProps): Element {
+  if (props.type === toolTypes.RECTANGLE) {
+    const { x1, x2, y1, y2, type, id } = props;
+    const element = generateRectangle({ x1, x2, y1, y2 });
+    return {
+      id,
+      element,
+      type,
       x1,
-      x2,
       y1,
-      y2,
-    },
-  };
+      x2: x2 || x1,
+      y2: y2 || y1,
+    };
+  } else if (props.type === toolTypes.LINE) {
+    const { x1, x2, y1, y2, type, id } = props;
+    const element = generateLine({ x1, x2, y1, y2 });
+    return {
+      id,
+      element,
+      type,
+      x1,
+      y1,
+      x2: x2 || x1,
+      y2: y2 || y1,
+    };
+  }
+  if (props.type === toolTypes.TEXT) {
+    return {
+      id: props.id,
+      type: toolTypes.TEXT,
+      x1: props.x1,
+      y1: props.y1,
+      text: props.text,
+    };
+  } else {
+    throw new Error("Something went wrong when creating element");
+  }
 }
