@@ -1,15 +1,26 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { useLayoutEffect, useRef } from "react";
+import { CiTrash } from "react-icons/ci";
 import { useAppDispatch } from "~/store/hooks";
 import { setActivePageIndex } from "~/store/slices/editorSlice";
 import { getPageFromIndex } from "~/utils";
+import ContextMenu, {
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "./ContextMenu";
 
 interface ThumbnailItemProps {
   pageIndex: number;
   loadingTask: pdfjsLib.PDFDocumentLoadingTask;
+  onRemove: (index: number) => void;
 }
 
-export function ThumbnailItem({ pageIndex, loadingTask }: ThumbnailItemProps) {
+export function ThumbnailItem({
+  pageIndex,
+  loadingTask,
+  onRemove,
+}: ThumbnailItemProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
   const dispatch = useAppDispatch();
@@ -54,10 +65,24 @@ export function ThumbnailItem({ pageIndex, loadingTask }: ThumbnailItemProps) {
   }
 
   return (
-    <canvas
-      ref={canvasRef}
-      onClick={handleClick}
-      className="cursor-pointer hover:outline-2 hover:outline-grey-400"
-    />
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <canvas
+          ref={canvasRef}
+          onClick={handleClick}
+          className="cursor-pointer hover:outline-2 hover:outline-grey-400"
+        />
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem
+          onClick={async () => {
+            onRemove(pageIndex);
+          }}
+          className="text-red-500"
+        >
+          <CiTrash /> Remove
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }

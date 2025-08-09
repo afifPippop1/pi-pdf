@@ -32,21 +32,12 @@ export function Thumbnail(props: ThumbnailProps) {
   return (
     <div className="flex flex-col items-center gap-2 p-4">
       {pdfDoc?.getPageIndices().map((index) => (
-        <ContextMenu key={index}>
-          <ContextMenuTrigger>
-            <ThumbnailItem pageIndex={index} loadingTask={loadingTask} />
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <ContextMenuItem
-              onClick={async () => {
-                props.onRemove(index);
-              }}
-              className="text-red-500"
-            >
-              <CiTrash /> Remove
-            </ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
+        <ThumbnailItem
+          key={index}
+          pageIndex={index}
+          loadingTask={loadingTask}
+          onRemove={props.onRemove}
+        />
       ))}
     </div>
   );
