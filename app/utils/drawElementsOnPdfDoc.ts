@@ -11,7 +11,8 @@ export async function drawElementsOnPdfDoc(
   elements: Element[][],
   doc: PDFDocument
 ): Promise<PDFDocument> {
-  const pdfDoc = await doc.copy();
+  const buffer = await doc.save();
+  const pdfDoc = await PDFDocument.load(buffer);
   for (const index of pdfDoc.getPageIndices()) {
     for (const element of elements[index]) {
       const pdfCoordinate = await getPdfCoordinate(

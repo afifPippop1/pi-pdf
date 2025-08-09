@@ -3,19 +3,21 @@ import { setPDFDoc as setPDFDocSlice } from "~/store/slices/editorSlice";
 import { store } from "~/store/store";
 
 export async function setPDFDoc(files: File[]) {
-  const pdfDoc = await store.getState().editor.pdfDoc?.copy();
+  const buffer = await store.getState().editor.pdfDoc?.save();
 
-  const newDoc = await (pdfDoc ? pdfDoc : PDFDocument.create());
+  const pdfDoc = await (buffer
+    ? PDFDocument.load(buffer)
+    : PDFDocument.create());
 
   for (const file of files) {
     const arrayBuffer = await file.arrayBuffer();
     const loadedDoc = await PDFDocument.load(arrayBuffer);
-    const copiedPages = await newDoc.copyPages(
+    const copiedPages = await pdfDoc.copyPages(
       loadedDoc,
       loadedDoc.getPageIndices()
     );
-    copiedPages.forEach((page) => newDoc.addPage(page));
+    copiedPages.forEach((page) => pdfDoc.addPage(page));
   }
 
-  store.dispatch(setPDFDocSlice(newDoc));
+  store.dispatch(setPDFDocSlice(pdfDoc));
 }
