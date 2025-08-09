@@ -19,6 +19,24 @@ export function EditorPage() {
   const elements = useAppSelector((s) => s.editor.elements);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const dispatch = useDispatch();
+  async function handleRemove(index: number) {
+    if (!pdfDoc) return;
+    if (pdfDoc.getPageCount() === 1) {
+      dispatch(setPDFDoc(null));
+      setBlob(undefined);
+    } else {
+      if (activePageIndex === index) {
+        if (activePageIndex !== 0) {
+          dispatch(setActivePageIndex(index - 1));
+        }
+      }
+      pdfDoc.removePage(index);
+      const el = elements.filter((_, idx) => idx !== index);
+      dispatch(setElements(el));
+      const buffer = await pdfDoc.save();
+      setBlob(buffer);
+    }
+  }
 
   return (
     <div className="h-screen w-screen bg-[#EDEDED] flex flex-col">
@@ -33,26 +51,7 @@ export function EditorPage() {
           <div className="flex-1 flex min-h-0">
             {/* Left panel */}
             <div className="overflow-auto max-w-64 min-h-0">
-              <Thumbnail
-                onRemove={async (index) => {
-                  if (!pdfDoc) return;
-                  if (pdfDoc.getPageCount() === 1) {
-                    dispatch(setPDFDoc(null));
-                    setBlob(undefined);
-                  } else {
-                    if (activePageIndex === index) {
-                      if (activePageIndex !== 0) {
-                        dispatch(setActivePageIndex(index - 1));
-                      }
-                    }
-                    pdfDoc.removePage(index);
-                    const el = elements.filter((_, idx) => idx !== index);
-                    dispatch(setElements(el));
-                    const buffer = await pdfDoc.save();
-                    setBlob(buffer);
-                  }
-                }}
-              />
+              <Thumbnail onRemove={handleRemove} buffer={blob} />
             </div>
 
             {/* Right panel */}

@@ -4,6 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type MouseEvent,
   type ReactNode,
 } from "react";
 import { PopoverArrow } from "../atoms/PopoverArrow";
@@ -92,7 +93,9 @@ export function ContextMenuItem({
   className?: string;
 }) {
   const { setShow } = useContextMenu();
-  function handleClick() {
+  function handleClick(event: MouseEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
     setShow(false);
     onClick?.();
   }

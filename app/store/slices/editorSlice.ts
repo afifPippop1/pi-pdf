@@ -24,7 +24,7 @@ const initialState: EditorState = {
 };
 
 export const reorderPage = createAsyncThunk<
-  PDFDocument, // return type
+  { doc: PDFDocument; elements: Element[][] }, // return type
   { active: number; over: number }, // argument type
   { state: { editor: EditorState } } // thunkAPI type
 >("editor/reorderPage", async ({ active, over }, thunkAPI) => {
@@ -37,15 +37,17 @@ export const reorderPage = createAsyncThunk<
     (_, index) => index
   );
 
+  const elements = [...state.elements];
   // Swap positions
   swapArrayValue(orderArray, active, over);
+  swapArrayValue(elements, active, over);
 
   // Create new doc with reordered pages
   const newPdf = await PDFDocument.create();
   const pages = await newPdf.copyPages(state.pdfDoc, orderArray);
   pages.forEach((p) => newPdf.addPage(p));
 
-  return newPdf;
+  return { doc: newPdf, elements };
 });
 
 const editorSlice = createSlice({
@@ -103,7 +105,8 @@ const editorSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(reorderPage.fulfilled, (state, action) => {
-      state.pdfDoc = action.payload;
+      state.pdfDoc = action.payload.doc;
+      state.elements = action.payload.elements;
     });
   },
 });

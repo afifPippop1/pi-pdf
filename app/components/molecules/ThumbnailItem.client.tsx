@@ -1,16 +1,15 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import * as pdfjsLib from "pdfjs-dist";
 import { useLayoutEffect, useRef } from "react";
 import { CiTrash } from "react-icons/ci";
 import { useAppDispatch } from "~/store/hooks";
-import { setActivePageIndex } from "~/store/slices/editorSlice";
 import { getPageFromIndex } from "~/utils";
 import ContextMenu, {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "./ContextMenu";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
 interface ThumbnailItemProps {
   pageIndex: number;
@@ -64,35 +63,31 @@ export function ThumbnailItem({
     };
   }, [pageIndex, loadingTask]);
 
-  function handleClick() {
-    dispatch(setActivePageIndex(pageIndex));
-  }
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <ContextMenu>
-        <ContextMenuTrigger>
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
           <canvas
             ref={canvasRef}
-            onClick={handleClick}
             className="cursor-pointer hover:outline-2 hover:outline-grey-400"
           />
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem
-            onClick={async () => {
-              onRemove(pageIndex);
-            }}
-            className="text-red-500"
-          >
-            <CiTrash /> Remove
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
-    </div>
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem
+          onClick={async () => {
+            onRemove(pageIndex);
+          }}
+          className="text-red-500"
+        >
+          <CiTrash /> Remove
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }

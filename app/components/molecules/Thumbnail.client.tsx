@@ -1,8 +1,3 @@
-import * as pdfjsLib from "pdfjs-dist";
-import { useMemo } from "react";
-import { useDocBuffer } from "~/hooks/useDocBuffer";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { ThumbnailItem } from "./ThumbnailItem.client";
 import {
   closestCenter,
   DndContext,
@@ -17,7 +12,11 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { reorderPage } from "~/store/slices/editorSlice";
+import * as pdfjsLib from "pdfjs-dist";
+import { useMemo } from "react";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { reorderPage, setActivePageIndex } from "~/store/slices/editorSlice";
+import { ThumbnailItem } from "./ThumbnailItem.client";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -25,17 +24,16 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 interface ThumbnailProps {
+  buffer: Uint8Array;
   onRemove: (index: number) => void;
 }
 
 export function Thumbnail(props: ThumbnailProps) {
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
-  const { blob } = useDocBuffer();
   const loadingTask = useMemo(() => {
-    if (!blob) return;
-    return pdfjsLib.getDocument({ data: new Uint8Array(blob) });
-  }, [blob]);
-  const items = useMemo(() => pdfDoc?.getPageIndices() || [], [pdfDoc]);
+    return pdfjsLib.getDocument({ data: new Uint8Array(props.buffer) });
+  }, [props.buffer]);
+  const items = pdfDoc?.getPageIndices() || [];
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -46,13 +44,14 @@ export function Thumbnail(props: ThumbnailProps) {
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    console.log(active, over);
+    if (active.id === over?.id) {
+      dispatch(setActivePageIndex(active.id as number));
+      return;
+    }
     dispatch(
       reorderPage({ active: active.id as number, over: over?.id as number })
     );
   }
-
-  if (!loadingTask) return null;
 
   return (
     <DndContext
