@@ -1,10 +1,16 @@
-import EditorPage from "~/components/pages/editor.page";
+import { useNavigate } from "react-router";
 import type { Route } from "./+types/home";
+import { Button } from "~/components/atoms/Button";
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "Pi-PDF" }, { name: "description", content: "Editing PDF" }];
+  return [{ title: "Pi-DF" }, { name: "description", content: "Editing PDF" }];
 }
 
 export default function Editor() {
-  return <EditorPage />;
+  const navigate = useNavigate();
+  return (
+    <div>
+      <Button onClick={() => navigate("/editor")}>Start Editing</Button>
+    </div>
+  );
 }
