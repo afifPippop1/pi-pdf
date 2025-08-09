@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { useDispatch } from "react-redux";
 import { EditorCanvas } from "~/components/molecules/EditorCanvas.client";
 import { useDocBuffer } from "~/hooks/useDocBuffer";
@@ -7,17 +8,10 @@ import {
   setElements,
   setPDFDoc,
 } from "~/store/slices/editorSlice";
-import { getPageFromIndex } from "~/utils";
-import { Button } from "../atoms/Button";
-import ContextMenu, {
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "../molecules/ContextMenu";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
+import { Thumbnail } from "../molecules/Thumbnail";
 import { ToolPicker } from "../molecules/ToolPicker";
-import { Suspense } from "react";
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
@@ -27,61 +21,51 @@ export function EditorPage() {
   const dispatch = useDispatch();
 
   return (
-    <div className="h-screen w-screen bg-[#EDEDED] overflow-hidden flex flex-col">
+    <div className="h-screen w-screen bg-[#EDEDED] flex flex-col">
       <Navbar />
-      <div className="overflow-auto flex-1 flex-col items-stretch pt-8 relative">
-        {!blob ? (
-          <>
-            <EmptyFile />
-          </>
-        ) : (
-          <>
-            <div className="flex gap-4">
-              {pdfDoc?.getPageIndices().map((index) => (
-                <ContextMenu key={index}>
-                  <ContextMenuTrigger>
-                    <Button
-                      key={index}
-                      onClick={() => dispatch(setActivePageIndex(index))}
-                    >
-                      {getPageFromIndex(index)}
-                    </Button>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem
-                      onClick={async () => {
-                        if (pdfDoc.getPageCount() === 1) {
-                          dispatch(setPDFDoc(null));
-                          setBlob(undefined);
-                        } else {
-                          if (activePageIndex === index) {
-                            if (activePageIndex !== 0) {
-                              dispatch(setActivePageIndex(index - 1));
-                            }
-                          }
-                          pdfDoc.removePage(index);
-                          const el = elements.filter((_, idx) => idx !== index);
-                          dispatch(setElements(el));
-                          const buffer = await pdfDoc.save();
-                          setBlob(buffer);
-                        }
-                      }}
-                    >
-                      Remove
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              ))}
-            </div>
-            <div className="flex justify-center">
-              <Suspense>
-                <EditorCanvas buffer={blob} />
-              </Suspense>
-            </div>
+      {!blob ? (
+        <EmptyFile />
+      ) : (
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="bg-white flex items-center justify-center shrink-0">
             <ToolPicker />
-          </>
-        )}
-      </div>
+          </div>
+          <div className="flex-1 flex min-h-0">
+            {/* Left panel */}
+            <div className="overflow-auto max-w-64 min-h-0">
+              <Thumbnail
+                onRemove={async (index) => {
+                  if (!pdfDoc) return;
+                  if (pdfDoc.getPageCount() === 1) {
+                    dispatch(setPDFDoc(null));
+                    setBlob(undefined);
+                  } else {
+                    if (activePageIndex === index) {
+                      if (activePageIndex !== 0) {
+                        dispatch(setActivePageIndex(index - 1));
+                      }
+                    }
+                    pdfDoc.removePage(index);
+                    const el = elements.filter((_, idx) => idx !== index);
+                    dispatch(setElements(el));
+                    const buffer = await pdfDoc.save();
+                    setBlob(buffer);
+                  }
+                }}
+              />
+            </div>
+
+            {/* Right panel */}
+            <div className="overflow-auto flex-1 min-h-0">
+              <div className="p-8 flex justify-center">
+                <Suspense>
+                  <EditorCanvas buffer={blob} />
+                </Suspense>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

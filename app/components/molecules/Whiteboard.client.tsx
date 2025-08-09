@@ -321,7 +321,8 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
             outline: 0,
             overflow: "hidden",
             whiteSpace: "pre",
-            background: "white",
+            background: "transparent",
+            resize: "none",
           }}
           onBlur={handleTextareaBlur}
         />

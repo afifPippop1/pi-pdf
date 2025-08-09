@@ -71,7 +71,6 @@ export async function drawElementsOnPdfDoc(
           x,
           y,
           size: 24,
-
           rotate,
         });
       }

@@ -13,7 +13,7 @@ interface NavbarProps {}
 
 export function Navbar({}: NavbarProps) {
   return (
-    <div className="flex justify-between bg-white px-32 py-4">
+    <div className="flex justify-between bg-white px-32 py-4 shadow-xl border-b border-b-gray-200">
       {/* Menu list */}
       <div className="flex gap-4">
         <FileMenu />
