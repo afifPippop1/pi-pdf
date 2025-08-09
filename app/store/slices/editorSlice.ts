@@ -1,6 +1,11 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { PDFDocument } from "pdf-lib";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+import { PDFDocument } from "pdf-lib";
 import type { Element, ToolType } from "~/types";
+import { swapArrayValue } from "~/utils";
 
 interface EditorState {
   activePageIndex: number;
@@ -17,6 +22,31 @@ const initialState: EditorState = {
   elements: [],
   toolType: null,
 };
+
+export const reorderPage = createAsyncThunk<
+  PDFDocument, // return type
+  { active: number; over: number }, // argument type
+  { state: { editor: EditorState } } // thunkAPI type
+>("editor/reorderPage", async ({ active, over }, thunkAPI) => {
+  const state = thunkAPI.getState().editor;
+  if (!state.pdfDoc) throw new Error("No PDF document loaded");
+
+  // Create the current order
+  const orderArray = Array.from(
+    { length: state.pdfDoc.getPageCount() },
+    (_, index) => index
+  );
+
+  // Swap positions
+  swapArrayValue(orderArray, active, over);
+
+  // Create new doc with reordered pages
+  const newPdf = await PDFDocument.create();
+  const pages = await newPdf.copyPages(state.pdfDoc, orderArray);
+  pages.forEach((p) => newPdf.addPage(p));
+
+  return newPdf;
+});
 
 const editorSlice = createSlice({
   name: "editor",
@@ -60,6 +90,21 @@ const editorSlice = createSlice({
       if (state.activePageIndex === null) return;
       state.elements[state.activePageIndex] = action.payload;
     },
+    reorderPage(
+      state,
+      action: PayloadAction<{ active: number; over: number }>
+    ) {
+      const orderArray = Array.from(
+        { length: state.pdfDoc?.getPageCount() || 0 },
+        (_, index) => index
+      );
+      swapArrayValue(orderArray, action.payload.active, action.payload.over);
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(reorderPage.fulfilled, (state, action) => {
+      state.pdfDoc = action.payload;
+    });
   },
 });
 

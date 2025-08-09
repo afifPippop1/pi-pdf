@@ -9,6 +9,8 @@ import ContextMenu, {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "./ContextMenu";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ThumbnailItemProps {
   pageIndex: number;
@@ -24,6 +26,8 @@ export function ThumbnailItem({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
   const dispatch = useAppDispatch();
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: pageIndex });
 
   useLayoutEffect(() => {
     loadingTask.promise.then((pdf) => {
@@ -63,26 +67,32 @@ export function ThumbnailItem({
   function handleClick() {
     dispatch(setActivePageIndex(pageIndex));
   }
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>
-        <canvas
-          ref={canvasRef}
-          onClick={handleClick}
-          className="cursor-pointer hover:outline-2 hover:outline-grey-400"
-        />
-      </ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem
-          onClick={async () => {
-            onRemove(pageIndex);
-          }}
-          className="text-red-500"
-        >
-          <CiTrash /> Remove
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <canvas
+            ref={canvasRef}
+            onClick={handleClick}
+            className="cursor-pointer hover:outline-2 hover:outline-grey-400"
+          />
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            onClick={async () => {
+              onRemove(pageIndex);
+            }}
+            className="text-red-500"
+          >
+            <CiTrash /> Remove
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+    </div>
   );
 }

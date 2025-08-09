@@ -25,6 +25,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
             "editor/setElements",
             "editor/updateElement",
             "editor/setActivePageElements",
+            "editor/reorderPage/fulfilled",
           ],
           ignoredPaths: ["editor.pdfDoc", "editor.elements"],
         },
