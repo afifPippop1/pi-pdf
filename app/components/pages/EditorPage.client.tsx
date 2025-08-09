@@ -1,3 +1,4 @@
+import * as pdfjsLib from "pdfjs-dist";
 import { Suspense } from "react";
 import { useDispatch } from "react-redux";
 import { EditorCanvas } from "~/components/molecules/EditorCanvas.client";
@@ -12,6 +13,11 @@ import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
 import { Thumbnail } from "../molecules/Thumbnail.client";
 import { ToolPicker } from "../molecules/ToolPicker";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();

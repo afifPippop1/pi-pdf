@@ -18,11 +18,6 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { reorderPage, setActivePageIndex } from "~/store/slices/editorSlice";
 import { ThumbnailItem } from "./ThumbnailItem.client";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
-
 interface ThumbnailProps {
   buffer: Uint8Array;
   onRemove: (index: number) => void;
