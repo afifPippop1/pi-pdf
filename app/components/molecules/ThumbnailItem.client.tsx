@@ -1,29 +1,23 @@
 import * as pdfjsLib from "pdfjs-dist";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
+import { useAppDispatch } from "~/store/hooks";
+import { setActivePageIndex } from "~/store/slices/editorSlice";
 import { getPageFromIndex } from "~/utils";
 
-interface PdfViewerProps {
-  pdfData: Uint8Array;
-  pageIndex?: number;
-  scale?: number;
-  onPdfRendered: () => void;
+interface ThumbnailItemProps {
+  pageIndex: number;
+  loadingTask: pdfjsLib.PDFDocumentLoadingTask;
 }
 
-export function PdfViewer({
-  pdfData,
-  pageIndex = 0,
-  scale = 1,
-  onPdfRendered,
-}: PdfViewerProps) {
+export function ThumbnailItem({ pageIndex, loadingTask }: ThumbnailItemProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
+  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfData) });
-
+  useLayoutEffect(() => {
     loadingTask.promise.then((pdf) => {
       pdf.getPage(getPageFromIndex(pageIndex)).then((page) => {
-        const viewport = page.getViewport({ scale: scale });
+        const viewport = page.getViewport({ scale: 0.2 });
         const canvas = canvasRef.current;
         if (!canvas) return;
         const context = canvas.getContext("2d", { willReadFrequently: true });
@@ -41,13 +35,11 @@ export function PdfViewer({
 
         renderTaskRef.current = renderTask;
 
-        renderTask.promise
-          .then(() => onPdfRendered())
-          .catch((err) => {
-            if (err?.name !== "RenderingCancelledException") {
-              console.error("Render error:", err);
-            }
-          });
+        renderTask.promise.catch((err) => {
+          if (err?.name !== "RenderingCancelledException") {
+            console.error("Render error:", err);
+          }
+        });
       });
     });
 
@@ -55,7 +47,17 @@ export function PdfViewer({
     return () => {
       renderTaskRef.current?.cancel();
     };
-  }, [pdfData, pageIndex, scale]);
+  }, [pageIndex, loadingTask]);
 
-  return <canvas ref={canvasRef} />;
+  function handleClick() {
+    dispatch(setActivePageIndex(pageIndex));
+  }
+
+  return (
+    <canvas
+      ref={canvasRef}
+      onClick={handleClick}
+      className="cursor-pointer hover:outline-2 hover:outline-grey-400"
+    />
+  );
 }

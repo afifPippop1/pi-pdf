@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { PopoverArrow } from "../atoms/PopoverArrow";
+import clsx from "clsx";
 
 interface ContextMenuProps {
   children: ReactNode;
@@ -76,7 +77,7 @@ export function ContextMenuContent({ children }: { children: ReactNode }) {
       }
     >
       <PopoverArrow />
-      <div className="p-4 text-sm text-gray-700">{children}</div>
+      <div className="text-sm text-gray-700">{children}</div>
     </div>
   );
 }
@@ -84,9 +85,11 @@ export function ContextMenuContent({ children }: { children: ReactNode }) {
 export function ContextMenuItem({
   children,
   onClick,
+  className,
 }: {
   children: ReactNode;
   onClick?: () => void;
+  className?: string;
 }) {
   const { setShow } = useContextMenu();
   function handleClick() {
@@ -94,7 +97,13 @@ export function ContextMenuItem({
     onClick?.();
   }
   return (
-    <div onClick={handleClick} className="select-none cursor-pointer">
+    <div
+      onClick={handleClick}
+      className={clsx(
+        "select-none cursor-pointer flex gap-2 items-center p-4 hover:bg-gray-50",
+        className
+      )}
+    >
       {children}
     </div>
   );

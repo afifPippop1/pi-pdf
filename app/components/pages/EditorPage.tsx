@@ -10,7 +10,7 @@ import {
 } from "~/store/slices/editorSlice";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
-import { Thumbnail } from "../molecules/Thumbnail";
+import { Thumbnail } from "../molecules/Thumbnail.client";
 import { ToolPicker } from "../molecules/ToolPicker";
 
 export function EditorPage() {

@@ -1,12 +1,19 @@
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { setActivePageIndex } from "~/store/slices/editorSlice";
-import { getPageFromIndex } from "~/utils";
-import { Button } from "../atoms/Button";
+import * as pdfjsLib from "pdfjs-dist";
+import { useAppSelector } from "~/store/hooks";
 import ContextMenu, {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "./ContextMenu";
+import { ThumbnailItem } from "./ThumbnailItem.client";
+import { useMemo } from "react";
+import { useDocBuffer } from "~/hooks/useDocBuffer";
+import { CiTrash } from "react-icons/ci";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 interface ThumbnailProps {
   onRemove: (index: number) => void;
@@ -14,28 +21,29 @@ interface ThumbnailProps {
 
 export function Thumbnail(props: ThumbnailProps) {
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
+  const { blob } = useDocBuffer();
+  const loadingTask = useMemo(() => {
+    if (!blob) return;
+    return pdfjsLib.getDocument({ data: new Uint8Array(blob) });
+  }, [blob]);
 
-  const dispatch = useAppDispatch();
+  if (!loadingTask) return null;
+
   return (
     <div className="flex flex-col items-center gap-2 p-4">
       {pdfDoc?.getPageIndices().map((index) => (
         <ContextMenu key={index}>
           <ContextMenuTrigger>
-            <Button
-              key={index}
-              onClick={() => dispatch(setActivePageIndex(index))}
-              className="w-32 h-48"
-            >
-              {getPageFromIndex(index)}
-            </Button>
+            <ThumbnailItem pageIndex={index} loadingTask={loadingTask} />
           </ContextMenuTrigger>
           <ContextMenuContent>
             <ContextMenuItem
               onClick={async () => {
                 props.onRemove(index);
               }}
+              className="text-red-500"
             >
-              Remove
+              <CiTrash /> Remove
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
