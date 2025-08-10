@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { SketchPicker, type ColorResult } from "react-color";
+import { RgbaColorPicker, RgbColorPicker, type RgbColor } from "react-colorful";
 import { IoColorFill } from "react-icons/io5";
 import { toolTypes } from "~/constants";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { useAppSelector } from "~/store/hooks";
 import { updateElement } from "~/utils";
 import Popover, { PopoverContent, PopoverTrigger } from "../Popover";
 
@@ -16,7 +16,7 @@ export function BackgroundPickerTool() {
     [elements, selectedElement]
   );
 
-  function handleChange(color: ColorResult) {
+  function handleChange(color: RgbColor) {
     if (
       !selectedElement ||
       selectedElement?.type !== toolTypes.RECTANGLE ||
@@ -29,9 +29,7 @@ export function BackgroundPickerTool() {
         ...selectedElement,
         index: selectedElementIndex,
         type: toolTypes.RECTANGLE,
-        options: {
-          color: color.rgb,
-        },
+        options: { color },
       },
       elements
     );
@@ -39,7 +37,7 @@ export function BackgroundPickerTool() {
 
   const color = useMemo(() => {
     if (!selectedElement || selectedElement.type !== toolTypes.RECTANGLE)
-      return "";
+      return;
     return selectedElement.element.color;
   }, [selectedElement]);
 
@@ -55,7 +53,7 @@ export function BackgroundPickerTool() {
         </button>
       </PopoverTrigger>
       <PopoverContent>
-        <SketchPicker color={color} onChange={handleChange} disableAlpha />
+        <RgbaColorPicker color={color} onChange={handleChange} />
       </PopoverContent>
     </Popover>
   );
