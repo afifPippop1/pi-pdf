@@ -4,23 +4,26 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { PDFDocument } from "pdf-lib";
+import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import type { Element, ToolType } from "~/types";
 import { swapArrayValue } from "~/utils";
 
 interface EditorState {
   activePageIndex: number;
   pdfDoc: PDFDocument | null;
-  readonlyDoc: PDFDocument | null;
   elements: Element[][];
   toolType: ToolType | null;
+  thumbnails: string[];
+  loadingTask: PDFDocumentLoadingTask | null;
 }
 
 const initialState: EditorState = {
   activePageIndex: 0,
   pdfDoc: null,
-  readonlyDoc: null,
   elements: [],
   toolType: null,
+  thumbnails: [],
+  loadingTask: null,
 };
 
 export const reorderPage = createAsyncThunk<
@@ -40,11 +43,11 @@ export const reorderPage = createAsyncThunk<
   const elements = [...state.elements];
   // Swap positions
   swapArrayValue(orderArray, active, over);
-  swapArrayValue(elements, active, over);
 
   // Create new doc with reordered pages
   const newPdf = await PDFDocument.create();
   const pages = await newPdf.copyPages(state.pdfDoc, orderArray);
+  swapArrayValue(elements, active, over);
   pages.forEach((p) => newPdf.addPage(p));
 
   return { doc: newPdf, elements };
@@ -67,6 +70,7 @@ const editorSlice = createSlice({
         }
       } else {
         state.elements = [];
+        state.thumbnails = [];
       }
     },
     setToolType: (state, action: PayloadAction<ToolType | null>) => {
@@ -92,15 +96,11 @@ const editorSlice = createSlice({
       if (state.activePageIndex === null) return;
       state.elements[state.activePageIndex] = action.payload;
     },
-    reorderPage(
+    setLoadingTask(
       state,
-      action: PayloadAction<{ active: number; over: number }>
+      action: PayloadAction<PDFDocumentLoadingTask | null>
     ) {
-      const orderArray = Array.from(
-        { length: state.pdfDoc?.getPageCount() || 0 },
-        (_, index) => index
-      );
-      swapArrayValue(orderArray, action.payload.active, action.payload.over);
+      state.loadingTask = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -118,5 +118,6 @@ export const {
   updateElement,
   setElements,
   setActivePageElements,
+  setLoadingTask,
 } = editorSlice.actions;
 export default editorSlice;

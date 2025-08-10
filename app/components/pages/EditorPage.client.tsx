@@ -29,7 +29,7 @@ export function EditorPage() {
     if (!pdfDoc) return;
     if (pdfDoc.getPageCount() === 1) {
       dispatch(setPDFDoc(null));
-      setBlob(undefined);
+      setBlob(null);
     } else {
       if (activePageIndex === index) {
         if (activePageIndex !== 0) {
