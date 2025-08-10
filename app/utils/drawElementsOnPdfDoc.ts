@@ -1,4 +1,4 @@
-import { ColorTypes, degrees, PDFDocument } from "pdf-lib";
+import { ColorTypes, degrees, PDFDocument, rgb } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import { PDFViewer, toolTypes } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
@@ -23,17 +23,14 @@ export async function drawElementsOnPdfDoc(
       );
       if (isShapeElement(element)) {
         if (element.element instanceof Rectangle) {
+          const { a: alpha, b: blue, g: green, r: red } = element.element.color;
           pdfDoc.getPage(index).drawRectangle({
             x: pdfCoordinate.x1,
             y: pdfCoordinate.y1,
             height: Math.abs(pdfCoordinate.y2 - pdfCoordinate.y1),
             width: Math.abs(pdfCoordinate.x2 - pdfCoordinate.x1),
-            color: {
-              type: ColorTypes.RGB,
-              blue: 255,
-              green: 255,
-              red: 255,
-            },
+            color: rgb(red / 255, green / 255, blue / 255),
+            opacity: alpha,
           });
         }
         if (element.element instanceof Line) {

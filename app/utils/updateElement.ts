@@ -11,10 +11,14 @@ import type {
   ToolType,
 } from "~/types";
 import { createElement } from "./createElement";
+import type { Color } from "~/lib/shape/rectangle";
 
 interface RectangleElementProps
   extends Omit<Element<RectangleElement>, "element"> {
   index: number;
+  options?: {
+    color?: Partial<Color>;
+  };
 }
 
 interface LineElementProps extends Omit<Element<LineElement>, "element"> {
@@ -37,7 +41,6 @@ export function updateElement(
   const elementsCopy = [...elements];
   switch (element.type) {
     case toolTypes.LINE:
-    case toolTypes.RECTANGLE: {
       const { id, type, x1, x2, y1, y2 } = element;
       const updateElement = createElement({
         id,
@@ -46,6 +49,22 @@ export function updateElement(
         x2,
         y1,
         y2,
+      });
+
+      elementsCopy[element.index] = updateElement;
+
+      store.dispatch(setActivePageElements(elementsCopy));
+      break;
+    case toolTypes.RECTANGLE: {
+      const { id, type, x1, x2, y1, y2, options } = element;
+      const updateElement = createElement({
+        id,
+        type,
+        x1,
+        x2,
+        y1,
+        y2,
+        options,
       });
 
       elementsCopy[element.index] = updateElement;

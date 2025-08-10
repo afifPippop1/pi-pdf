@@ -13,16 +13,16 @@ export function SavePDFButton() {
     const doc = await drawElementsOnPdfDoc(loadingTask, elements, pdfDoc);
 
     const url = await savePdfAsURL(doc);
-    // window.open(url);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Hello world.pdf";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    window.open(url);
+    // const a = document.createElement("a");
+    // a.href = url;
+    // a.download = "Hello world.pdf";
+    // document.body.appendChild(a);
+    // a.click();
+    // a.remove();
 
-    // Optional: revoke to free memory
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    // // Optional: revoke to free memory
+    // setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   return (
