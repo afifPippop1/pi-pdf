@@ -1,4 +1,3 @@
-import * as pdfjsLib from "pdfjs-dist";
 import { Button } from "~/components/atoms/Button";
 import { useAppSelector } from "~/store/hooks";
 import { drawElementsOnPdfDoc, savePdfAsURL } from "~/utils";
@@ -24,6 +23,8 @@ export function SavePDFButton() {
     // // Optional: revoke to free memory
     // setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+
+  if (!pdfDoc) return null;
 
   return (
     <Button className="bg-grey-400 text-white rounded-lg" onClick={handleSave}>
