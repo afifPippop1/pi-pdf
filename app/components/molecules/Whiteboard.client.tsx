@@ -14,10 +14,10 @@ import { canvas } from "~/lib/canvas";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   setActivePageElements,
+  setSelectedElement,
   setToolType,
   updateElement as updateElementStore,
 } from "~/store/slices/editorSlice";
-import type { Element } from "~/types";
 import type { Action } from "~/types/action";
 import {
   adjustElementCoordinates,
@@ -45,7 +45,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
   const el = useAppSelector((s) => s.editor.elements);
   const docSize = getDocumentSize(pdfDoc, activePageIndex, scale);
   const [action, setAction] = useState<Action | null>(null);
-  const [selectedElement, setSelectedElement] = useState<Element | null>(null);
+  const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
   const elements = useMemo(
     () => el[activePageIndex] || [],
@@ -117,7 +117,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
             type: toolType,
             id: uuid(),
           });
-          setSelectedElement(element);
+          dispatch(setSelectedElement(element));
           dispatch(updateElementStore(element));
           break;
         }
@@ -129,7 +129,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
             type: toolType,
             id: uuid(),
           });
-          setSelectedElement(element);
+          dispatch(setSelectedElement(element));
           setAction(actions.WRITING);
           dispatch(updateElementStore(element));
         }
@@ -224,17 +224,32 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
         const newX2 = newX1 + width;
         const newY2 = newY1 + height;
 
-        updateElement(
-          {
-            ...element,
-            x1: newX1,
-            y1: newY1,
-            x2: newX2,
-            y2: newY2,
-            index,
-          },
-          elements
-        );
+        if (element.type === toolTypes.RECTANGLE) {
+          updateElement(
+            {
+              ...element,
+              x1: newX1,
+              y1: newY1,
+              x2: newX2,
+              y2: newY2,
+              index,
+              options: { color: element.element.color },
+            },
+            elements
+          );
+        } else {
+          updateElement(
+            {
+              ...element,
+              x1: newX1,
+              y1: newY1,
+              x2: newX2,
+              y2: newY2,
+              index,
+            },
+            elements
+          );
+        }
       }
     } else if (toolType === toolTypes.TEXT) {
       canvas.style.cursor = "text ";
@@ -260,10 +275,10 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
       );
       if (coveringElements.length) {
         const lastElement = coveringElements[coveringElements.length - 1];
-        setSelectedElement(lastElement);
+        dispatch(setSelectedElement(lastElement));
         canvas.focus();
       } else {
-        setSelectedElement(null);
+        dispatch(setSelectedElement(null));
       }
     }
   }
@@ -279,7 +294,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
   }
   function reset() {
     setAction(null);
-    setSelectedElement(null);
+    dispatch(setSelectedElement(null));
     resetDrag();
     dispatch(setToolType(null));
   }

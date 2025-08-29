@@ -13,6 +13,7 @@ import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
 import { Thumbnail } from "../molecules/Thumbnail.client";
 import { ToolPicker } from "../molecules/ToolPicker";
+import { PropertiesPanel } from "../molecules/PropertiesPanel";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -29,7 +30,7 @@ export function EditorPage() {
     if (!pdfDoc) return;
     if (pdfDoc.getPageCount() === 1) {
       dispatch(setPDFDoc(null));
-      setBlob(undefined);
+      setBlob(null);
     } else {
       if (activePageIndex === index) {
         if (activePageIndex !== 0) {
@@ -51,8 +52,10 @@ export function EditorPage() {
         <EmptyFile />
       ) : (
         <div className="flex-1 flex flex-col min-h-0">
-          <div className="bg-white flex items-center justify-center shrink-0">
+          <div className="bg-white flex items-center justify-start shrink-0">
             <ToolPicker />
+            <hr />
+            <PropertiesPanel />
           </div>
           <div className="flex-1 flex min-h-0">
             {/* Left panel */}

@@ -2,11 +2,11 @@ import { Suspense } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { normalizeFileList, setPDFDoc } from "~/utils";
 import FileUpload from "../FileUpload";
-import NavbarMenu, {
-  NavbarMenuContent,
-  NavbarMenuItem,
-  NavbarMenuTrigger,
-} from "./NavbarMenu";
+import Popover, {
+  PopoverContent,
+  PopoverItem,
+  PopoverTrigger,
+} from "../Popover";
 import { SavePDFButton } from "./SavePDFButton.client";
 
 interface NavbarProps {}
@@ -36,16 +36,16 @@ function FileMenu() {
     }
   }
   return (
-    <NavbarMenu>
-      <NavbarMenuTrigger>File</NavbarMenuTrigger>
-      <NavbarMenuContent>
+    <Popover>
+      <PopoverTrigger>File</PopoverTrigger>
+      <PopoverContent>
         <FileUpload onChange={handleChange} multiple>
-          <NavbarMenuItem>
+          <PopoverItem>
             <FaPlus />
             Add file
-          </NavbarMenuItem>
+          </PopoverItem>
         </FileUpload>
-      </NavbarMenuContent>
-    </NavbarMenu>
+      </PopoverContent>
+    </Popover>
   );
 }

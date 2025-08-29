@@ -1,5 +1,5 @@
 import type { toolTypes } from "~/constants";
-import type { Drawable } from "~/lib/shape";
+import type { Drawable, Line, Rectangle } from "~/lib/shape";
 
 export interface Coordinate2D {
   x1: number;
@@ -9,12 +9,12 @@ export interface Coordinate2D {
 }
 
 export interface LineElement extends Coordinate2D {
-  element: Drawable;
+  element: Line;
   type: typeof toolTypes.LINE;
 }
 
 export interface RectangleElement extends Coordinate2D {
-  element: Drawable;
+  element: Rectangle;
   type: typeof toolTypes.RECTANGLE;
 }
 

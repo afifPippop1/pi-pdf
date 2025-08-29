@@ -18,6 +18,8 @@ export function Button({ className, ...props }: ButtonProps) {
         "cursor-pointer",
         "bg-grey-400",
         "text-white",
+        "text-xs",
+        "md:text-base",
         className
       )}
     >

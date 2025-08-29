@@ -1,5 +1,6 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { useEffect, useRef } from "react";
+import { useAppSelector } from "~/store/hooks";
 import { getPageFromIndex } from "~/utils";
 
 interface PdfViewerProps {
@@ -17,9 +18,10 @@ export function PdfViewer({
 }: PdfViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
+  const loadingTask = useAppSelector((s) => s.editor.loadingTask);
 
   useEffect(() => {
-    const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfData) });
+    if (!loadingTask) return;
 
     loadingTask.promise.then((pdf) => {
       pdf.getPage(getPageFromIndex(pageIndex)).then((page) => {
@@ -55,7 +57,7 @@ export function PdfViewer({
     return () => {
       renderTaskRef.current?.cancel();
     };
-  }, [pdfData, pageIndex, scale]);
+  }, [pdfData, pageIndex, scale, loadingTask]);
 
   return <canvas ref={canvasRef} />;
 }

@@ -1,3 +1,4 @@
+import { rgbToString } from "~/utils";
 import type { Drawable } from "../shape";
 import { Line, Rectangle } from "../shape";
 
@@ -32,7 +33,8 @@ export class Canvas {
   }
 
   private drawRect(element: Rectangle) {
-    this.ctx.fillStyle = "#ffffff";
+    // this.ctx.fillStyle = "#ffffff";
+    this.ctx.fillStyle = rgbToString(element.color);
 
     // Draw filled rectangle (x, y, width, height)
     this.ctx.fillRect(element.x, element.y, element.width, element.height);

@@ -1,11 +1,7 @@
 import { toolTypes } from "~/constants";
 import { shapeGenerator } from "~/lib/shape";
-import type {
-  Element,
-  ElementType,
-  LineElement,
-  RectangleElement,
-} from "~/types";
+import type { Color } from "~/lib/shape/rectangle";
+import type { Element } from "~/types";
 
 const generator = shapeGenerator();
 
@@ -16,6 +12,9 @@ type RectangleProps = {
   y1: number;
   y2: number;
   id: string;
+  options?: {
+    color?: Partial<Color>;
+  };
 };
 type LineProps = {
   type: typeof toolTypes.LINE;
@@ -35,15 +34,14 @@ type TextProps = {
 
 type CreateElementProps = RectangleProps | LineProps | TextProps;
 
-// type CreateElementProps<T extends ElementType> = Omit<Element<T>, "element">;
-
 function generateRectangle({
   x1,
   x2,
   y1,
   y2,
+  options,
 }: Omit<RectangleProps, "id" | "type">) {
-  return generator.rectangle(x1, y1, x2 - x1, y2 - y1);
+  return generator.rectangle(x1, y1, x2 - x1, y2 - y1, options);
 }
 
 function generateLine({ x1, x2, y1, y2 }: Omit<LineProps, "id" | "type">) {
@@ -52,8 +50,8 @@ function generateLine({ x1, x2, y1, y2 }: Omit<LineProps, "id" | "type">) {
 
 export function createElement(props: CreateElementProps): Element {
   if (props.type === toolTypes.RECTANGLE) {
-    const { x1, x2, y1, y2, type, id } = props;
-    const element = generateRectangle({ x1, x2, y1, y2 });
+    const { x1, x2, y1, y2, type, id, options } = props;
+    const element = generateRectangle({ x1, x2, y1, y2, options });
     return {
       id,
       element,

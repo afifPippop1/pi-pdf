@@ -8,25 +8,25 @@ import {
 } from "react";
 import { PopoverArrow } from "~/components/atoms/PopoverArrow";
 
-interface NavbarMenuProps {
+interface PopoverProps {
   children: ReactNode;
 }
 
-interface INavbarMenuContext {
+interface IPopoverContext {
   show: boolean;
   setShow: (show: boolean) => void;
 }
 
-const NavbarMenuContext = createContext<INavbarMenuContext>({
+const PopoverContext = createContext<IPopoverContext>({
   show: false,
   setShow() {},
 });
 
-function useNavbarMenu() {
-  return useContext(NavbarMenuContext);
+function usePopover() {
+  return useContext(PopoverContext);
 }
 
-export default function NavbarMenu(props: NavbarMenuProps) {
+export default function Popover(props: PopoverProps) {
   const contextRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
 
@@ -47,16 +47,16 @@ export default function NavbarMenu(props: NavbarMenuProps) {
   }, []);
 
   return (
-    <NavbarMenuContext.Provider value={{ show, setShow }}>
+    <PopoverContext.Provider value={{ show, setShow }}>
       <div className="relative inline-block" ref={contextRef}>
         {props.children}
       </div>
-    </NavbarMenuContext.Provider>
+    </PopoverContext.Provider>
   );
 }
 
-export function NavbarMenuTrigger({ children }: { children: ReactNode }) {
-  const { setShow } = useNavbarMenu();
+export function PopoverTrigger({ children }: { children: ReactNode }) {
+  const { setShow } = usePopover();
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setShow(true);
@@ -71,8 +71,8 @@ export function NavbarMenuTrigger({ children }: { children: ReactNode }) {
   );
 }
 
-export function NavbarMenuContent({ children }: { children: ReactNode }) {
-  const { show } = useNavbarMenu();
+export function PopoverContent({ children }: { children: ReactNode }) {
+  const { show } = usePopover();
   return (
     <div
       id="popoverPanel"
@@ -88,14 +88,14 @@ export function NavbarMenuContent({ children }: { children: ReactNode }) {
   );
 }
 
-export function NavbarMenuItem({
+export function PopoverItem({
   children,
   onClick,
 }: {
   children: ReactNode;
   onClick?: () => void;
 }) {
-  const { setShow } = useNavbarMenu();
+  const { setShow } = usePopover();
   function handleClick() {
     setShow(false);
     onClick?.();

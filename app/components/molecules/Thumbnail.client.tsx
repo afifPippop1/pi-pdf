@@ -13,10 +13,12 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import * as pdfjsLib from "pdfjs-dist";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { reorderPage, setActivePageIndex } from "~/store/slices/editorSlice";
 import { ThumbnailItem } from "./ThumbnailItem.client";
+import { PDFDocument } from "pdf-lib";
+import { getPdfPageThumbnail } from "~/utils/getPdfThumbnail.client";
 
 interface ThumbnailProps {
   buffer: Uint8Array;
@@ -25,9 +27,7 @@ interface ThumbnailProps {
 
 export function Thumbnail(props: ThumbnailProps) {
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
-  const loadingTask = useMemo(() => {
-    return pdfjsLib.getDocument({ data: new Uint8Array(props.buffer) });
-  }, [props.buffer]);
+  const loadingTask = useAppSelector((s) => s.editor.loadingTask);
   const items = pdfDoc?.getPageIndices() || [];
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -36,6 +36,22 @@ export function Thumbnail(props: ThumbnailProps) {
     })
   );
   const dispatch = useAppDispatch();
+  const pdfDocRef = useRef<PDFDocument | null>(null);
+  const [thumbnails, setThumbnails] = useState<string[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      if (!loadingTask) return;
+      const pdfDoc = await PDFDocument.load(props.buffer);
+      pdfDocRef.current = pdfDoc;
+
+      const thumbs: string[] = [];
+      for (let i = 1; i <= pdfDoc.getPageCount(); i++) {
+        thumbs.push(await getPdfPageThumbnail(loadingTask, i, 0.2));
+      }
+      setThumbnails(thumbs);
+    })();
+  }, [props.buffer]);
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -47,6 +63,8 @@ export function Thumbnail(props: ThumbnailProps) {
       reorderPage({ active: active.id as number, over: over?.id as number })
     );
   }
+
+  if (!loadingTask) return null;
 
   return (
     <DndContext
@@ -60,7 +78,7 @@ export function Thumbnail(props: ThumbnailProps) {
             <ThumbnailItem
               key={index}
               pageIndex={index}
-              loadingTask={loadingTask}
+              thumbnail={thumbnails[index]}
               onRemove={props.onRemove}
             />
           ))}
