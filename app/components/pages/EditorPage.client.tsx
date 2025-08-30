@@ -57,14 +57,14 @@ export function EditorPage() {
             <hr />
             <PropertiesPanel />
           </div>
-          <div className="flex-1 flex min-h-0">
+          <div className="flex-1 flex gap-2 md:gap-0 flex-col-reverse md:flex-row min-h-0">
             {/* Left panel */}
-            <div className="overflow-auto max-w-64 min-h-0">
+            <div className="overflow-auto w-full md:max-w-64 min-h-0">
               <Thumbnail onRemove={handleRemove} buffer={blob} />
             </div>
 
             {/* Right panel */}
-            <div className="overflow-auto flex-1 min-h-0">
+            <div className="overflow-auto flex-1 min-w-0 md:min-h-0">
               <div className="p-8 flex justify-center">
                 <Suspense>
                   <EditorCanvas buffer={blob} />
