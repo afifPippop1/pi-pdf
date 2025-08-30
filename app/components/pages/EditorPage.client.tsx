@@ -65,10 +65,12 @@ export function EditorPage() {
 
             {/* Right panel */}
             <div className="overflow-auto flex-1 min-w-0 md:min-h-0">
-              <div className="p-8 flex justify-center">
-                <Suspense>
-                  <EditorCanvas buffer={blob} />
-                </Suspense>
+              <div className="flex md:justify-center">
+                <div className="p-8">
+                  <Suspense>
+                    <EditorCanvas buffer={blob} />
+                  </Suspense>
+                </div>
               </div>
             </div>
           </div>
