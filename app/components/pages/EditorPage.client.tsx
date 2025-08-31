@@ -14,6 +14,8 @@ import { Navbar } from "../molecules/Navbar";
 import { Thumbnail } from "../molecules/Thumbnail.client";
 import { ToolPicker } from "../molecules/ToolPicker";
 import { PropertiesPanel } from "../molecules/PropertiesPanel";
+import { ZoomTool } from "../molecules/ZoomTool";
+import { ZoomProvider } from "~/context/ZoomContext";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -46,27 +48,33 @@ export function EditorPage() {
   }
 
   return (
-    <div className="h-screen w-screen bg-[#EDEDED] flex flex-col">
+    <div className="h-screen w-screen flex flex-col">
       <Navbar />
       {!blob ? (
         <EmptyFile />
       ) : (
-        <div className="flex-1 flex flex-col min-h-0">
-          <div className="bg-white flex items-center justify-start shrink-0">
-            <ToolPicker />
-            <hr />
-            <PropertiesPanel />
-          </div>
-          <div className="flex-1 flex gap-2 md:gap-0 flex-col-reverse md:flex-row min-h-0">
-            {/* Left panel */}
-            <div className="overflow-auto w-full md:max-w-64 min-h-0">
-              <Thumbnail onRemove={handleRemove} buffer={blob} />
+        <ZoomProvider>
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="bg-white flex items-center shrink-0">
+              <ToolPicker />
+              <div className="flex-1 flex justify-center items-center">
+                <ZoomTool />
+              </div>
+              <div className="w-64 h-full">
+                <PropertiesPanel />
+              </div>
             </div>
+            <div className="flex-1 flex gap-2 md:gap-4 flex-col-reverse md:flex-row min-h-0 p-2">
+              {/* Left panel */}
+              <div className="md:h-full bg-white">
+                <div className="overflow-auto w-full md:w-max h-full outline rounded-lg outline-blue-500">
+                  <Thumbnail onRemove={handleRemove} buffer={blob} />
+                </div>
+              </div>
 
-            {/* Right panel */}
-            <div className="overflow-auto flex-1 min-w-0 md:min-h-0">
-              <div className="flex md:justify-center">
-                <div className="p-8">
+              {/* Right panel */}
+              <div className="overflow-auto flex-1 min-w-0 md:min-h-0 rounded-lg bg-gray-300">
+                <div className="p-4 w-max mx-auto">
                   <Suspense>
                     <EditorCanvas buffer={blob} />
                   </Suspense>
@@ -74,7 +82,7 @@ export function EditorPage() {
               </div>
             </div>
           </div>
-        </div>
+        </ZoomProvider>
       )}
     </div>
   );

@@ -33,10 +33,9 @@ import {
 
 export interface WhiteboardProps {
   scale: number;
-  readyToRender?: boolean;
 }
 
-export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
+export function Whiteboard({ scale }: WhiteboardProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const ref = useRef<HTMLCanvasElement>(null);
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
@@ -59,7 +58,6 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
   const dispatch = useAppDispatch();
 
   useLayoutEffect(() => {
-    if (!readyToRender) return;
     const c = ref.current;
     const cvs = canvas(c);
 
@@ -83,7 +81,7 @@ export function Whiteboard({ scale, readyToRender = true }: WhiteboardProps) {
       });
       ctx?.restore();
     }
-  }, [elements, selectedElement, action, scale, readyToRender]);
+  }, [elements, selectedElement, action, scale]);
 
   useEffect(() => {
     if (action === actions.WRITING) {

@@ -7,14 +7,12 @@ interface PdfViewerProps {
   pdfData: Uint8Array;
   pageIndex?: number;
   scale?: number;
-  onPdfRendered: () => void;
 }
 
 export function PdfViewer({
   pdfData,
   pageIndex = 0,
   scale = 1,
-  onPdfRendered,
 }: PdfViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
@@ -44,7 +42,6 @@ export function PdfViewer({
         renderTaskRef.current = renderTask;
 
         renderTask.promise
-          .then(() => onPdfRendered())
           .catch((err) => {
             if (err?.name !== "RenderingCancelledException") {
               console.error("Render error:", err);
