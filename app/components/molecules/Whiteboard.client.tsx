@@ -91,7 +91,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
   }, [action]);
 
-  function handleMouseDown(event: React.MouseEvent<HTMLCanvasElement>) {
+  function handleMouseDown(event: {
+    clientX: number;
+    clientY: number;
+    currentTarget: HTMLCanvasElement;
+  }) {
     if (toolType && action === actions.WRITING) return;
 
     const { clientX, clientY } = event;
@@ -147,7 +151,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
   }
 
-  function handleMouseUp(event: React.MouseEvent<HTMLCanvasElement>) {
+  function handleMouseUp() {
     const selectedElementIndex = elements.findIndex(
       (el) => el.id === selectedElement?.id
     );
@@ -181,7 +185,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
   }
 
-  function handleMouseMove(event: React.MouseEvent<HTMLCanvasElement>) {
+  function handleMouseMove(event: {
+    clientX: number;
+    clientY: number;
+    currentTarget: HTMLCanvasElement;
+  }) {
     const { clientX, clientY } = event;
     const canvas = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
@@ -259,7 +267,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
   }
 
-  function handleClick(event: React.MouseEvent<HTMLCanvasElement>) {
+  function handleClick(event: {
+    clientX: number;
+    clientY: number;
+    currentTarget: HTMLCanvasElement;
+  }) {
     if (!action) {
       const { clientX, clientY } = event;
       const canvas = event.currentTarget;
@@ -343,6 +355,9 @@ export function Whiteboard({ scale }: WhiteboardProps) {
       <canvas
         ref={ref}
         className="absolute top-0 left-0 right-0 focus:outline-0"
+        style={{
+          touchAction: toolType || selectedElement ? "none" : "auto",
+        }}
         width={docSize.width}
         height={docSize.height}
         onMouseDown={handleMouseDown}
@@ -350,7 +365,26 @@ export function Whiteboard({ scale }: WhiteboardProps) {
         onMouseMove={handleMouseMove}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          handleMouseDown({
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            currentTarget: e.currentTarget,
+          });
+        }}
         tabIndex={0}
+        onTouchMove={(e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          handleMouseMove({
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            currentTarget: e.currentTarget,
+          });
+        }}
+        onTouchEnd={handleMouseUp}
       />
     </>
   );

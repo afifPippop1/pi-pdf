@@ -17,6 +17,8 @@ export function PdfViewer({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
   const loadingTask = useAppSelector((s) => s.editor.loadingTask);
+  const toolType = useAppSelector((s) => s.editor.toolType);
+  const selectedElement = useAppSelector((s) => s.editor.selectedElement);
 
   useEffect(() => {
     if (!loadingTask) return;
@@ -41,12 +43,11 @@ export function PdfViewer({
 
         renderTaskRef.current = renderTask;
 
-        renderTask.promise
-          .catch((err) => {
-            if (err?.name !== "RenderingCancelledException") {
-              console.error("Render error:", err);
-            }
-          });
+        renderTask.promise.catch((err) => {
+          if (err?.name !== "RenderingCancelledException") {
+            console.error("Render error:", err);
+          }
+        });
       });
     });
 
@@ -56,5 +57,12 @@ export function PdfViewer({
     };
   }, [pdfData, pageIndex, scale, loadingTask]);
 
-  return <canvas ref={canvasRef} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        touchAction: toolType || selectedElement ? "none" : "auto",
+      }}
+    />
+  );
 }
