@@ -1,4 +1,4 @@
-import React, {
+import {
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -6,6 +6,7 @@ import React, {
   useState,
   type FocusEvent,
   type KeyboardEvent,
+  type TouchEvent,
 } from "react";
 import { v4 as uuid } from "uuid";
 import { actions, toolTypes } from "~/constants";
@@ -331,6 +332,23 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     reset();
   }
 
+  function handleTouchEvent(
+    fn: (prop: {
+      clientX: number;
+      clientY: number;
+      currentTarget: HTMLCanvasElement;
+    }) => void
+  ) {
+    return function (event: TouchEvent<HTMLCanvasElement>) {
+      const touch = event.touches[0];
+      fn({
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        currentTarget: event.currentTarget,
+      });
+    };
+  }
+
   return (
     <>
       {action === actions.WRITING && (
@@ -365,25 +383,9 @@ export function Whiteboard({ scale }: WhiteboardProps) {
         onMouseMove={handleMouseMove}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
-        onTouchStart={(e) => {
-          e.preventDefault();
-          const touch = e.touches[0];
-          handleMouseDown({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            currentTarget: e.currentTarget,
-          });
-        }}
+        onTouchStart={handleTouchEvent(handleMouseDown)}
         tabIndex={0}
-        onTouchMove={(e) => {
-          e.preventDefault();
-          const touch = e.touches[0];
-          handleMouseMove({
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            currentTarget: e.currentTarget,
-          });
-        }}
+        onTouchMove={handleTouchEvent(handleMouseMove)}
         onTouchEnd={handleMouseUp}
       />
     </>

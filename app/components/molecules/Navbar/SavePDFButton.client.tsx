@@ -27,7 +27,7 @@ export function SavePDFButton() {
   if (!pdfDoc) return null;
 
   return (
-    <Button className="bg-grey-400 text-white rounded-lg" onClick={handleSave}>
+    <Button className="text-white rounded-lg" onClick={handleSave}>
       Save
     </Button>
   );
