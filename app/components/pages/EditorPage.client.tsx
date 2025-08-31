@@ -16,6 +16,7 @@ import { ToolPicker } from "../molecules/ToolPicker";
 import { PropertiesPanel } from "../molecules/PropertiesPanel";
 import { ZoomTool } from "../molecules/ZoomTool";
 import { ZoomProvider } from "~/context/ZoomContext";
+import { AddFloatingButton } from "../molecules/AddFloatingButton";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -84,6 +85,7 @@ export function EditorPage() {
           </div>
         </ZoomProvider>
       )}
+      <AddFloatingButton />
     </div>
   );
 }
