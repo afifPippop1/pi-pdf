@@ -9,8 +9,7 @@ interface EditorCanvasProps {
 }
 
 export function EditorCanvas(props: EditorCanvasProps) {
-  const [pdfReady, setPdfReady] = useState(false);
-  const { zoom } = useZoom({ onChange: () => setPdfReady(false) });
+  const { zoom } = useZoom();
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   return (
     <div className="relative">
@@ -18,9 +17,8 @@ export function EditorCanvas(props: EditorCanvasProps) {
         pdfData={props.buffer}
         pageIndex={activePageIndex}
         scale={zoom}
-        onPdfRendered={() => setPdfReady(true)}
       />
-      <Whiteboard scale={zoom} readyToRender={pdfReady} />
+      <Whiteboard scale={zoom} />
     </div>
   );
 }

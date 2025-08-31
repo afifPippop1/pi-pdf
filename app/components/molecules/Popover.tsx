@@ -103,7 +103,7 @@ export function PopoverItem({
   return (
     <div
       onClick={handleClick}
-      className="select-none cursor-pointer flex items-center gap-2"
+      className="select-none cursor-pointer flex items-center gap-2 text-sm lg:text-base"
     >
       {children}
     </div>
