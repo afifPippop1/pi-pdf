@@ -49,7 +49,7 @@ export function EditorPage() {
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col">
+    <div className="h-dvh w-dvw flex flex-col">
       <Navbar />
       {!blob ? (
         <EmptyFile />

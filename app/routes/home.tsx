@@ -7,7 +7,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   return (
-    <div className="h-screen w-screen p-16 flex justify-center">
+    <div className="h-dvh w-dvw p-16 flex justify-center">
       <HomePage />
     </div>
   );
