@@ -16,3 +16,4 @@ export * from "./getPdfCoordinate";
 export * from "./isShapeElement";
 export * from "./swapArrayValue";
 export * from "./rgbToString";
+export * from "./toolType";

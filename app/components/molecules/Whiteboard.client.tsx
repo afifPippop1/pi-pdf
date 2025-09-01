@@ -301,8 +301,10 @@ export function Whiteboard({ scale }: WhiteboardProps) {
           elements.filter((element) => element.id !== selectedElement.id)
         )
       );
+      reset();
     }
   }
+
   function reset() {
     setAction(null);
     dispatch(setSelectedElement(null));
