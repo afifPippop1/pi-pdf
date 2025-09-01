@@ -47,6 +47,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
   const [action, setAction] = useState<Action | null>(null);
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
+  const toolState = useAppSelector((s) => s.editor.toolState);
   const elements = useMemo(
     () => el[activePageIndex] || [],
     [el, activePageIndex]
@@ -110,6 +111,19 @@ export function Whiteboard({ scale }: WhiteboardProps) {
 
       switch (toolType) {
         case toolTypes.RECTANGLE:
+          setAction(actions.DRAWING);
+          const element = createElement({
+            x1: x,
+            y1: y,
+            x2: x,
+            y2: y,
+            type: toolType,
+            id: uuid(),
+            options: toolState.RECTANGLE,
+          });
+          dispatch(setSelectedElement(element));
+          dispatch(updateElementStore(element));
+          break;
         case toolTypes.LINE: {
           setAction(actions.DRAWING);
           const element = createElement({

@@ -1,7 +1,7 @@
 import { toolTypes } from "~/constants";
 import { store } from "~/store/store";
 
-export function isRectangleTool(toolType?: string) {
+export function isRectangleTool(toolType?: string | null) {
   if (toolType) {
     return toolType === toolTypes.RECTANGLE;
   }

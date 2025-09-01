@@ -18,15 +18,17 @@ export function BackgroundPickerTool() {
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const els = useAppSelector((s) => s.editor.elements);
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
+  const toolState = useAppSelector((s) => s.editor.toolState);
+  const dispatch = useAppDispatch();
+
   const elements = useMemo(() => els[activePageIndex], [els, activePageIndex]);
   const selectedElementIndex = useMemo(
     () => elements.findIndex((el) => el.id === selectedElement?.id),
     [elements, selectedElement]
   );
-  const dispatch = useAppDispatch();
 
   function handleChange(color: RgbColor) {
-    if (isRectangleTool()) {
+    if (isRectangleTool(toolType)) {
       dispatch(setToolState({ type: toolTypes.RECTANGLE, value: { color } }));
     }
 
@@ -55,14 +57,17 @@ export function BackgroundPickerTool() {
     return selectedElement.element.color;
   }, [selectedElement]);
 
-  if (!isRectangleTool() && !isRectangleTool(selectedElement?.type)) {
+  if (!isRectangleTool(toolType) && !isRectangleTool(selectedElement?.type)) {
     return null;
   }
 
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm">Background color</p>
-      <RgbaColorPicker color={color || defaultColor} onChange={handleChange} />
+      <RgbaColorPicker
+        color={color || toolState.RECTANGLE.color || defaultColor}
+        onChange={handleChange}
+      />
     </div>
   );
 }
