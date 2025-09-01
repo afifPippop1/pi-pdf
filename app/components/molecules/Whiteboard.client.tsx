@@ -372,7 +372,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
           className="absolute z-50"
           ref={textareaRef}
           style={{
-            top: selectedElement?.y1,
+            top: (selectedElement?.y1 || 0) - 18,
             left: selectedElement?.x1,
             margin: 0,
             padding: 0,
