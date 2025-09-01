@@ -1,4 +1,4 @@
-import React, {
+import {
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -6,6 +6,7 @@ import React, {
   useState,
   type FocusEvent,
   type KeyboardEvent,
+  type TouchEvent,
 } from "react";
 import { v4 as uuid } from "uuid";
 import { actions, toolTypes } from "~/constants";
@@ -46,6 +47,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
   const [action, setAction] = useState<Action | null>(null);
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
+  const toolState = useAppSelector((s) => s.editor.toolState);
   const elements = useMemo(
     () => el[activePageIndex] || [],
     [el, activePageIndex]
@@ -91,7 +93,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
   }, [action]);
 
-  function handleMouseDown(event: React.MouseEvent<HTMLCanvasElement>) {
+  function handleMouseDown(event: {
+    clientX: number;
+    clientY: number;
+    currentTarget: HTMLCanvasElement;
+  }) {
     if (toolType && action === actions.WRITING) return;
 
     const { clientX, clientY } = event;
@@ -105,6 +111,19 @@ export function Whiteboard({ scale }: WhiteboardProps) {
 
       switch (toolType) {
         case toolTypes.RECTANGLE:
+          setAction(actions.DRAWING);
+          const element = createElement({
+            x1: x,
+            y1: y,
+            x2: x,
+            y2: y,
+            type: toolType,
+            id: uuid(),
+            options: toolState.RECTANGLE,
+          });
+          dispatch(setSelectedElement(element));
+          dispatch(updateElementStore(element));
+          break;
         case toolTypes.LINE: {
           setAction(actions.DRAWING);
           const element = createElement({
@@ -147,7 +166,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
   }
 
-  function handleMouseUp(event: React.MouseEvent<HTMLCanvasElement>) {
+  function handleMouseUp() {
     const selectedElementIndex = elements.findIndex(
       (el) => el.id === selectedElement?.id
     );
@@ -181,7 +200,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
   }
 
-  function handleMouseMove(event: React.MouseEvent<HTMLCanvasElement>) {
+  function handleMouseMove(event: {
+    clientX: number;
+    clientY: number;
+    currentTarget: HTMLCanvasElement;
+  }) {
     const { clientX, clientY } = event;
     const canvas = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
@@ -259,7 +282,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
   }
 
-  function handleClick(event: React.MouseEvent<HTMLCanvasElement>) {
+  function handleClick(event: {
+    clientX: number;
+    clientY: number;
+    currentTarget: HTMLCanvasElement;
+  }) {
     if (!action) {
       const { clientX, clientY } = event;
       const canvas = event.currentTarget;
@@ -288,8 +315,10 @@ export function Whiteboard({ scale }: WhiteboardProps) {
           elements.filter((element) => element.id !== selectedElement.id)
         )
       );
+      reset();
     }
   }
+
   function reset() {
     setAction(null);
     dispatch(setSelectedElement(null));
@@ -319,6 +348,23 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     reset();
   }
 
+  function handleTouchEvent(
+    fn: (prop: {
+      clientX: number;
+      clientY: number;
+      currentTarget: HTMLCanvasElement;
+    }) => void
+  ) {
+    return function (event: TouchEvent<HTMLCanvasElement>) {
+      const touch = event.touches[0];
+      fn({
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        currentTarget: event.currentTarget,
+      });
+    };
+  }
+
   return (
     <>
       {action === actions.WRITING && (
@@ -343,6 +389,9 @@ export function Whiteboard({ scale }: WhiteboardProps) {
       <canvas
         ref={ref}
         className="absolute top-0 left-0 right-0 focus:outline-0"
+        style={{
+          touchAction: toolType || selectedElement ? "none" : "auto",
+        }}
         width={docSize.width}
         height={docSize.height}
         onMouseDown={handleMouseDown}
@@ -350,7 +399,10 @@ export function Whiteboard({ scale }: WhiteboardProps) {
         onMouseMove={handleMouseMove}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
+        onTouchStart={handleTouchEvent(handleMouseDown)}
         tabIndex={0}
+        onTouchMove={handleTouchEvent(handleMouseMove)}
+        onTouchEnd={handleMouseUp}
       />
     </>
   );

@@ -28,12 +28,14 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
             "editor/reorderPage/fulfilled",
             "editor/setLoadingTask",
             "editor/setSelectedElement",
+            "editor/setToolState",
           ],
           ignoredPaths: [
             "editor.pdfDoc",
             "editor.elements",
             "editor.loadingTask",
             "editor.selectedElement",
+            "editor.toolState",
           ],
         },
       });

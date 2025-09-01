@@ -1,15 +1,26 @@
 import { useMemo } from "react";
-import { RgbaColorPicker, RgbColorPicker, type RgbColor } from "react-colorful";
-import { IoColorFill } from "react-icons/io5";
+import { RgbaColorPicker, type RgbColor } from "react-colorful";
 import { toolTypes } from "~/constants";
-import { useAppSelector } from "~/store/hooks";
-import { updateElement } from "~/utils";
-import Popover, { PopoverContent, PopoverTrigger } from "../Popover";
+import type { Color } from "~/lib/shape/rectangle";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { setToolState } from "~/store/slices/editorSlice";
+import { isRectangleTool, updateElement } from "~/utils";
+
+const defaultColor = {
+  a: 1,
+  r: 255,
+  g: 255,
+  b: 255,
+} as Color;
 
 export function BackgroundPickerTool() {
+  const toolType = useAppSelector((s) => s.editor.toolType);
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const els = useAppSelector((s) => s.editor.elements);
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
+  const toolState = useAppSelector((s) => s.editor.toolState);
+  const dispatch = useAppDispatch();
+
   const elements = useMemo(() => els[activePageIndex], [els, activePageIndex]);
   const selectedElementIndex = useMemo(
     () => elements.findIndex((el) => el.id === selectedElement?.id),
@@ -17,6 +28,10 @@ export function BackgroundPickerTool() {
   );
 
   function handleChange(color: RgbColor) {
+    if (isRectangleTool(toolType)) {
+      dispatch(setToolState({ type: toolTypes.RECTANGLE, value: { color } }));
+    }
+
     if (
       !selectedElement ||
       selectedElement?.type !== toolTypes.RECTANGLE ||
@@ -24,6 +39,7 @@ export function BackgroundPickerTool() {
     ) {
       return;
     }
+
     updateElement(
       {
         ...selectedElement,
@@ -41,20 +57,17 @@ export function BackgroundPickerTool() {
     return selectedElement.element.color;
   }, [selectedElement]);
 
-  if (!selectedElement || selectedElement.type !== toolTypes.RECTANGLE)
+  if (!isRectangleTool(toolType) && !isRectangleTool(selectedElement?.type)) {
     return null;
+  }
 
   return (
-    <Popover>
-      <PopoverTrigger>
-        <button className="flex flex-col gap-0.5">
-          <IoColorFill />
-          <div className="w-full h-1 bg-black" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <RgbaColorPicker color={color} onChange={handleChange} />
-      </PopoverContent>
-    </Popover>
+    <div className="flex flex-col gap-2">
+      <p className="text-sm">Background color</p>
+      <RgbaColorPicker
+        color={color || toolState.RECTANGLE.color || defaultColor}
+        onChange={handleChange}
+      />
+    </div>
   );
 }

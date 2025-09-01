@@ -16,6 +16,7 @@ interface EditorState {
   thumbnails: string[];
   loadingTask: PDFDocumentLoadingTask | null;
   selectedElement: Element | null;
+  toolState: Record<ToolType, Record<string, any>>;
 }
 
 const initialState: EditorState = {
@@ -26,6 +27,11 @@ const initialState: EditorState = {
   thumbnails: [],
   loadingTask: null,
   selectedElement: null,
+  toolState: {
+    LINE: {},
+    RECTANGLE: {},
+    TEXT: {},
+  },
 };
 
 export const reorderPage = createAsyncThunk<
@@ -107,6 +113,13 @@ const editorSlice = createSlice({
     setSelectedElement(state, action: PayloadAction<Element | null>) {
       state.selectedElement = action.payload;
     },
+    setToolState(state, action: PayloadAction<{ type: ToolType; value: any }>) {
+      const { type, value } = action.payload;
+      state.toolState[type] = {
+        ...state.toolState[type],
+        ...value,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(reorderPage.fulfilled, (state, action) => {
@@ -125,5 +138,6 @@ export const {
   setActivePageElements,
   setLoadingTask,
   setSelectedElement,
+  setToolState,
 } = editorSlice.actions;
 export default editorSlice;

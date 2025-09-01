@@ -61,9 +61,6 @@ export function EditorPage() {
               <div className="flex-1 flex justify-center items-center">
                 <ZoomTool />
               </div>
-              <div className="w-64 h-full">
-                <PropertiesPanel />
-              </div>
             </div>
             <div className="flex-1 flex gap-2 md:gap-4 flex-col-reverse md:flex-row min-h-0 p-2">
               {/* Left panel */}
@@ -73,12 +70,19 @@ export function EditorPage() {
                 </div>
               </div>
 
-              {/* Right panel */}
+              {/* Center panel */}
               <div className="overflow-auto flex-1 min-w-0 md:min-h-0 rounded-lg bg-gray-300">
                 <div className="p-4 w-max mx-auto">
                   <Suspense>
                     <EditorCanvas buffer={blob} />
                   </Suspense>
+                </div>
+              </div>
+
+              {/* Right panel */}
+              <div className="md:h-full md:w-56 bg-white">
+                <div className="overflow-auto h-full rounded-lg">
+                  <PropertiesPanel />
                 </div>
               </div>
             </div>
