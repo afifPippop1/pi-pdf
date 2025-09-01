@@ -382,6 +382,8 @@ export function Whiteboard({ scale }: WhiteboardProps) {
             whiteSpace: "pre",
             background: "transparent",
             resize: "none",
+            fontSize: 24,
+            fontFamily: "Ubuntu, sans-serif",
           }}
           onBlur={handleTextareaBlur}
         />

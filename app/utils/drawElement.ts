@@ -13,7 +13,7 @@ function drawText(
   element: Element<TextElement>
 ) {
   ctx.textBaseline = "top";
-  ctx.font = "24px sans-serif";
+  ctx.font = "24px Ubuntu";
   ctx.fillStyle = "black";
   ctx.fillText(element.text, element.x1, element.y1);
 }

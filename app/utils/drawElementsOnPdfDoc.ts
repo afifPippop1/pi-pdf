@@ -1,10 +1,11 @@
-import { ColorTypes, degrees, PDFDocument, rgb } from "pdf-lib";
+import { ColorTypes, degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import { PDFViewer, toolTypes } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
 import type { Element } from "~/types";
 import { getPdfCoordinate } from "./getPdfCoordinate";
 import { isShapeElement } from "./isShapeElement";
+import fontkit from "@pdf-lib/fontkit";
 
 export async function drawElementsOnPdfDoc(
   loadingTask: PDFDocumentLoadingTask,
@@ -13,6 +14,8 @@ export async function drawElementsOnPdfDoc(
 ): Promise<PDFDocument> {
   const buffer = await doc.save();
   const pdfDoc = await PDFDocument.load(buffer);
+  pdfDoc.registerFontkit(fontkit);
+  console.log(StandardFonts.Helvetica);
   for (const index of pdfDoc.getPageIndices()) {
     for (const element of elements[index]) {
       const pdfCoordinate = await getPdfCoordinate(
@@ -65,11 +68,15 @@ export async function drawElementsOnPdfDoc(
           angle === 90 || angle === 270
             ? pdfCoordinate.y1
             : pdfCoordinate.y1 - 18;
+        const url = "https://pdf-lib.js.org/assets/ubuntu/Ubuntu-R.ttf";
+        const ubuntuBytes = await fetch(url).then((res) => res.arrayBuffer());
+
         page.drawText(element.text, {
           x,
           y,
           size: 24,
           rotate,
+          font: await pdfDoc.embedFont(ubuntuBytes),
         });
       }
     }
