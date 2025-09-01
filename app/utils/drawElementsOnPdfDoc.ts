@@ -1,11 +1,11 @@
-import { ColorTypes, degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
+import { ColorTypes, degrees, PDFDocument, rgb } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import { PDFViewer, toolTypes } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
 import type { Element } from "~/types";
 import { getPdfCoordinate } from "./getPdfCoordinate";
 import { isShapeElement } from "./isShapeElement";
-import fontkit from "@pdf-lib/fontkit";
 
 export async function drawElementsOnPdfDoc(
   loadingTask: PDFDocumentLoadingTask,
@@ -15,7 +15,6 @@ export async function drawElementsOnPdfDoc(
   const buffer = await doc.save();
   const pdfDoc = await PDFDocument.load(buffer);
   pdfDoc.registerFontkit(fontkit);
-  console.log(StandardFonts.Helvetica);
   for (const index of pdfDoc.getPageIndices()) {
     for (const element of elements[index]) {
       const pdfCoordinate = await getPdfCoordinate(

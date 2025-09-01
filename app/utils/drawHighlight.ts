@@ -1,3 +1,4 @@
+import { DEFAULT_FONT_SIZE, toolTypes } from "~/constants";
 import type { Element } from "~/types";
 import { isShapeElement } from "./isShapeElement";
 
@@ -11,18 +12,31 @@ export function drawHighlight(ctx: CanvasRenderingContext2D, element: Element) {
 }
 
 function drawHighlightOutline(ctx: CanvasRenderingContext2D, element: Element) {
+  ctx.save();
+  ctx.strokeStyle = "#007bff";
+  ctx.lineWidth = 2;
   if (isShapeElement(element)) {
-    ctx.save();
-    ctx.strokeStyle = "#007bff";
-    ctx.lineWidth = 2;
     ctx.strokeRect(
       Math.min(element.x1, element.x2),
       Math.min(element.y1, element.y2),
       Math.abs(element.x2 - element.x1),
       Math.abs(element.y2 - element.y1)
     );
-    ctx.restore();
+  } else if (element.type === toolTypes.TEXT && element.text.length) {
+    const width = ctx.measureText(element.text).width;
+    // const height = element.fontSize; // rough estimate
+    const height = DEFAULT_FONT_SIZE; // rough estimate
+    const x2 = element.x1 + width;
+    const y2 = element.y1 + height;
+
+    ctx.strokeRect(
+      Math.min(element.x1, x2),
+      Math.min(element.y1, y2),
+      Math.abs(x2 - element.x1),
+      Math.abs(y2 - element.y1)
+    );
   }
+  ctx.restore();
 }
 
 function getHandlePoints(el: Element) {

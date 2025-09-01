@@ -28,6 +28,7 @@ import {
   drawHighlight,
   getDocumentSize,
   isPointInElement,
+  isPointInText,
   isShapeElement,
   updateElement,
 } from "~/utils";
@@ -65,25 +66,32 @@ export function Whiteboard({ scale }: WhiteboardProps) {
 
     if (c) {
       const ctx = c.getContext("2d", { willReadFrequently: true });
-      ctx?.clearRect(0, 0, c.width, c.height);
+      if (!ctx) return;
 
-      ctx?.save();
-      ctx?.scale(scale, scale);
+      const dpr = window.devicePixelRatio || 1;
+
+      // Scale up backing store
+      c.width = docSize.width * dpr;
+      c.height = docSize.height * dpr;
+      c.style.width = `${docSize.width}px`;
+      c.style.height = `${docSize.height}px`;
+
+      ctx.clearRect(0, 0, c.width, c.height);
+
+      ctx.save();
+      ctx.scale(dpr * scale, dpr * scale);
 
       elements.forEach((element) => {
         drawElement({ canvas: cvs, context: ctx, element });
 
-        if (
-          element.id === selectedElement?.id &&
-          !!ctx &&
-          action !== actions.DRAWING
-        ) {
+        if (element.id === selectedElement?.id && action !== actions.DRAWING) {
           drawHighlight(ctx, element);
         }
       });
-      ctx?.restore();
+
+      ctx.restore();
     }
-  }, [elements, selectedElement, action, scale]);
+  }, [elements, selectedElement, action, scale, docSize]);
 
   useEffect(() => {
     if (action === actions.WRITING) {
@@ -295,9 +303,12 @@ export function Whiteboard({ scale }: WhiteboardProps) {
       const x = clientX - rect.left;
       const y = clientY - rect.top;
 
-      const coveringElements = elements.filter((el) =>
-        isPointInElement(x, y, el, scale)
-      );
+      const coveringElements = elements.filter((el) => {
+        if (el.type === toolTypes.TEXT) {
+          return isPointInText(el, x, y, canvas.getContext("2d")!);
+        }
+        return isPointInElement(x, y, el, scale);
+      });
       if (coveringElements.length) {
         const lastElement = coveringElements[coveringElements.length - 1];
         dispatch(setSelectedElement(lastElement));

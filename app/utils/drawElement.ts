@@ -13,9 +13,9 @@ function drawText(
   element: Element<TextElement>
 ) {
   ctx.textBaseline = "top";
-  ctx.font = "24px Ubuntu";
+  ctx.font = "24px Ubuntu, sans-serif";
   ctx.fillStyle = "black";
-  ctx.fillText(element.text, element.x1, element.y1);
+  ctx.fillText(element.text, Math.round(element.x1), Math.round(element.y1));
 }
 
 export function drawElement({ element, canvas }: DrawElementProps) {
