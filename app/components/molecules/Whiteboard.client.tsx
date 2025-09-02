@@ -6,12 +6,13 @@ import {
   useState,
   type FocusEvent,
   type KeyboardEvent,
+  type MouseEvent,
   type TouchEvent,
 } from "react";
 import { v4 as uuid } from "uuid";
 import { actions, toolTypes } from "~/constants";
 import { useDrag } from "~/hooks/useDrag";
-import { canvas } from "~/lib/canvas";
+import { createCanvas } from "~/lib/canvas";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   setActivePageElements,
@@ -25,6 +26,7 @@ import {
   adjustmentRequired,
   createElement,
   drawElement,
+  drawElementOnCanvas,
   drawHighlight,
   getDocumentSize,
   isPointInElement,
@@ -61,37 +63,13 @@ export function Whiteboard({ scale }: WhiteboardProps) {
   const dispatch = useAppDispatch();
 
   useLayoutEffect(() => {
-    const c = ref.current;
-    const cvs = canvas(c);
+    const canvasElement = ref.current;
+    const canvas = createCanvas(canvasElement);
 
-    if (c) {
-      const ctx = c.getContext("2d", { willReadFrequently: true });
-      if (!ctx) return;
-
-      const dpr = window.devicePixelRatio || 1;
-
-      // Scale up backing store
-      c.width = docSize.width * dpr;
-      c.height = docSize.height * dpr;
-      c.style.width = `${docSize.width}px`;
-      c.style.height = `${docSize.height}px`;
-
-      ctx.clearRect(0, 0, c.width, c.height);
-
-      ctx.save();
-      ctx.scale(dpr * scale, dpr * scale);
-
-      elements.forEach((element) => {
-        drawElement({ canvas: cvs, context: ctx, element });
-
-        if (element.id === selectedElement?.id && action !== actions.DRAWING) {
-          drawHighlight(ctx, element);
-        }
-      });
-
-      ctx.restore();
+    if (canvasElement) {
+      drawElementOnCanvas(canvasElement, canvas, action, docSize, scale);
     }
-  }, [elements, selectedElement, action, scale, docSize]);
+  }, [action, scale, docSize]);
 
   useEffect(() => {
     if (action === actions.WRITING) {
@@ -376,6 +354,18 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     reset();
   }
 
+  function handleMouseEvent(
+    fn: (prop: {
+      clientX: number;
+      clientY: number;
+      currentTarget: HTMLCanvasElement;
+    }) => void
+  ) {
+    return function (event: MouseEvent<HTMLCanvasElement>) {
+      fn(event);
+    };
+  }
+
   function handleTouchEvent(
     fn: (prop: {
       clientX: number;
@@ -424,9 +414,9 @@ export function Whiteboard({ scale }: WhiteboardProps) {
         }}
         width={docSize.width}
         height={docSize.height}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseEvent(handleMouseDown)}
+        onMouseUp={handleMouseEvent(handleMouseUp)}
+        onMouseMove={handleMouseEvent(handleMouseMove)}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         onTouchStart={handleTouchEvent(handleMouseDown)}
