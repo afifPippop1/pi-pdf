@@ -1,22 +1,16 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { Suspense } from "react";
-import { useDispatch } from "react-redux";
 import { EditorCanvas } from "~/components/molecules/EditorCanvas.client";
+import { ZoomProvider } from "~/context/ZoomContext";
 import { useDocBuffer } from "~/hooks/useDocBuffer";
-import { useAppSelector } from "~/store/hooks";
-import {
-  setActivePageIndex,
-  setElements,
-  setPDFDoc,
-} from "~/store/slices/editorSlice";
+import { removePageHandler } from "~/utils";
+import { AddFloatingButton } from "../molecules/AddFloatingButton";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
+import { PropertiesPanel } from "../molecules/PropertiesPanel";
 import { Thumbnail } from "../molecules/Thumbnail.client";
 import { ToolPicker } from "../molecules/ToolPicker";
-import { PropertiesPanel } from "../molecules/PropertiesPanel";
 import { ZoomTool } from "../molecules/ZoomTool";
-import { ZoomProvider } from "~/context/ZoomContext";
-import { AddFloatingButton } from "../molecules/AddFloatingButton";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -25,27 +19,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
-  const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
-  const elements = useAppSelector((s) => s.editor.elements);
-  const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
-  const dispatch = useDispatch();
+
   async function handleRemove(index: number) {
-    if (!pdfDoc) return;
-    if (pdfDoc.getPageCount() === 1) {
-      dispatch(setPDFDoc(null));
-      setBlob(null);
-    } else {
-      if (activePageIndex === index) {
-        if (activePageIndex !== 0) {
-          dispatch(setActivePageIndex(index - 1));
-        }
-      }
-      pdfDoc.removePage(index);
-      const el = elements.filter((_, idx) => idx !== index);
-      dispatch(setElements(el));
-      const buffer = await pdfDoc.save();
-      setBlob(buffer);
-    }
+    await removePageHandler(index, setBlob);
   }
 
   return (

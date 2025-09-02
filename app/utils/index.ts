@@ -18,3 +18,4 @@ export * from "./swapArrayValue";
 export * from "./rgbToString";
 export * from "./toolType";
 export * from "./isPointInText";
+export * from "./removePageHandler";
