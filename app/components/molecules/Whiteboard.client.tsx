@@ -162,7 +162,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
 
     if (!toolType && selectedElement) {
-      if (isPointInElement(x, y, selectedElement, scale)) {
+      if (
+        isPointInElement(x, y, selectedElement, scale) ||
+        (selectedElement.type === toolTypes.TEXT &&
+          isPointInText(selectedElement, x, y, canvas.getContext("2d")!))
+      ) {
         setAction(actions.DRAGGING);
         canvas.style.cursor = "grab";
 
@@ -279,6 +283,19 @@ export function Whiteboard({ scale }: WhiteboardProps) {
             elements
           );
         }
+      } else if (element.type === toolTypes.TEXT) {
+        const newX1 = x - dragOffset.x;
+        const newY1 = y - dragOffset.y;
+        updateElement(
+          {
+            ...element,
+            type: toolTypes.TEXT,
+            x1: newX1,
+            y1: newY1,
+            index,
+          },
+          elements
+        );
       }
     } else if (toolType === toolTypes.TEXT) {
       canvas.style.cursor = "text ";
