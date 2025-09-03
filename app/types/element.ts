@@ -23,9 +23,17 @@ export interface ShapeElement extends Coordinate2D {
   type: typeof toolTypes.LINE | typeof toolTypes.RECTANGLE;
 }
 
+export interface TextProperties {
+  fontFamily: string;
+  bold: boolean;
+  italic: boolean;
+  fontSize: number;
+}
+
 export interface TextElement extends Pick<Coordinate2D, "x1" | "y1"> {
   type: typeof toolTypes.TEXT;
   text: string;
+  properties: TextProperties;
 }
 
 export type ElementType = LineElement | RectangleElement | TextElement;

@@ -11,6 +11,7 @@ import { PropertiesPanel } from "../molecules/PropertiesPanel";
 import { Thumbnail } from "../molecules/Thumbnail.client";
 import { ToolPicker } from "../molecules/ToolPicker";
 import { ZoomTool } from "../molecules/ZoomTool";
+import { useAppSelector } from "~/store/hooks";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -19,6 +20,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 
 export function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
+  const fonts = useAppSelector((s) => s.editor.fonts);
 
   async function handleRemove(index: number) {
     await removePageHandler(index, setBlob);
@@ -56,8 +58,8 @@ export function EditorPage() {
               </div>
 
               {/* Right panel */}
-              <div className="md:h-full md:w-56 bg-white">
-                <div className="overflow-auto h-full rounded-lg">
+              <div className="hidden md:block md:h-full md:w-56 bg-white">
+                <div className="overflow-y-auto w-full h-full rounded-lg">
                   <PropertiesPanel />
                 </div>
               </div>

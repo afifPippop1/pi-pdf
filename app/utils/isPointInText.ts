@@ -1,6 +1,4 @@
-import { DEFAULT_FONT_SIZE } from "~/constants";
 import type { TextElement } from "../types";
-
 
 export function isPointInText(
   element: TextElement,
@@ -8,10 +6,9 @@ export function isPointInText(
   y: number,
   ctx: CanvasRenderingContext2D
 ) {
-  ctx.font = `${DEFAULT_FONT_SIZE}px Ubuntu, sans-serif`;
+  ctx.font = `${element.properties.fontSize}px ${element.properties.fontFamily}, sans-serif`;
   const width = ctx.measureText(element.text).width;
-  // const height = element.fontSize; // rough estimate
-  const height = DEFAULT_FONT_SIZE; // rough estimate
+  const height = element.properties.fontSize;
   return (
     x >= element.x1 &&
     x <= element.x1 + width &&

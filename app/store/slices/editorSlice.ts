@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { PDFDocument } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
-import type { Element, ToolType } from "~/types";
+import type { Element, Font, ToolType } from "~/types";
 import { swapArrayValue } from "~/utils";
 
 interface EditorState {
@@ -17,6 +17,7 @@ interface EditorState {
   loadingTask: PDFDocumentLoadingTask | null;
   selectedElement: Element | null;
   toolState: Record<ToolType, Record<string, any>>;
+  fonts: Font[];
 }
 
 const initialState: EditorState = {
@@ -30,8 +31,14 @@ const initialState: EditorState = {
   toolState: {
     LINE: {},
     RECTANGLE: {},
-    TEXT: {},
+    TEXT: {
+      fontFamily: "Inter",
+      bold: false,
+      italic: false,
+      fontSize: 24,
+    },
   },
+  fonts: [],
 };
 
 export const reorderPage = createAsyncThunk<
@@ -120,6 +127,9 @@ const editorSlice = createSlice({
         ...value,
       };
     },
+    setFonts(state, action: PayloadAction<Font[]>) {
+      state.fonts = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(reorderPage.fulfilled, (state, action) => {
@@ -139,5 +149,6 @@ export const {
   setLoadingTask,
   setSelectedElement,
   setToolState,
+  setFonts,
 } = editorSlice.actions;
 export default editorSlice;

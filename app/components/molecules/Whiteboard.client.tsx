@@ -21,6 +21,7 @@ import {
   setToolType,
   updateElement as updateElementStore,
 } from "~/store/slices/editorSlice";
+import type { Element, TextElement, TextProperties } from "~/types";
 import type { Action } from "~/types/action";
 import {
   adjustElementCoordinates,
@@ -130,6 +131,7 @@ export function Whiteboard(_: WhiteboardProps) {
             text: "",
             type: toolType,
             id: uuid(),
+            properties: toolState.TEXT as TextProperties,
           });
           dispatch(setSelectedElement(element));
           setAction(actions.WRITING);
@@ -338,7 +340,7 @@ export function Whiteboard(_: WhiteboardProps) {
       (el) => el.id === selectedElement?.id
     );
     if (selectedElementIndex !== -1) {
-      const element = elements[selectedElementIndex];
+      const element = elements[selectedElementIndex] as Element<TextElement>;
       updateElement(
         {
           id: element.id,
@@ -347,6 +349,7 @@ export function Whiteboard(_: WhiteboardProps) {
           x1: element.x1,
           y1: element.y1,
           text,
+          properties: element.properties,
         },
         elements
       );
@@ -401,7 +404,7 @@ export function Whiteboard(_: WhiteboardProps) {
             background: "transparent",
             resize: "none",
             fontSize: 24 * zoom,
-            fontFamily: "Ubuntu, sans-serif",
+            fontFamily: toolState.TEXT.fontFamily,
           }}
           onBlur={handleTextareaBlur}
         />
