@@ -6,12 +6,14 @@ import {
   useState,
   type FocusEvent,
   type KeyboardEvent,
+  type MouseEvent,
   type TouchEvent,
 } from "react";
 import { v4 as uuid } from "uuid";
 import { actions, toolTypes } from "~/constants";
 import { useDrag } from "~/hooks/useDrag";
-import { canvas } from "~/lib/canvas";
+import { useZoom } from "~/hooks/useZoom";
+import { createCanvas } from "~/lib/canvas";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   setActivePageElements,
@@ -19,31 +21,31 @@ import {
   setToolType,
   updateElement as updateElementStore,
 } from "~/store/slices/editorSlice";
+import type { Element, TextElement, TextProperties } from "~/types";
 import type { Action } from "~/types/action";
 import {
   adjustElementCoordinates,
   adjustmentRequired,
   createElement,
-  drawElement,
-  drawHighlight,
+  drawElementOnCanvas,
   getDocumentSize,
   isPointInElement,
+  isPointInText,
   isShapeElement,
   updateElement,
 } from "~/utils";
 
-export interface WhiteboardProps {
-  scale: number;
-}
+export interface WhiteboardProps {}
 
-export function Whiteboard({ scale }: WhiteboardProps) {
+export function Whiteboard(_: WhiteboardProps) {
+  const { zoom } = useZoom();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const ref = useRef<HTMLCanvasElement>(null);
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const toolType = useAppSelector((s) => s.editor.toolType);
   const el = useAppSelector((s) => s.editor.elements);
-  const docSize = getDocumentSize(pdfDoc, activePageIndex, scale);
+  const docSize = getDocumentSize(pdfDoc, activePageIndex, zoom);
   const [action, setAction] = useState<Action | null>(null);
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
@@ -60,30 +62,13 @@ export function Whiteboard({ scale }: WhiteboardProps) {
   const dispatch = useAppDispatch();
 
   useLayoutEffect(() => {
-    const c = ref.current;
-    const cvs = canvas(c);
+    const canvasElement = ref.current;
+    const canvas = createCanvas(canvasElement);
 
-    if (c) {
-      const ctx = c.getContext("2d", { willReadFrequently: true });
-      ctx?.clearRect(0, 0, c.width, c.height);
-
-      ctx?.save();
-      ctx?.scale(scale, scale);
-
-      elements.forEach((element) => {
-        drawElement({ canvas: cvs, context: ctx, element });
-
-        if (
-          element.id === selectedElement?.id &&
-          !!ctx &&
-          action !== actions.DRAWING
-        ) {
-          drawHighlight(ctx, element);
-        }
-      });
-      ctx?.restore();
+    if (canvasElement) {
+      drawElementOnCanvas(canvasElement, canvas, action, docSize, zoom);
     }
-  }, [elements, selectedElement, action, scale]);
+  }, [action, zoom, docSize]);
 
   useEffect(() => {
     if (action === actions.WRITING) {
@@ -103,8 +88,9 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     const { clientX, clientY } = event;
     const canvas = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    // Normalize coordinate
+    const x = (clientX - rect.left) / zoom;
+    const y = (clientY - rect.top) / zoom;
 
     if (toolType) {
       canvas.style.cursor = "default";
@@ -145,6 +131,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
             text: "",
             type: toolType,
             id: uuid(),
+            properties: toolState.TEXT as TextProperties,
           });
           dispatch(setSelectedElement(element));
           setAction(actions.WRITING);
@@ -154,7 +141,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     }
 
     if (!toolType && selectedElement) {
-      if (isPointInElement(x, y, selectedElement, scale)) {
+      if (
+        isPointInElement(x, y, selectedElement, zoom) ||
+        (selectedElement.type === toolTypes.TEXT &&
+          isPointInText(selectedElement, x, y, canvas.getContext("2d")!))
+      ) {
         setAction(actions.DRAGGING);
         canvas.style.cursor = "grab";
 
@@ -209,8 +200,8 @@ export function Whiteboard({ scale }: WhiteboardProps) {
     const canvas = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
 
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    const x = (clientX - rect.left) / zoom;
+    const y = (clientY - rect.top) / zoom;
     if (action === actions.DRAWING) {
       if (!selectedElement) return;
       if (activeElementIndex !== -1) {
@@ -271,12 +262,25 @@ export function Whiteboard({ scale }: WhiteboardProps) {
             elements
           );
         }
+      } else if (element.type === toolTypes.TEXT) {
+        const newX1 = x - dragOffset.x;
+        const newY1 = y - dragOffset.y;
+        updateElement(
+          {
+            ...element,
+            type: toolTypes.TEXT,
+            x1: newX1,
+            y1: newY1,
+            index,
+          },
+          elements
+        );
       }
     } else if (toolType === toolTypes.TEXT) {
       canvas.style.cursor = "text ";
     } else if (!toolType) {
       const isHovering = elements.some((el) =>
-        isPointInElement(x, y, el, scale)
+        isPointInElement(x, y, el, zoom)
       );
       canvas.style.cursor = isHovering ? "pointer" : "default";
     }
@@ -292,12 +296,16 @@ export function Whiteboard({ scale }: WhiteboardProps) {
       const canvas = event.currentTarget;
       const rect = canvas.getBoundingClientRect();
 
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-
-      const coveringElements = elements.filter((el) =>
-        isPointInElement(x, y, el, scale)
-      );
+      const coveringElements = elements.filter((el) => {
+        if (el.type === toolTypes.TEXT) {
+          const x = (clientX - rect.left) / zoom;
+          const y = (clientY - rect.top) / zoom;
+          return isPointInText(el, x, y, canvas.getContext("2d")!);
+        }
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        return isPointInElement(x, y, el, zoom);
+      });
       if (coveringElements.length) {
         const lastElement = coveringElements[coveringElements.length - 1];
         dispatch(setSelectedElement(lastElement));
@@ -332,7 +340,7 @@ export function Whiteboard({ scale }: WhiteboardProps) {
       (el) => el.id === selectedElement?.id
     );
     if (selectedElementIndex !== -1) {
-      const element = elements[selectedElementIndex];
+      const element = elements[selectedElementIndex] as Element<TextElement>;
       updateElement(
         {
           id: element.id,
@@ -341,11 +349,24 @@ export function Whiteboard({ scale }: WhiteboardProps) {
           x1: element.x1,
           y1: element.y1,
           text,
+          properties: element.properties,
         },
         elements
       );
     }
     reset();
+  }
+
+  function handleMouseEvent(
+    fn: (prop: {
+      clientX: number;
+      clientY: number;
+      currentTarget: HTMLCanvasElement;
+    }) => void
+  ) {
+    return function (event: MouseEvent<HTMLCanvasElement>) {
+      fn(event);
+    };
   }
 
   function handleTouchEvent(
@@ -372,8 +393,8 @@ export function Whiteboard({ scale }: WhiteboardProps) {
           className="absolute z-50"
           ref={textareaRef}
           style={{
-            top: selectedElement?.y1,
-            left: selectedElement?.x1,
+            top: ((selectedElement?.y1 || 0) - 7.3) * zoom,
+            left: (selectedElement?.x1 || 0) * zoom,
             margin: 0,
             padding: 0,
             border: 0,
@@ -382,6 +403,11 @@ export function Whiteboard({ scale }: WhiteboardProps) {
             whiteSpace: "pre",
             background: "transparent",
             resize: "none",
+            fontSize:
+              selectedElement?.type === toolTypes.TEXT
+                ? selectedElement.properties.fontSize * zoom
+                : undefined,
+            fontFamily: toolState.TEXT.fontFamily,
           }}
           onBlur={handleTextareaBlur}
         />
@@ -394,9 +420,9 @@ export function Whiteboard({ scale }: WhiteboardProps) {
         }}
         width={docSize.width}
         height={docSize.height}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseEvent(handleMouseDown)}
+        onMouseUp={handleMouseEvent(handleMouseUp)}
+        onMouseMove={handleMouseEvent(handleMouseMove)}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         onTouchStart={handleTouchEvent(handleMouseDown)}

@@ -71,9 +71,16 @@ export function updateElement(
       break;
     }
     case toolTypes.TEXT: {
-      const { id, type, x1, y1, text } = element;
+      const { id, type, x1, y1, text, properties } = element;
 
-      const updateElement = createElement({ id, type, x1, y1, text });
+      const updateElement = createElement({
+        id,
+        type,
+        x1,
+        y1,
+        text,
+        properties,
+      });
       elementsCopy[element.index] = updateElement;
       store.dispatch(setActivePageElements(elementsCopy));
       break;

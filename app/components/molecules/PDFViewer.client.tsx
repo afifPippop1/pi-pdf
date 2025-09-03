@@ -1,19 +1,16 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { useEffect, useRef } from "react";
+import { useZoom } from "~/hooks/useZoom";
 import { useAppSelector } from "~/store/hooks";
 import { getPageFromIndex } from "~/utils";
 
 interface PdfViewerProps {
   pdfData: Uint8Array;
   pageIndex?: number;
-  scale?: number;
 }
 
-export function PdfViewer({
-  pdfData,
-  pageIndex = 0,
-  scale = 1,
-}: PdfViewerProps) {
+export function PdfViewer({ pdfData, pageIndex = 0 }: PdfViewerProps) {
+  const { zoom } = useZoom();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
   const loadingTask = useAppSelector((s) => s.editor.loadingTask);
@@ -25,12 +22,21 @@ export function PdfViewer({
 
     loadingTask.promise.then((pdf) => {
       pdf.getPage(getPageFromIndex(pageIndex)).then((page) => {
-        const viewport = page.getViewport({ scale: scale });
+        const viewport = page.getViewport({ scale: zoom });
         const canvas = canvasRef.current;
         if (!canvas) return;
         const context = canvas.getContext("2d", { willReadFrequently: true });
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+        const outputScale = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+
+        canvas.style.width = `${viewport.width}px`;
+        canvas.style.height = `${viewport.height}px`;
+
+        const transform =
+          outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+        if (!transform) return;
 
         // Cancel any ongoing render before starting a new one
         renderTaskRef.current?.cancel();
@@ -39,6 +45,7 @@ export function PdfViewer({
           canvasContext: context!,
           viewport,
           canvas,
+          transform,
         });
 
         renderTaskRef.current = renderTask;
@@ -51,11 +58,10 @@ export function PdfViewer({
       });
     });
 
-    // Optional: cancel render task if component unmounts
     return () => {
       renderTaskRef.current?.cancel();
     };
-  }, [pdfData, pageIndex, scale, loadingTask]);
+  }, [pdfData, pageIndex, zoom, loadingTask]);
 
   return (
     <canvas

@@ -17,3 +17,7 @@ export * from "./isShapeElement";
 export * from "./swapArrayValue";
 export * from "./rgbToString";
 export * from "./toolType";
+export * from "./isPointInText";
+export * from "./removePageHandler";
+export * from "./drawElementOnCanvas";
+export * from "./getFontFile";

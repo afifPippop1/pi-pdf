@@ -21,7 +21,7 @@ export function BackgroundPickerTool() {
   const toolState = useAppSelector((s) => s.editor.toolState);
   const dispatch = useAppDispatch();
 
-  const elements = useMemo(() => els[activePageIndex], [els, activePageIndex]);
+  const elements = useMemo(() => els[activePageIndex] || [], [els, activePageIndex]);
   const selectedElementIndex = useMemo(
     () => elements.findIndex((el) => el.id === selectedElement?.id),
     [elements, selectedElement]

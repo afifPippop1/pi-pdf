@@ -29,6 +29,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
             "editor/setLoadingTask",
             "editor/setSelectedElement",
             "editor/setToolState",
+            "editor/setFonts",
           ],
           ignoredPaths: [
             "editor.pdfDoc",
@@ -36,6 +37,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
             "editor.loadingTask",
             "editor.selectedElement",
             "editor.toolState",
+            "editor.fonts",
           ],
         },
       });

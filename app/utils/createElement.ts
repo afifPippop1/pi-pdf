@@ -1,7 +1,7 @@
 import { toolTypes } from "~/constants";
 import { shapeGenerator } from "~/lib/shape";
 import type { Color } from "~/lib/shape/rectangle";
-import type { Element } from "~/types";
+import type { Element, TextProperties } from "~/types";
 
 const generator = shapeGenerator();
 
@@ -30,6 +30,7 @@ type TextProps = {
   y1: number;
   id: string;
   text: string;
+  properties: TextProperties;
 };
 
 type CreateElementProps = RectangleProps | LineProps | TextProps;
@@ -81,6 +82,7 @@ export function createElement(props: CreateElementProps): Element {
       x1: props.x1,
       y1: props.y1,
       text: props.text,
+      properties: props.properties,
     };
   } else {
     throw new Error("Something went wrong when creating element");
