@@ -4,9 +4,12 @@ import { setToolState, updateElement } from "~/store/slices/editorSlice";
 import type { Element, Font, TextElement } from "~/types";
 import { FontPicker } from "./FontPicker";
 import { useMemo } from "react";
+import { FontSizeTool } from "./FontSizeTool";
 
 export function TextTool() {
-  const { fontFamily } = useAppSelector((s) => s.editor.toolState.TEXT);
+  const { fontFamily, fontSize: fz } = useAppSelector(
+    (s) => s.editor.toolState.TEXT
+  );
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const elements = useAppSelector((s) => s.editor.elements);
@@ -51,9 +54,38 @@ export function TextTool() {
     [selectedElement, fontFamily, element]
   );
 
+  const fontSize = useMemo(
+    () =>
+      element?.type === toolTypes.TEXT ? element.properties.fontSize || fz : fz,
+    [element, fz]
+  );
+
+  function handleFontSizeChange(fontSize: number | string) {
+    if (!selectedElement) {
+      dispatch(
+        setToolState({
+          type: toolTypes.TEXT,
+          value: { fontSize },
+        })
+      );
+      return;
+    }
+    dispatch(
+      updateElement({
+        ...(selectedElement as Element<TextElement>),
+        properties: {
+          ...(selectedElement as Element<TextElement>).properties,
+          fontSize: Number(fontSize),
+        },
+      })
+    );
+    return;
+  }
+
   return (
     <div className="flex flex-col gap-4 w-full">
       <FontPicker font={font} onFontChange={handleFontChange} />
+      <FontSizeTool fontSize={fontSize} onChange={handleFontSizeChange} />
     </div>
   );
 }

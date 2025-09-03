@@ -403,7 +403,10 @@ export function Whiteboard(_: WhiteboardProps) {
             whiteSpace: "pre",
             background: "transparent",
             resize: "none",
-            fontSize: 24 * zoom,
+            fontSize:
+              selectedElement?.type === toolTypes.TEXT
+                ? selectedElement.properties.fontSize * zoom
+                : undefined,
             fontFamily: toolState.TEXT.fontFamily,
           }}
           onBlur={handleTextareaBlur}

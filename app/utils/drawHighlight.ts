@@ -1,4 +1,4 @@
-import { DEFAULT_FONT_SIZE, toolTypes } from "~/constants";
+import { toolTypes } from "~/constants";
 import type { Element } from "~/types";
 import { isShapeElement } from "./isShapeElement";
 
@@ -25,7 +25,7 @@ function drawHighlightOutline(ctx: CanvasRenderingContext2D, element: Element) {
   } else if (element.type === toolTypes.TEXT && element.text.length) {
     const width = ctx.measureText(element.text).width;
     // const height = element.fontSize; // rough estimate
-    const height = DEFAULT_FONT_SIZE; // rough estimate
+    const height = element.properties.fontSize; // rough estimate
     const x2 = element.x1 + width;
     const y2 = element.y1 + height;
 

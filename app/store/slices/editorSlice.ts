@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { PDFDocument } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
+import { DEFAULT_FONT_SIZE } from "~/constants";
 import type { Element, Font, ToolType } from "~/types";
 import { swapArrayValue } from "~/utils";
 
@@ -35,7 +36,7 @@ const initialState: EditorState = {
       fontFamily: "Inter",
       bold: false,
       italic: false,
-      fontSize: 24,
+      fontSize: DEFAULT_FONT_SIZE,
     },
   },
   fonts: [],
