@@ -1,19 +1,16 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { useEffect, useRef } from "react";
+import { useZoom } from "~/hooks/useZoom";
 import { useAppSelector } from "~/store/hooks";
 import { getPageFromIndex } from "~/utils";
 
 interface PdfViewerProps {
   pdfData: Uint8Array;
   pageIndex?: number;
-  scale?: number;
 }
 
-export function PdfViewer({
-  pdfData,
-  pageIndex = 0,
-  scale = 1,
-}: PdfViewerProps) {
+export function PdfViewer({ pdfData, pageIndex = 0 }: PdfViewerProps) {
+  const { zoom } = useZoom();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
   const loadingTask = useAppSelector((s) => s.editor.loadingTask);
@@ -25,7 +22,7 @@ export function PdfViewer({
 
     loadingTask.promise.then((pdf) => {
       pdf.getPage(getPageFromIndex(pageIndex)).then((page) => {
-        const viewport = page.getViewport({ scale: scale });
+        const viewport = page.getViewport({ scale: zoom });
         const canvas = canvasRef.current;
         if (!canvas) return;
         const context = canvas.getContext("2d", { willReadFrequently: true });
@@ -61,11 +58,10 @@ export function PdfViewer({
       });
     });
 
-    // Optional: cancel render task if component unmounts
     return () => {
       renderTaskRef.current?.cancel();
     };
-  }, [pdfData, pageIndex, scale, loadingTask]);
+  }, [pdfData, pageIndex, zoom, loadingTask]);
 
   return (
     <canvas

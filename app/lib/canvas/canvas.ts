@@ -49,7 +49,7 @@ export class Canvas {
   }
 }
 
-export const canvas = (c: HTMLCanvasElement | null | undefined) => {
+export const createCanvas = (c: HTMLCanvasElement | null | undefined) => {
   if (!c) throw Error("No canvas found");
   return new Canvas(c);
 };

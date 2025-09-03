@@ -9,16 +9,11 @@ interface EditorCanvasProps {
 }
 
 export function EditorCanvas(props: EditorCanvasProps) {
-  const { zoom } = useZoom();
   const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   return (
     <div className="relative">
-      <PdfViewer
-        pdfData={props.buffer}
-        pageIndex={activePageIndex}
-        scale={zoom}
-      />
-      <Whiteboard scale={zoom} />
+      <PdfViewer pdfData={props.buffer} pageIndex={activePageIndex} />
+      <Whiteboard />
     </div>
   );
 }

@@ -1,1 +1,1 @@
-export { Canvas, canvas } from "./canvas";
+export { Canvas, createCanvas } from "./canvas";

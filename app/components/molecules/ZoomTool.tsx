@@ -4,6 +4,7 @@ import { PDFViewer } from "~/constants";
 import { useZoom } from "~/hooks/useZoom";
 
 const PERCENT = 100;
+const TEN_PERCENT = 0.1;
 
 const STATUS = {
   idle: "idle",
@@ -19,11 +20,11 @@ export function ZoomTool({ className }: { className?: string }) {
   const zoomStr = (zoom * PERCENT).toFixed(2);
 
   function decrease() {
-    setZoom((z) => Math.max(z - 0.1, PDFViewer.MIN_SCALE));
+    setZoom((z) => Math.max(z - TEN_PERCENT, PDFViewer.MIN_SCALE));
   }
 
   function increase() {
-    setZoom((z) => Math.min(z + 0.1, PDFViewer.MAX_SCALE));
+    setZoom((z) => Math.min(z + TEN_PERCENT, PDFViewer.MAX_SCALE));
   }
 
   function commitValue() {
