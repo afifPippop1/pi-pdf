@@ -8,6 +8,19 @@ import { useMemo } from "react";
 export function TextTool() {
   const { fontFamily } = useAppSelector((s) => s.editor.toolState.TEXT);
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
+  const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
+  const elements = useAppSelector((s) => s.editor.elements);
+  const selectedElementIndex = useMemo(
+    () =>
+      elements[activePageIndex].findIndex(
+        (element) => element.id === selectedElement?.id
+      ),
+    [elements, activePageIndex, selectedElement]
+  );
+  const element = useMemo(
+    () => elements[activePageIndex][selectedElementIndex],
+    [elements, activePageIndex, selectedElementIndex]
+  );
   const dispatch = useAppDispatch();
   function handleFontChange(font: Font) {
     if (!selectedElement) {
@@ -32,10 +45,10 @@ export function TextTool() {
   }
   const font = useMemo(
     () =>
-      selectedElement?.type === toolTypes.TEXT
-        ? selectedElement.properties.fontFamily || fontFamily
+      element?.type === toolTypes.TEXT
+        ? element.properties.fontFamily || fontFamily
         : fontFamily,
-    [selectedElement, fontFamily]
+    [selectedElement, fontFamily, element]
   );
 
   return (
