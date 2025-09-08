@@ -29,7 +29,6 @@ export function FontSizeTool({fontSize, onChange}: FontSizeToolProps) {
   };
 
   const toggleDropdown = () => {
-    console.log("HELLO");
     setDropdownOpen((open) => !open);
   };
 
