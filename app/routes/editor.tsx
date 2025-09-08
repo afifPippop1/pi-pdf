@@ -1,8 +1,9 @@
-import { Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useLoaderData } from "react-router";
-import { EditorPage } from "~/components/pages/EditorPage.client";
 import { useAppDispatch } from "~/store/hooks";
 import { setFonts } from "~/store/slices/editorSlice";
+
+const EditorPage = lazy(() => import("~/components/pages/EditorPage"));
 
 export async function loader() {
   const apiKey = process.env.GOOGLE_API_KEY;

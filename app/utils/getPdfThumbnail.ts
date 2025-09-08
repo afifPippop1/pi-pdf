@@ -1,4 +1,4 @@
-import { getDocument, type PDFDocumentLoadingTask } from "pdfjs-dist";
+import { type PDFDocumentLoadingTask } from "pdfjs-dist";
 
 export async function getPdfPageThumbnail(
   loadingTask: PDFDocumentLoadingTask,

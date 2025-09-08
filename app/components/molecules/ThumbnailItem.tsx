@@ -1,16 +1,13 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import * as pdfjsLib from "pdfjs-dist";
-import { useLayoutEffect, useRef } from "react";
+import clsx from "clsx";
 import { CiTrash } from "react-icons/ci";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { getPageFromIndex } from "~/utils";
+import { useAppSelector } from "~/store/hooks";
 import ContextMenu, {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "./ContextMenu";
-import clsx from "clsx";
 
 interface ThumbnailItemProps {
   pageIndex: number;
