@@ -34,6 +34,7 @@ import {
   isShapeElement,
   updateElement,
 } from "~/utils";
+import { TextEditor } from "./TextEditor";
 
 export interface WhiteboardProps {}
 
@@ -388,30 +389,7 @@ export function Whiteboard(_: WhiteboardProps) {
 
   return (
     <>
-      {action === actions.WRITING && (
-        <textarea
-          className="absolute z-50"
-          ref={textareaRef}
-          style={{
-            top: ((selectedElement?.y1 || 0) - 7.3) * zoom,
-            left: (selectedElement?.x1 || 0) * zoom,
-            margin: 0,
-            padding: 0,
-            border: 0,
-            outline: 0,
-            overflow: "hidden",
-            whiteSpace: "pre",
-            background: "transparent",
-            resize: "none",
-            fontSize:
-              selectedElement?.type === toolTypes.TEXT
-                ? selectedElement.properties.fontSize * zoom
-                : undefined,
-            fontFamily: toolState.TEXT.fontFamily,
-          }}
-          onBlur={handleTextareaBlur}
-        />
-      )}
+      <TextEditor action={action} onBlur={handleTextareaBlur} />
       <canvas
         ref={ref}
         className="absolute top-0 left-0 right-0 focus:outline-0"

@@ -57,19 +57,24 @@ export async function drawElementsOnPdfDoc(
       } else if (element.type === toolTypes.TEXT) {
         const page = pdfDoc.getPage(index);
         const angle = page.getRotation().angle;
+        const fontSize = element.properties.fontSize;
+        const verticalOffset = -0.75 * fontSize;
+        const horizontalOffset = 0.75 * fontSize;
+
         const rotate =
           angle === DEGREE.DEG_90 || angle === DEGREE.DEG_270
             ? degrees(angle)
             : undefined;
+
         const x =
           angle === DEGREE.DEG_90 || angle === DEGREE.DEG_270
-            ? pdfCoordinate.x1 + 18
+            ? pdfCoordinate.x1 + horizontalOffset
             : pdfCoordinate.x1;
+
         const y =
           angle === DEGREE.DEG_90 || angle === DEGREE.DEG_270
             ? pdfCoordinate.y1
-            : // TODO: Fix this -18
-              pdfCoordinate.y1 - 18;
+            : pdfCoordinate.y1 + verticalOffset;
         const fontUrl = getFontFile(element.properties.fontFamily, "regular");
         let fontBytes: ArrayBuffer | StandardFonts = StandardFonts.Helvetica;
         if (fontUrl) {
