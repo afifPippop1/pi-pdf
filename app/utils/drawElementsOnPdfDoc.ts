@@ -1,7 +1,7 @@
 import fontkit from "@pdf-lib/fontkit";
 import { ColorTypes, degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
-import { PDFViewer, toolTypes } from "~/constants";
+import { DEGREE, PDFViewer, toolTypes } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
 import type { Element } from "~/types";
 import { getPdfCoordinate } from "./getPdfCoordinate";
@@ -58,16 +58,18 @@ export async function drawElementsOnPdfDoc(
         const page = pdfDoc.getPage(index);
         const angle = page.getRotation().angle;
         const rotate =
-          angle === 90 || angle === 270 ? degrees(angle) : undefined;
+          angle === DEGREE.DEG_90 || angle === DEGREE.DEG_270
+            ? degrees(angle)
+            : undefined;
         const x =
-          angle === 90 || angle === 270
+          angle === DEGREE.DEG_90 || angle === DEGREE.DEG_270
             ? pdfCoordinate.x1 + 18
             : pdfCoordinate.x1;
-        // TODO: FINDOUT this -18
         const y =
-          angle === 90 || angle === 270
+          angle === DEGREE.DEG_90 || angle === DEGREE.DEG_270
             ? pdfCoordinate.y1
-            : pdfCoordinate.y1 - 18;
+            : // TODO: Fix this -18
+              pdfCoordinate.y1 - 18;
         const fontUrl = getFontFile(element.properties.fontFamily, "regular");
         let fontBytes: ArrayBuffer | StandardFonts = StandardFonts.Helvetica;
         if (fontUrl) {
