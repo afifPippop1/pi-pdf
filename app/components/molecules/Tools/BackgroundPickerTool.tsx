@@ -1,19 +1,12 @@
 import { useMemo } from "react";
-import { RgbaColorPicker, type RgbColor } from "react-colorful";
+import { type RgbColor } from "react-colorful";
 import { toolTypes } from "~/constants";
-import type { Color } from "~/lib/shape/rectangle";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, updateElement } from "~/utils";
+import { ColorPicker } from "./ColorPicker";
 
-const defaultColor = {
-  a: 1,
-  r: 255,
-  g: 255,
-  b: 255,
-} as Color;
-
-export function BackgroundPickerTool() {
+export function RectangleBackgroundPickerTool() {
   const toolType = useAppSelector((s) => s.editor.toolType);
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const els = useAppSelector((s) => s.editor.elements);
@@ -21,7 +14,10 @@ export function BackgroundPickerTool() {
   const toolState = useAppSelector((s) => s.editor.toolState);
   const dispatch = useAppDispatch();
 
-  const elements = useMemo(() => els[activePageIndex] || [], [els, activePageIndex]);
+  const elements = useMemo(
+    () => els[activePageIndex] || [],
+    [els, activePageIndex]
+  );
   const selectedElementIndex = useMemo(
     () => elements.findIndex((el) => el.id === selectedElement?.id),
     [elements, selectedElement]
@@ -53,21 +49,19 @@ export function BackgroundPickerTool() {
 
   const color = useMemo(() => {
     if (!selectedElement || selectedElement.type !== toolTypes.RECTANGLE)
-      return;
+      return toolState.RECTANGLE.color;
     return selectedElement.element.color;
-  }, [selectedElement]);
+  }, [selectedElement, toolState.RECTANGLE]);
 
   if (!isRectangleTool(toolType) && !isRectangleTool(selectedElement?.type)) {
     return null;
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-sm">Background color</p>
-      <RgbaColorPicker
-        color={color || toolState.RECTANGLE.color || defaultColor}
-        onChange={handleChange}
-      />
-    </div>
+    <ColorPicker
+      color={color}
+      onChange={handleChange}
+      title="Background color"
+    />
   );
 }
