@@ -1,7 +1,7 @@
 import { toolTypes } from "~/constants";
 import { shapeGenerator } from "~/lib/shape";
 import type { Color } from "~/lib/shape/rectangle";
-import type { Element, TextProperties } from "~/types";
+import type { TextProperties } from "~/types";
 
 const generator = shapeGenerator();
 
@@ -33,8 +33,6 @@ type TextProps = {
   properties: TextProperties;
 };
 
-type CreateElementProps = RectangleProps | LineProps | TextProps;
-
 function generateRectangle({
   x1,
   x2,
@@ -53,37 +51,15 @@ export class CreateElement {
   static rectangle(props: RectangleProps) {
     const { x1, x2, y1, y2, type, id, options } = props;
     const element = generateRectangle({ x1, x2, y1, y2, options });
-    return {
-      id,
-      element,
-      type,
-      x1,
-      y1,
-      x2: x2 || x1,
-      y2: y2 || y1,
-    };
+    return { id, element, type, x1, y1, x2, y2 };
   }
   static line(props: LineProps) {
     const { x1, x2, y1, y2, type, id } = props;
     const element = generateLine({ x1, x2, y1, y2 });
-    return {
-      id,
-      element,
-      type,
-      x1,
-      y1,
-      x2: x2 || x1,
-      y2: y2 || y1,
-    };
+    return { id, element, type, x1, y1, x2, y2 };
   }
   static text(props: TextProps) {
-    return {
-      id: props.id,
-      type: toolTypes.TEXT,
-      x1: props.x1,
-      y1: props.y1,
-      text: props.text,
-      properties: props.properties,
-    };
+    const { id, type, x1, y1, text, properties } = props;
+    return { id, type, x1, y1, text, properties };
   }
 }
