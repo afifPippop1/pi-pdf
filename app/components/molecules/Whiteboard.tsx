@@ -29,6 +29,7 @@ import {
   isOnHighlight,
   isPointInElement,
   isPointInText,
+  isShapeElement,
   normalizeCoordinate,
   ScaleElementOnWhiteboard,
   setCanvasCursor,
@@ -81,6 +82,7 @@ export function Whiteboard() {
       const onHighlight = isOnHighlight({
         element: selectedElement,
         coordinate: normalizedCoordinate,
+        context: canvas.getContext("2d"),
       });
       if (onHighlight.on) {
         if (onHighlight.onTopRight) {
@@ -106,12 +108,11 @@ export function Whiteboard() {
           element: selectedElement,
           scale: zoom,
         }) ||
-        (selectedElement.type === toolTypes.TEXT &&
-          isPointInText(
-            selectedElement,
-            normalizedCoordinate,
-            canvas.getContext("2d")!
-          ))
+        isPointInText(
+          selectedElement,
+          normalizedCoordinate,
+          canvas.getContext("2d")!
+        )
       ) {
         setAction(actions.DRAGGING);
 
@@ -162,31 +163,65 @@ export function Whiteboard() {
         dragOffset,
       });
     } else if (scalingActions.has(action)) {
-      switch (action) {
-        case actions.SCALING_BOTTOM_RIGHT:
-          ScaleElementOnWhiteboard.bottomRight(normalizedCoordinate);
-          break;
-        case actions.SCALING_TOP_LEFT:
-          ScaleElementOnWhiteboard.topLeft(normalizedCoordinate);
-          break;
-        case actions.SCALING_TOP_RIGHT:
-          ScaleElementOnWhiteboard.topRight(normalizedCoordinate);
-          break;
-        case actions.SCALING_BOTTOM_LEFT:
-          ScaleElementOnWhiteboard.bottomLeft(normalizedCoordinate);
-          break;
-        case actions.SCALING_TOP:
-          ScaleElementOnWhiteboard.top(normalizedCoordinate);
-          break;
-        case actions.SCALING_LEFT:
-          ScaleElementOnWhiteboard.left(normalizedCoordinate);
-          break;
-        case actions.SCALING_RIGHT:
-          ScaleElementOnWhiteboard.right(normalizedCoordinate);
-          break;
-        case actions.SCALING_BOTTOM:
-          ScaleElementOnWhiteboard.bottom(normalizedCoordinate);
-          break;
+      if (selectedElement && isShapeElement(selectedElement)) {
+        switch (action) {
+          case actions.SCALING_BOTTOM_RIGHT:
+            ScaleElementOnWhiteboard.bottomRight(normalizedCoordinate);
+            break;
+          case actions.SCALING_TOP_LEFT:
+            ScaleElementOnWhiteboard.topLeft(normalizedCoordinate);
+            break;
+          case actions.SCALING_TOP_RIGHT:
+            ScaleElementOnWhiteboard.topRight(normalizedCoordinate);
+            break;
+          case actions.SCALING_BOTTOM_LEFT:
+            ScaleElementOnWhiteboard.bottomLeft(normalizedCoordinate);
+            break;
+          case actions.SCALING_TOP:
+            ScaleElementOnWhiteboard.top(normalizedCoordinate);
+            break;
+          case actions.SCALING_LEFT:
+            ScaleElementOnWhiteboard.left(normalizedCoordinate);
+            break;
+          case actions.SCALING_RIGHT:
+            ScaleElementOnWhiteboard.right(normalizedCoordinate);
+            break;
+          case actions.SCALING_BOTTOM:
+            ScaleElementOnWhiteboard.bottom(normalizedCoordinate);
+            break;
+        }
+      } else if (selectedElement && selectedElement.type === toolTypes.TEXT) {
+        const width =
+          canvas.getContext("2d")?.measureText(selectedElement.text).width || 0;
+        const height = selectedElement.properties.fontSize;
+
+        // pick horizontal or vertical scale factor depending on action
+        let scaleFactor = 1;
+        if (
+          action === actions.SCALING_LEFT ||
+          action === actions.SCALING_RIGHT ||
+          action === actions.SCALING_TOP_LEFT ||
+          action === actions.SCALING_BOTTOM_RIGHT ||
+          action === actions.SCALING_TOP_RIGHT ||
+          action === actions.SCALING_BOTTOM_LEFT
+        ) {
+          scaleFactor = (normalizedCoordinate.x - selectedElement.x1) / width;
+        } else {
+          scaleFactor = (normalizedCoordinate.y - selectedElement.y1) / height;
+        }
+
+        const newFontSize = Math.max(
+          4,
+          selectedElement.properties.fontSize * scaleFactor
+        );
+        UpdateElement.new(elements).text({
+          ...selectedElement,
+          index: getActiveElementIndex(),
+          properties: {
+            ...selectedElement.properties,
+            fontSize: newFontSize,
+          },
+        });
       }
     } else if (toolType === toolTypes.TEXT) {
       canvas.style.cursor = "text ";
@@ -254,9 +289,7 @@ export function Whiteboard() {
 
   function handleTextareaBlur(event: FocusEvent<HTMLTextAreaElement>) {
     const text = event.target.value;
-    const selectedElementIndex = elements.findIndex(
-      (el) => el.id === selectedElement?.id
-    );
+    const selectedElementIndex = getActiveElementIndex();
     if (selectedElementIndex !== -1) {
       const element = elements[selectedElementIndex] as Element<TextElement>;
       UpdateElement.new(elements).text({

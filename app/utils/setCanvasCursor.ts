@@ -2,6 +2,8 @@ import type { BaseCoordinate } from "~/types";
 import { isPointInElement } from "./isPointInElement";
 import { store } from "~/store/store";
 import { isOnHighlight } from "./isOnHighlight";
+import { toolTypes } from "~/constants";
+import { isPointInText } from "./isPointInText";
 
 export function setCanvasCursor({
   canvas,
@@ -14,10 +16,13 @@ export function setCanvasCursor({
 }) {
   const element = store.getState().editor.selectedElement;
   if (!element) return;
-  const isHovering = isPointInElement({ coordinate, element, scale: zoom });
+  const context = canvas.getContext("2d")!;
+  const isHovering =
+    isPointInElement({ coordinate, element, scale: zoom }) ||
+    isPointInText(element, coordinate, context);
   canvas.style.cursor = isHovering ? "move" : "default";
 
-  const onHighlight = isOnHighlight({ element, coordinate });
+  const onHighlight = isOnHighlight({ element, coordinate, context });
   if (onHighlight.on) {
     if (onHighlight.onTopRight || onHighlight.onBottomLeft) {
       canvas.style.cursor = "nesw-resize";
