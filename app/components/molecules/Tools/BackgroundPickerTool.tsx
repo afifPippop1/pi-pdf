@@ -3,7 +3,7 @@ import { type RgbColor } from "react-colorful";
 import { toolTypes } from "~/constants";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { setToolState } from "~/store/slices/editorSlice";
-import { isRectangleTool, updateElement } from "~/utils";
+import { isRectangleTool, UpdateElement } from "~/utils";
 import { ColorPicker } from "./ColorPicker";
 
 export function RectangleBackgroundPickerTool() {
@@ -36,15 +36,11 @@ export function RectangleBackgroundPickerTool() {
       return;
     }
 
-    updateElement(
-      {
-        ...selectedElement,
-        index: selectedElementIndex,
-        type: toolTypes.RECTANGLE,
-        options: { color },
-      },
-      elements
-    );
+    UpdateElement.new(elements).rectangle({
+      ...selectedElement,
+      index: selectedElementIndex,
+      options: { color },
+    });
   }
 
   const color = useMemo(() => {

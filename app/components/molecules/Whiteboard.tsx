@@ -32,7 +32,7 @@ import {
   isPointInElement,
   isPointInText,
   isShapeElement,
-  updateElement,
+  UpdateElement
 } from "~/utils";
 import { TextEditor } from "./TextEditor";
 
@@ -170,18 +170,16 @@ export function Whiteboard(_: WhiteboardProps) {
             const coordinates = adjustElementCoordinates(element);
             if (coordinates) {
               const { x1, x2, y1, y2 } = coordinates;
-              updateElement(
-                {
-                  id: element.id,
-                  index: selectedElementIndex,
-                  type: element.type,
-                  x1,
-                  y1,
-                  x2,
-                  y2,
-                },
-                elements
-              );
+              const updateElement = UpdateElement.new(elements);
+              updateElement.update({
+                id: element.id,
+                index: selectedElementIndex,
+                type: element.type,
+                x1,
+                y1,
+                x2,
+                y2,
+              });
             }
           }
         }
@@ -208,15 +206,12 @@ export function Whiteboard(_: WhiteboardProps) {
       if (activeElementIndex !== -1) {
         const element = elements[activeElementIndex];
         if (isShapeElement(element)) {
-          updateElement(
-            {
-              ...element,
-              x2: x,
-              y2: y,
-              index: activeElementIndex,
-            },
-            elements
-          );
+          UpdateElement.new(elements).update({
+            ...element,
+            x2: x,
+            y2: y,
+            index: activeElementIndex,
+          });
         }
       }
     } else if (action === actions.DRAGGING) {
@@ -225,6 +220,7 @@ export function Whiteboard(_: WhiteboardProps) {
       if (index === -1) return;
 
       const element = elements[index];
+      const updateElement = UpdateElement.new(elements);
       if (
         element.type === toolTypes.LINE ||
         element.type === toolTypes.RECTANGLE
@@ -238,44 +234,35 @@ export function Whiteboard(_: WhiteboardProps) {
         const newY2 = newY1 + height;
 
         if (element.type === toolTypes.RECTANGLE) {
-          updateElement(
-            {
-              ...element,
-              x1: newX1,
-              y1: newY1,
-              x2: newX2,
-              y2: newY2,
-              index,
-              options: { color: element.element.color },
-            },
-            elements
-          );
+          updateElement.rectangle({
+            ...element,
+            x1: newX1,
+            y1: newY1,
+            x2: newX2,
+            y2: newY2,
+            index,
+            options: { color: element.element.color },
+          });
         } else {
-          updateElement(
-            {
-              ...element,
-              x1: newX1,
-              y1: newY1,
-              x2: newX2,
-              y2: newY2,
-              index,
-            },
-            elements
-          );
+          updateElement.line({
+            ...element,
+            x1: newX1,
+            y1: newY1,
+            x2: newX2,
+            y2: newY2,
+            index,
+          });
         }
       } else if (element.type === toolTypes.TEXT) {
         const newX1 = x - dragOffset.x;
         const newY1 = y - dragOffset.y;
-        updateElement(
-          {
-            ...element,
-            type: toolTypes.TEXT,
-            x1: newX1,
-            y1: newY1,
-            index,
-          },
-          elements
-        );
+        updateElement.text({
+          ...element,
+          type: toolTypes.TEXT,
+          x1: newX1,
+          y1: newY1,
+          index,
+        });
       }
     } else if (toolType === toolTypes.TEXT) {
       canvas.style.cursor = "text ";
@@ -342,18 +329,15 @@ export function Whiteboard(_: WhiteboardProps) {
     );
     if (selectedElementIndex !== -1) {
       const element = elements[selectedElementIndex] as Element<TextElement>;
-      updateElement(
-        {
-          id: element.id,
-          index: selectedElementIndex,
-          type: toolTypes.TEXT,
-          x1: element.x1,
-          y1: element.y1,
-          text,
-          properties: element.properties,
-        },
-        elements
-      );
+      UpdateElement.new(elements).text({
+        id: element.id,
+        index: selectedElementIndex,
+        type: toolTypes.TEXT,
+        x1: element.x1,
+        y1: element.y1,
+        text,
+        properties: element.properties,
+      });
     }
     reset();
   }
