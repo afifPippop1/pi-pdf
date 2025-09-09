@@ -21,7 +21,7 @@ export function isOnHighlight({
   coordinate: BaseCoordinate;
 }) {
   if (!isShapeElement(element)) return defaultValue;
-  const tolerance = 3;
+  const tolerance = 5;
   const onLeft =
     Math.abs(coordinate.x - element.x1) <= tolerance &&
     coordinate.y >= element.y1 &&
