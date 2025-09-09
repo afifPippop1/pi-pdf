@@ -1,7 +1,7 @@
 import { toolTypes } from "~/constants";
 import { shapeGenerator } from "~/lib/shape";
 import type { Color } from "~/lib/shape/rectangle";
-import type { TextProperties } from "~/types";
+import type { Element, TextProperties } from "~/types";
 
 const generator = shapeGenerator();
 
@@ -48,17 +48,17 @@ function generateLine({ x1, x2, y1, y2 }: Omit<LineProps, "id" | "type">) {
 }
 
 export class CreateElement {
-  static rectangle(props: RectangleProps) {
+  static rectangle(props: RectangleProps): Element {
     const { x1, x2, y1, y2, type, id, options } = props;
     const element = generateRectangle({ x1, x2, y1, y2, options });
     return { id, element, type, x1, y1, x2, y2 };
   }
-  static line(props: LineProps) {
+  static line(props: LineProps): Element {
     const { x1, x2, y1, y2, type, id } = props;
     const element = generateLine({ x1, x2, y1, y2 });
     return { id, element, type, x1, y1, x2, y2 };
   }
-  static text(props: TextProps) {
+  static text(props: TextProps): Element {
     const { id, type, x1, y1, text, properties } = props;
     return { id, type, x1, y1, text, properties };
   }

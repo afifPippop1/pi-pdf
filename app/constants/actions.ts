@@ -1,7 +1,27 @@
+import type { Action } from "~/types/action";
+
 export const actions = {
   DRAWING: "DRAWING",
   WRITING: "WRITING",
   DRAGGING: "DRAGGING",
-  // SCALING: "SCALING",
+  SCALING_TOP: "SCALING_TOP",
+  SCALING_BOTTOM: "SCALING_BOTTOM",
+  SCALING_RIGHT: "SCALING_RIGHT",
+  SCALING_LEFT: "SCALING_LEFT",
+  SCALING_TOP_RIGHT: "SCALING_TOP_RIGHT",
+  SCALING_TOP_LEFT: "SCALING_TOP_LEFT",
+  SCALING_BOTTOM_RIGHT: "SCALING_BOTTOM_RIGHT",
+  SCALING_BOTTOM_LEFT: "SCALING_BOTTOM_LEFT",
   // ROTATING: "ROTATING",
 } as const;
+
+export const scalingActions = new Set<Action | null>([
+  actions.SCALING_TOP,
+  actions.SCALING_BOTTOM,
+  actions.SCALING_RIGHT,
+  actions.SCALING_LEFT,
+  actions.SCALING_TOP_RIGHT,
+  actions.SCALING_TOP_LEFT,
+  actions.SCALING_BOTTOM_RIGHT,
+  actions.SCALING_BOTTOM_LEFT,
+] as const);
