@@ -26,7 +26,7 @@ import type { Action } from "~/types/action";
 import {
   adjustElementCoordinates,
   adjustmentRequired,
-  createElement,
+  CreateElement,
   drawElementOnCanvas,
   getDocumentSize,
   isPointInElement,
@@ -99,7 +99,7 @@ export function Whiteboard(_: WhiteboardProps) {
       switch (toolType) {
         case toolTypes.RECTANGLE:
           setAction(actions.DRAWING);
-          const element = createElement({
+          const element = CreateElement.rectangle({
             x1: x,
             y1: y,
             x2: x,
@@ -113,7 +113,7 @@ export function Whiteboard(_: WhiteboardProps) {
           break;
         case toolTypes.LINE: {
           setAction(actions.DRAWING);
-          const element = createElement({
+          const element = CreateElement.line({
             x1: x,
             y1: y,
             x2: x,
@@ -126,7 +126,7 @@ export function Whiteboard(_: WhiteboardProps) {
           break;
         }
         case toolTypes.TEXT: {
-          const element = createElement({
+          const element = CreateElement.text({
             x1: x,
             y1: y,
             text: "",

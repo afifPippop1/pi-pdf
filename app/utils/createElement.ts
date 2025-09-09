@@ -49,8 +49,8 @@ function generateLine({ x1, x2, y1, y2 }: Omit<LineProps, "id" | "type">) {
   return generator.line(x1, y1, x2, y2);
 }
 
-export function createElement(props: CreateElementProps): Element {
-  if (props.type === toolTypes.RECTANGLE) {
+export class CreateElement {
+  static rectangle(props: RectangleProps) {
     const { x1, x2, y1, y2, type, id, options } = props;
     const element = generateRectangle({ x1, x2, y1, y2, options });
     return {
@@ -62,7 +62,8 @@ export function createElement(props: CreateElementProps): Element {
       x2: x2 || x1,
       y2: y2 || y1,
     };
-  } else if (props.type === toolTypes.LINE) {
+  }
+  static line(props: LineProps) {
     const { x1, x2, y1, y2, type, id } = props;
     const element = generateLine({ x1, x2, y1, y2 });
     return {
@@ -75,7 +76,7 @@ export function createElement(props: CreateElementProps): Element {
       y2: y2 || y1,
     };
   }
-  if (props.type === toolTypes.TEXT) {
+  static text(props: TextProps) {
     return {
       id: props.id,
       type: toolTypes.TEXT,
@@ -84,7 +85,5 @@ export function createElement(props: CreateElementProps): Element {
       text: props.text,
       properties: props.properties,
     };
-  } else {
-    throw new Error("Something went wrong when creating element");
   }
 }

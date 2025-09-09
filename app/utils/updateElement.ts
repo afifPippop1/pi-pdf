@@ -7,7 +7,7 @@ import type {
   RectangleElement,
   TextElement,
 } from "~/types";
-import { createElement } from "./createElement";
+import { CreateElement } from "./createElement";
 
 interface RectangleElementProps
   extends Omit<Element<RectangleElement>, "element"> {
@@ -39,7 +39,7 @@ export class UpdateElement {
   rectangle(element: RectangleElementProps) {
     const stateOptions = store.getState().editor.toolState.RECTANGLE;
     const { id, type, x1, x2, y1, y2, options } = element;
-    const updateElement = createElement({
+    const updateElement = CreateElement.rectangle({
       id,
       type,
       x1,
@@ -56,7 +56,7 @@ export class UpdateElement {
 
   line(element: LineElementProps) {
     const { id, type, x1, x2, y1, y2 } = element;
-    const updateElement = createElement({
+    const updateElement = CreateElement.line({
       id,
       type,
       x1,
@@ -73,7 +73,7 @@ export class UpdateElement {
   text(element: TextElementProps) {
     const { id, type, x1, y1, text, properties } = element;
 
-    const updateElement = createElement({
+    const updateElement = CreateElement.text({
       id,
       type,
       x1,
