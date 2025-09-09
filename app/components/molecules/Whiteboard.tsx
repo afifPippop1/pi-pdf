@@ -6,7 +6,7 @@ import {
   type MouseEvent,
   type TouchEvent,
 } from "react";
-import { actions, toolTypes } from "~/constants";
+import { actions, scalingActions, toolTypes } from "~/constants";
 import { useActivePageElements } from "~/hooks/useActivePageElements";
 import { useDrag } from "~/hooks/useDrag";
 import { useDrawElementsOnCanvas } from "~/hooks/useDrawElementsOnCanvas";
@@ -26,9 +26,12 @@ import {
   generateInitialElement,
   getActiveElementIndex,
   getDocumentSize,
+  isOnHighlight,
   isPointInElement,
   isPointInText,
   normalizeCoordinate,
+  ScaleElementOnWhiteboard,
+  setCanvasCursor,
   UpdateElement,
 } from "~/utils";
 import { TextEditor } from "./TextEditor";
@@ -75,7 +78,29 @@ export function Whiteboard() {
     }
 
     if (!toolType && selectedElement) {
-      if (
+      const onHighlight = isOnHighlight({
+        element: selectedElement,
+        coordinate: normalizedCoordinate,
+      });
+      if (onHighlight.on) {
+        if (onHighlight.onTopRight) {
+          setAction(actions.SCALING_TOP_RIGHT);
+        } else if (onHighlight.onTopLeft) {
+          setAction(actions.SCALING_TOP_LEFT);
+        } else if (onHighlight.onBottomRight) {
+          setAction(actions.SCALING_BOTTOM_RIGHT);
+        } else if (onHighlight.onBottomLeft) {
+          setAction(actions.SCALING_BOTTOM_LEFT);
+        } else if (onHighlight.onTop) {
+          setAction(actions.SCALING_TOP);
+        } else if (onHighlight.onBottom) {
+          setAction(actions.SCALING_BOTTOM);
+        } else if (onHighlight.onLeft) {
+          setAction(actions.SCALING_LEFT);
+        } else if (onHighlight.onRight) {
+          setAction(actions.SCALING_RIGHT);
+        }
+      } else if (
         isPointInElement({
           coordinate: normalizedCoordinate,
           element: selectedElement,
@@ -89,7 +114,6 @@ export function Whiteboard() {
           ))
       ) {
         setAction(actions.DRAGGING);
-        canvas.style.cursor = "grab";
 
         const offsetX = normalizedCoordinate.x - selectedElement.x1;
         const offsetY = normalizedCoordinate.y - selectedElement.y1;
@@ -102,7 +126,7 @@ export function Whiteboard() {
   function handleMouseUp() {
     const selectedElementIndex = getActiveElementIndex();
     if (selectedElementIndex !== -1) {
-      if (action === actions.DRAWING) {
+      if (action === actions.DRAWING || scalingActions.has(action)) {
         finishDrawingOnWhiteboard();
         reset();
       } else if (action === actions.DRAGGING) {
@@ -128,23 +152,46 @@ export function Whiteboard() {
     });
 
     if (action === actions.DRAWING) {
-      drawElementOnWhiteboard(normalizedCoordinate);
+      drawElementOnWhiteboard({
+        x2: normalizedCoordinate.x,
+        y2: normalizedCoordinate.y,
+      });
     } else if (action === actions.DRAGGING) {
       draggingElementOnWhiteboard({
         coordinate: normalizedCoordinate,
         dragOffset,
       });
+    } else if (scalingActions.has(action)) {
+      switch (action) {
+        case actions.SCALING_BOTTOM_RIGHT:
+          ScaleElementOnWhiteboard.bottomRight(normalizedCoordinate);
+          break;
+        case actions.SCALING_TOP_LEFT:
+          ScaleElementOnWhiteboard.topLeft(normalizedCoordinate);
+          break;
+        case actions.SCALING_TOP_RIGHT:
+          ScaleElementOnWhiteboard.topRight(normalizedCoordinate);
+          break;
+        case actions.SCALING_BOTTOM_LEFT:
+          ScaleElementOnWhiteboard.bottomLeft(normalizedCoordinate);
+          break;
+        case actions.SCALING_TOP:
+          ScaleElementOnWhiteboard.top(normalizedCoordinate);
+          break;
+        case actions.SCALING_LEFT:
+          ScaleElementOnWhiteboard.left(normalizedCoordinate);
+          break;
+        case actions.SCALING_RIGHT:
+          ScaleElementOnWhiteboard.right(normalizedCoordinate);
+          break;
+        case actions.SCALING_BOTTOM:
+          ScaleElementOnWhiteboard.bottom(normalizedCoordinate);
+          break;
+      }
     } else if (toolType === toolTypes.TEXT) {
       canvas.style.cursor = "text ";
     } else if (!toolType) {
-      const isHovering = elements.some((el) =>
-        isPointInElement({
-          coordinate: normalizedCoordinate,
-          element: el,
-          scale: zoom,
-        })
-      );
-      canvas.style.cursor = isHovering ? "pointer" : "default";
+      setCanvasCursor({ canvas, coordinate: normalizedCoordinate, zoom });
     }
   }
 
@@ -178,6 +225,7 @@ export function Whiteboard() {
       });
       if (coveringElements.length) {
         const lastElement = coveringElements[coveringElements.length - 1];
+        canvas.style.cursor = "move";
         dispatch(setSelectedElement(lastElement));
         canvas.focus();
       } else {

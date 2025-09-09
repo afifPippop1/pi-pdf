@@ -28,3 +28,6 @@ export * from "./updateElement";
 export * from "./draggingElementOnWhiteboard";
 export * from "./normalizeCoordinate";
 export * from "./finishDrawingOnWhiteboard";
+export * from "./isOnHighlight";
+export * from "./setCanvasCursor";
+export * from "./scaleElementOnWhiteboard";

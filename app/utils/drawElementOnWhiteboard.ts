@@ -1,10 +1,16 @@
 import { store } from "~/store/store";
+import type { BaseCoordinate, Coordinate2D } from "~/types";
 import { getActiveElementIndex } from "./getActiveElementIndex";
-import { isShapeElement } from "./isShapeElement";
 import { getActivePageElements } from "./getActivePageElements";
+import { isShapeElement } from "./isShapeElement";
 import { UpdateElement } from "./updateElement";
 
-export function drawElementOnWhiteboard({ x, y }: { x: number; y: number }) {
+export function drawElementOnWhiteboard({
+  x1,
+  y1,
+  x2,
+  y2,
+}: Partial<Coordinate2D>) {
   const selectedElement = store.getState().editor.selectedElement;
   const activeElementIndex = getActiveElementIndex();
   const elements = getActivePageElements();
@@ -14,8 +20,10 @@ export function drawElementOnWhiteboard({ x, y }: { x: number; y: number }) {
     if (isShapeElement(element)) {
       UpdateElement.new(elements).update({
         ...element,
-        x2: x,
-        y2: y,
+        x1: x1 || element.x1,
+        y1: y1 || element.y1,
+        x2: x2 || element.x2,
+        y2: y2 || element.y2,
         index: activeElementIndex,
       });
     }
