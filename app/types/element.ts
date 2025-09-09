@@ -1,6 +1,11 @@
 import type { toolTypes } from "~/constants";
 import type { Drawable, Line, Rectangle } from "~/lib/shape";
 
+export interface BaseCoordinate {
+  x: number;
+  y: number;
+}
+
 export interface Coordinate2D {
   x1: number;
   y1: number;

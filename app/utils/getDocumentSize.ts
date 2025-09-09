@@ -1,11 +1,12 @@
 import type { PDFDocument } from "pdf-lib";
 import { DEGREE, PDFViewer } from "~/constants";
+import { store } from "~/store/store";
 
 export function getDocumentSize(
   pdfDoc: PDFDocument | null,
-  activePageIndex: number,
   scale: number = PDFViewer.SCALE
 ) {
+  const activePageIndex = store.getState().editor.activePageIndex;
   if (!pdfDoc) return { height: 0, width: 0 };
 
   const angle = pdfDoc?.getPage(0).getRotation().angle;

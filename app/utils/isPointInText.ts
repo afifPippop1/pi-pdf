@@ -1,11 +1,11 @@
-import type { TextElement } from "../types";
+import type { BaseCoordinate, TextElement } from "../types";
 
 export function isPointInText(
   element: TextElement,
-  x: number,
-  y: number,
+  coordinate: BaseCoordinate,
   ctx: CanvasRenderingContext2D
 ) {
+  const { x, y } = coordinate;
   ctx.font = `${element.properties.fontSize}px ${element.properties.fontFamily}, sans-serif`;
   const width = ctx.measureText(element.text).width;
   const height = element.properties.fontSize;

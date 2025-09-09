@@ -1,17 +1,14 @@
 import { useState } from "react";
+import type { BaseCoordinate } from "~/types";
 
-interface Coordinate {
-  x: number;
-  y: number;
-}
-
-const defaultCoordinate: Coordinate = {
+const defaultCoordinate: BaseCoordinate = {
   x: 0,
   y: 0,
 };
 
 export function useDrag() {
-  const [dragOffset, setDragOffset] = useState<Coordinate>(defaultCoordinate);
+  const [dragOffset, setDragOffset] =
+    useState<BaseCoordinate>(defaultCoordinate);
   function reset() {
     setDragOffset(defaultCoordinate);
   }

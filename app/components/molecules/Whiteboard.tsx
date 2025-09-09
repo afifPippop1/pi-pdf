@@ -1,7 +1,4 @@
 import {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
   useRef,
   useState,
   type FocusEvent,
@@ -9,75 +6,49 @@ import {
   type MouseEvent,
   type TouchEvent,
 } from "react";
-import { v4 as uuid } from "uuid";
 import { actions, toolTypes } from "~/constants";
+import { useActivePageElements } from "~/hooks/useActivePageElements";
 import { useDrag } from "~/hooks/useDrag";
+import { useDrawElementsOnCanvas } from "~/hooks/useDrawElementsOnCanvas";
 import { useZoom } from "~/hooks/useZoom";
-import { createCanvas } from "~/lib/canvas";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   setActivePageElements,
   setSelectedElement,
   setToolType,
-  updateElement as updateElementStore,
 } from "~/store/slices/editorSlice";
-import type { Element, TextElement, TextProperties } from "~/types";
+import type { Element, TextElement } from "~/types";
 import type { Action } from "~/types/action";
 import {
   adjustElementCoordinates,
   adjustmentRequired,
-  CreateElement,
-  drawElementOnCanvas,
+  draggingElementOnWhiteboard,
+  drawElementOnWhiteboard,
+  generateInitialElement,
+  getActiveElementIndex,
   getDocumentSize,
   isPointInElement,
   isPointInText,
   isShapeElement,
+  normalizeCoordinate,
   UpdateElement,
 } from "~/utils";
 import { TextEditor } from "./TextEditor";
 
-export interface WhiteboardProps {}
-
-export function Whiteboard(_: WhiteboardProps) {
+export function Whiteboard() {
   const { zoom } = useZoom();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [action, setAction] = useState<Action | null>(null);
   const ref = useRef<HTMLCanvasElement>(null);
-  const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const toolType = useAppSelector((s) => s.editor.toolType);
-  const el = useAppSelector((s) => s.editor.elements);
-  const docSize = getDocumentSize(pdfDoc, activePageIndex, zoom);
-  const [action, setAction] = useState<Action | null>(null);
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
+  const docSize = getDocumentSize(pdfDoc, zoom);
   const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
-  const toolState = useAppSelector((s) => s.editor.toolState);
-  const elements = useMemo(
-    () => el[activePageIndex] || [],
-    [el, activePageIndex]
-  );
-  const activeElementIndex = useMemo(
-    () => elements.findIndex((element) => element.id === selectedElement?.id),
-    [elements, activePageIndex]
-  );
+  const elements = useActivePageElements();
 
   const dispatch = useAppDispatch();
 
-  useLayoutEffect(() => {
-    const canvasElement = ref.current;
-    const canvas = createCanvas(canvasElement);
-
-    if (canvasElement) {
-      drawElementOnCanvas(canvasElement, canvas, action, docSize, zoom);
-    }
-  }, [action, zoom, docSize]);
-
-  useEffect(() => {
-    if (action === actions.WRITING) {
-      requestAnimationFrame(() => {
-        textareaRef.current?.focus();
-      });
-    }
-  }, [action]);
+  useDrawElementsOnCanvas({ ref, action, docSize, zoom });
 
   function handleMouseDown(event: {
     clientX: number;
@@ -89,78 +60,41 @@ export function Whiteboard(_: WhiteboardProps) {
     const { clientX, clientY } = event;
     const canvas = event.currentTarget;
     const rect = canvas.getBoundingClientRect();
-    // Normalize coordinate
-    const { x, y } = normalizeCoordinate({
+    const normalizedCoordinate = normalizeCoordinate({
       x: clientX,
       y: clientY,
       bounding: rect,
+      zoom,
     });
-    // const x = (clientX - rect.left) / zoom;
-    // const y = (clientY - rect.top) / zoom;
 
     if (toolType) {
       canvas.style.cursor = "default";
-
-      switch (toolType) {
-        case toolTypes.RECTANGLE:
-          setAction(actions.DRAWING);
-          const element = CreateElement.rectangle({
-            x1: x,
-            y1: y,
-            x2: x,
-            y2: y,
-            type: toolType,
-            id: uuid(),
-            options: toolState.RECTANGLE,
-          });
-          dispatch(setSelectedElement(element));
-          dispatch(updateElementStore(element));
-          break;
-        case toolTypes.LINE: {
-          setAction(actions.DRAWING);
-          const element = CreateElement.line({
-            x1: x,
-            y1: y,
-            x2: x,
-            y2: y,
-            type: toolType,
-            id: uuid(),
-          });
-          dispatch(setSelectedElement(element));
-          dispatch(updateElementStore(element));
-          break;
-        }
-        case toolTypes.TEXT: {
-          const element = CreateElement.text({
-            x1: x,
-            y1: y,
-            text: "",
-            type: toolType,
-            id: uuid(),
-            properties: toolState.TEXT as TextProperties,
-          });
-          dispatch(setSelectedElement(element));
-          setAction(actions.WRITING);
-          dispatch(updateElementStore(element));
-        }
-      }
+      generateInitialElement({
+        canvas,
+        coordinate: normalizedCoordinate,
+        setAction,
+      });
     }
 
     if (!toolType && selectedElement) {
       if (
         isPointInElement({
-          coordinate: { x, y },
+          coordinate: normalizedCoordinate,
           element: selectedElement,
           scale: zoom,
         }) ||
         (selectedElement.type === toolTypes.TEXT &&
-          isPointInText(selectedElement, x, y, canvas.getContext("2d")!))
+          isPointInText(
+            selectedElement,
+            normalizedCoordinate,
+            canvas.getContext("2d")!
+          ))
       ) {
         setAction(actions.DRAGGING);
         canvas.style.cursor = "grab";
 
-        const offsetX = x - selectedElement.x1;
-        const offsetY = y - selectedElement.y1;
+        const offsetX = normalizedCoordinate.x - selectedElement.x1;
+        const offsetY = normalizedCoordinate.y - selectedElement.y1;
 
         setDragOffset({ x: offsetX, y: offsetY });
       }
@@ -168,9 +102,7 @@ export function Whiteboard(_: WhiteboardProps) {
   }
 
   function handleMouseUp() {
-    const selectedElementIndex = elements.findIndex(
-      (el) => el.id === selectedElement?.id
-    );
+    const selectedElementIndex = getActiveElementIndex();
     if (selectedElementIndex !== -1) {
       if (action === actions.DRAWING) {
         const element = elements[selectedElementIndex];
@@ -199,88 +131,6 @@ export function Whiteboard(_: WhiteboardProps) {
     }
   }
 
-  function drawingElement({ x, y }: { x: number; y: number }) {
-    if (!selectedElement) return;
-    if (activeElementIndex !== -1) {
-      const element = elements[activeElementIndex];
-      if (isShapeElement(element)) {
-        UpdateElement.new(elements).update({
-          ...element,
-          x2: x,
-          y2: y,
-          index: activeElementIndex,
-        });
-      }
-    }
-  }
-
-  function draggingElement({ x, y }: { x: number; y: number }) {
-    if (!selectedElement) return;
-    const index = elements.findIndex((el) => el.id === selectedElement.id);
-    if (index === -1) return;
-
-    const element = elements[index];
-    const updateElement = UpdateElement.new(elements);
-    if (
-      element.type === toolTypes.LINE ||
-      element.type === toolTypes.RECTANGLE
-    ) {
-      const width = element.x2 - element.x1;
-      const height = element.y2 - element.y1;
-
-      const newX1 = x - dragOffset.x;
-      const newY1 = y - dragOffset.y;
-      const newX2 = newX1 + width;
-      const newY2 = newY1 + height;
-
-      if (element.type === toolTypes.RECTANGLE) {
-        updateElement.rectangle({
-          ...element,
-          x1: newX1,
-          y1: newY1,
-          x2: newX2,
-          y2: newY2,
-          index,
-          options: { color: element.element.color },
-        });
-      } else {
-        updateElement.line({
-          ...element,
-          x1: newX1,
-          y1: newY1,
-          x2: newX2,
-          y2: newY2,
-          index,
-        });
-      }
-    } else if (element.type === toolTypes.TEXT) {
-      const newX1 = x - dragOffset.x;
-      const newY1 = y - dragOffset.y;
-      updateElement.text({
-        ...element,
-        type: toolTypes.TEXT,
-        x1: newX1,
-        y1: newY1,
-        index,
-      });
-    }
-  }
-
-  function normalizeCoordinate({
-    x,
-    y,
-    bounding,
-  }: {
-    x: number;
-    y: number;
-    bounding: DOMRect;
-  }) {
-    return {
-      x: (x - bounding.left) / zoom,
-      y: (y - bounding.top) / zoom,
-    };
-  }
-
   function handleMouseMove(event: {
     clientX: number;
     clientY: number;
@@ -294,12 +144,16 @@ export function Whiteboard(_: WhiteboardProps) {
       x: clientX,
       y: clientY,
       bounding: rect,
+      zoom,
     });
 
     if (action === actions.DRAWING) {
-      drawingElement(normalizedCoordinate);
+      drawElementOnWhiteboard(normalizedCoordinate);
     } else if (action === actions.DRAGGING) {
-      draggingElement(normalizedCoordinate);
+      draggingElementOnWhiteboard({
+        coordinate: normalizedCoordinate,
+        dragOffset,
+      });
     } else if (toolType === toolTypes.TEXT) {
       canvas.style.cursor = "text ";
     } else if (!toolType) {
@@ -326,12 +180,13 @@ export function Whiteboard(_: WhiteboardProps) {
 
       const coveringElements = elements.filter((el) => {
         if (el.type === toolTypes.TEXT) {
-          const { x, y } = normalizeCoordinate({
+          const coordinate = normalizeCoordinate({
             x: clientX,
             y: clientY,
             bounding: rect,
+            zoom,
           });
-          return isPointInText(el, x, y, canvas.getContext("2d")!);
+          return isPointInText(el, coordinate, canvas.getContext("2d")!);
         }
         const x = clientX - rect.left;
         const y = clientY - rect.top;
