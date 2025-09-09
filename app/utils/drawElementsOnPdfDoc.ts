@@ -17,6 +17,21 @@ export async function drawElementsOnPdfDoc(
   const buffer = await doc.save();
   const pdfDoc = await PDFDocument.load(buffer);
   pdfDoc.registerFontkit(fontkit);
+
+  await drawElements({ elements, pdfDoc, loadingTask });
+
+  return pdfDoc;
+}
+
+async function drawElements({
+  pdfDoc,
+  loadingTask,
+  elements,
+}: {
+  pdfDoc: PDFDocument;
+  loadingTask: PDFDocumentLoadingTask;
+  elements: Element[][];
+}) {
   for (const index of pdfDoc.getPageIndices()) {
     for (const element of elements[index]) {
       const pdfCoordinate = await getPdfCoordinate({
@@ -53,7 +68,6 @@ export async function drawElementsOnPdfDoc(
       }
     }
   }
-  return pdfDoc;
 }
 
 function generateRGBColor(color: Color) {
