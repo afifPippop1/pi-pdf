@@ -20,16 +20,14 @@ import {
 import type { Element, TextElement } from "~/types";
 import type { Action } from "~/types/action";
 import {
-  adjustElementCoordinates,
-  adjustmentRequired,
   draggingElementOnWhiteboard,
   drawElementOnWhiteboard,
+  finishDrawingOnWhiteboard,
   generateInitialElement,
   getActiveElementIndex,
   getDocumentSize,
   isPointInElement,
   isPointInText,
-  isShapeElement,
   normalizeCoordinate,
   UpdateElement,
 } from "~/utils";
@@ -105,25 +103,7 @@ export function Whiteboard() {
     const selectedElementIndex = getActiveElementIndex();
     if (selectedElementIndex !== -1) {
       if (action === actions.DRAWING) {
-        const element = elements[selectedElementIndex];
-        if (isShapeElement(element)) {
-          if (adjustmentRequired(element.type)) {
-            const coordinates = adjustElementCoordinates(element);
-            if (coordinates) {
-              const { x1, x2, y1, y2 } = coordinates;
-              const updateElement = UpdateElement.new(elements);
-              updateElement.update({
-                id: element.id,
-                index: selectedElementIndex,
-                type: element.type,
-                x1,
-                y1,
-                x2,
-                y2,
-              });
-            }
-          }
-        }
+        finishDrawingOnWhiteboard();
         reset();
       } else if (action === actions.DRAGGING) {
         reset();
@@ -232,13 +212,9 @@ export function Whiteboard() {
     if (selectedElementIndex !== -1) {
       const element = elements[selectedElementIndex] as Element<TextElement>;
       UpdateElement.new(elements).text({
-        id: element.id,
+        ...element,
         index: selectedElementIndex,
-        type: toolTypes.TEXT,
-        x1: element.x1,
-        y1: element.y1,
         text,
-        properties: element.properties,
       });
     }
     reset();
