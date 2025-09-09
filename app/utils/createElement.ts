@@ -33,8 +33,6 @@ type TextProps = {
   properties: TextProperties;
 };
 
-type CreateElementProps = RectangleProps | LineProps | TextProps;
-
 function generateRectangle({
   x1,
   x2,
@@ -49,42 +47,19 @@ function generateLine({ x1, x2, y1, y2 }: Omit<LineProps, "id" | "type">) {
   return generator.line(x1, y1, x2, y2);
 }
 
-export function createElement(props: CreateElementProps): Element {
-  if (props.type === toolTypes.RECTANGLE) {
+export class CreateElement {
+  static rectangle(props: RectangleProps): Element {
     const { x1, x2, y1, y2, type, id, options } = props;
     const element = generateRectangle({ x1, x2, y1, y2, options });
-    return {
-      id,
-      element,
-      type,
-      x1,
-      y1,
-      x2: x2 || x1,
-      y2: y2 || y1,
-    };
-  } else if (props.type === toolTypes.LINE) {
+    return { id, element, type, x1, y1, x2, y2 };
+  }
+  static line(props: LineProps): Element {
     const { x1, x2, y1, y2, type, id } = props;
     const element = generateLine({ x1, x2, y1, y2 });
-    return {
-      id,
-      element,
-      type,
-      x1,
-      y1,
-      x2: x2 || x1,
-      y2: y2 || y1,
-    };
+    return { id, element, type, x1, y1, x2, y2 };
   }
-  if (props.type === toolTypes.TEXT) {
-    return {
-      id: props.id,
-      type: toolTypes.TEXT,
-      x1: props.x1,
-      y1: props.y1,
-      text: props.text,
-      properties: props.properties,
-    };
-  } else {
-    throw new Error("Something went wrong when creating element");
+  static text(props: TextProps): Element {
+    const { id, type, x1, y1, text, properties } = props;
+    return { id, type, x1, y1, text, properties };
   }
 }

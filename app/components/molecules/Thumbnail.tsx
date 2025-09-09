@@ -18,8 +18,8 @@ import { useEffect, useRef, useState } from "react";
 import { useMobile } from "~/hooks/useMobile";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { reorderPage, setActivePageIndex } from "~/store/slices/editorSlice";
-import { getPdfPageThumbnail } from "~/utils/getPdfThumbnail.client";
-import { ThumbnailItem } from "./ThumbnailItem.client";
+import { getPdfPageThumbnail } from "~/utils/getPdfThumbnail";
+import { ThumbnailItem } from "./ThumbnailItem";
 
 interface ThumbnailProps {
   buffer: Uint8Array;

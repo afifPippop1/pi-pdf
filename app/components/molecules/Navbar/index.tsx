@@ -9,7 +9,7 @@ import Popover, {
   PopoverItem,
   PopoverTrigger,
 } from "../Popover";
-import { SavePDFButton } from "./SavePDFButton.client";
+import { SavePDFButton } from "./SavePDFButton";
 
 interface NavbarProps {}
 

@@ -1,6 +1,6 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { Suspense } from "react";
-import { EditorCanvas } from "~/components/molecules/EditorCanvas.client";
+import { EditorCanvas } from "~/components/molecules/EditorCanvas";
 import { ZoomProvider } from "~/context/ZoomContext";
 import { useDocBuffer } from "~/hooks/useDocBuffer";
 import { removePageHandler } from "~/utils";
@@ -8,19 +8,17 @@ import { AddFloatingButton } from "../molecules/AddFloatingButton";
 import EmptyFile from "../molecules/EmptyFile";
 import { Navbar } from "../molecules/Navbar";
 import { PropertiesPanel } from "../molecules/PropertiesPanel";
-import { Thumbnail } from "../molecules/Thumbnail.client";
+import { Thumbnail } from "../molecules/Thumbnail";
 import { ToolPicker } from "../molecules/ToolPicker";
 import { ZoomTool } from "../molecules/ZoomTool";
-import { useAppSelector } from "~/store/hooks";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
 ).toString();
 
-export function EditorPage() {
+export default function EditorPage() {
   const { blob, setBlob } = useDocBuffer();
-  const fonts = useAppSelector((s) => s.editor.fonts);
 
   async function handleRemove(index: number) {
     await removePageHandler(index, setBlob);
