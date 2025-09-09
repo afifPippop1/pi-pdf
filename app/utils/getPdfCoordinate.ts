@@ -4,12 +4,17 @@ import { getPageFromIndex } from "./getPageFromIndex";
 import { toolTypes } from "~/constants";
 import { adjustElementCoordinates } from "./adjustElementCoordinates";
 
-export function getPdfCoordinate(
-  loadingTask: PDFDocumentLoadingTask,
-  pageIndex: number,
-  scale: number,
-  element: Element
-): Promise<Coordinate2D> {
+export function getPdfCoordinate({
+  loadingTask,
+  pageIndex,
+  scale,
+  element,
+}: {
+  loadingTask: PDFDocumentLoadingTask;
+  pageIndex: number;
+  scale: number;
+  element: Element;
+}): Promise<Coordinate2D> {
   return loadingTask.promise.then((pdf) => {
     return pdf.getPage(getPageFromIndex(pageIndex)).then((page) => {
       let pdfCoordinate: Coordinate2D = { x1: 0, y1: 0, x2: 0, y2: 0 };
