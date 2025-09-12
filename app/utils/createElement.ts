@@ -1,6 +1,6 @@
 import { toolTypes } from "~/constants";
 import { shapeGenerator } from "~/lib/shape";
-import type { Color } from "~/lib/shape/rectangle";
+import type { Color } from "~/types";
 import type { Element, TextProperties } from "~/types";
 
 const generator = shapeGenerator();

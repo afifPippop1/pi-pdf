@@ -1,5 +1,5 @@
 import { RgbaColorPicker, type RgbaColor } from "react-colorful";
-import type { Color } from "~/lib/shape/rectangle";
+import type { Color } from "~/types";
 
 const defaultColor = {
   a: 1,

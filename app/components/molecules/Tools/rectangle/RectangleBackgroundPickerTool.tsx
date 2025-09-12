@@ -4,7 +4,7 @@ import { toolTypes } from "~/constants";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, UpdateElement } from "~/utils";
-import { ColorPicker } from "./ColorPicker";
+import { ColorPicker } from "../ColorPicker";
 
 export function RectangleBackgroundPickerTool() {
   const toolType = useAppSelector((s) => s.editor.toolType);

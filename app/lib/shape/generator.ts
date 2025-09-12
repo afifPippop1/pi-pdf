@@ -1,5 +1,6 @@
+import type { Color } from "~/types";
 import { Line } from "./line";
-import { Rectangle, type Color } from "./rectangle";
+import { Rectangle } from "./rectangle";
 
 export class ShapeGenerator {
   constructor() {}

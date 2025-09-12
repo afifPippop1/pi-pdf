@@ -1,5 +1,5 @@
 import { useAppSelector } from "~/store/hooks";
-import { RectangleTool } from "./Tools/RectangleTool";
+import { RectangleTool } from "./Tools/rectangle/RectangleTool";
 import { toolTypes } from "~/constants";
 import { TextTool } from "./Tools/TextTool";
 

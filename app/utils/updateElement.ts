@@ -1,7 +1,7 @@
-import type { Color } from "~/lib/shape/rectangle";
 import { setActivePageElements } from "~/store/slices/editorSlice";
 import { store } from "~/store/store";
 import type {
+  Color,
   Element,
   LineElement,
   RectangleElement,

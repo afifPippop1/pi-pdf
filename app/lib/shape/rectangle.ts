@@ -1,4 +1,4 @@
-export type Color = { r: number; g: number; b: number; a: number };
+import type { Color } from "~/types";
 
 export class Rectangle {
   public color: Color = {

@@ -7,7 +7,7 @@ import type { Coordinate2D, Element, TextElement } from "~/types";
 import { getPdfCoordinate } from "./getPdfCoordinate";
 import { isShapeElement } from "./isShapeElement";
 import { getFontFile } from "./getFontFile";
-import type { Color } from "~/lib/shape/rectangle";
+import type { Color } from "~/types";
 
 export async function drawElementsOnPdfDoc(
   loadingTask: PDFDocumentLoadingTask,

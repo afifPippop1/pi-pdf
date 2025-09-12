@@ -10,19 +10,7 @@ export function Button({ className, ...props }: ButtonProps) {
   return (
     <button
       {...props}
-      className={classNames(
-        "btn",
-        // "px-4",
-        // "py-2",
-        // "rounded",
-        // "hover:bg-blue-500/90",
-        // "cursor-pointer",
-        // "bg-blue-500",
-        // "text-white",
-        // "text-xs",
-        // "md:text-base",
-        className
-      )}
+      className={classNames("btn btn-xs md:btn-sm btn-primary", className)}
     >
       {props.children}
     </button>
