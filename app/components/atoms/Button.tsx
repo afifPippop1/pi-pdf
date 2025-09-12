@@ -11,15 +11,16 @@ export function Button({ className, ...props }: ButtonProps) {
     <button
       {...props}
       className={classNames(
-        "px-4",
-        "py-2",
-        "rounded",
-        "hover:bg-blue-500/90",
-        "cursor-pointer",
-        "bg-blue-500",
-        "text-white",
-        "text-xs",
-        "md:text-base",
+        "btn",
+        // "px-4",
+        // "py-2",
+        // "rounded",
+        // "hover:bg-blue-500/90",
+        // "cursor-pointer",
+        // "bg-blue-500",
+        // "text-white",
+        // "text-xs",
+        // "md:text-base",
         className
       )}
     >
