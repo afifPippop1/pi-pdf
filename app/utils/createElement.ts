@@ -1,6 +1,6 @@
 import { toolTypes } from "~/constants";
 import { shapeGenerator } from "~/lib/shape";
-import type { Color } from "~/types";
+import type { Color, RectangleProperties } from "~/types";
 import type { Element, TextProperties } from "~/types";
 
 const generator = shapeGenerator();
@@ -12,9 +12,7 @@ type RectangleProps = {
   y1: number;
   y2: number;
   id: string;
-  options?: {
-    color?: Partial<Color>;
-  };
+  options: RectangleProperties;
 };
 type LineProps = {
   type: typeof toolTypes.LINE;

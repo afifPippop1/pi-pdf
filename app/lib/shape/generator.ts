@@ -10,7 +10,7 @@ export class ShapeGenerator {
     y: number,
     width: number,
     height: number,
-    options?: RectangleProperties
+    options: RectangleProperties
   ): Rectangle {
     return new Rectangle(x, y, width, height, options);
   }

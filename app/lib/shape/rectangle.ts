@@ -1,28 +1,18 @@
 import type { Color, RectangleProperties } from "~/types";
 
-export class Rectangle {
-  public color: Color = {
-    b: 255,
-    g: 255,
-    r: 255,
-    a: 1,
-  };
+const defaultColor = {
+  b: 255,
+  g: 255,
+  r: 255,
+  a: 1,
+};
 
+export class Rectangle {
   constructor(
     public x: number,
     public y: number,
     public width: number,
     public height: number,
-    option?: RectangleProperties
-  ) {
-    if (option) {
-      if (option.color) {
-        const { r, g, b, a } = option.color;
-        if (r) this.color.r = r;
-        if (g) this.color.g = g;
-        if (b) this.color.b = b;
-        if (a) this.color.a = a;
-      }
-    }
-  }
+    public options: RectangleProperties
+  ) {}
 }

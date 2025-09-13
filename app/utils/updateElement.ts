@@ -5,6 +5,7 @@ import type {
   Element,
   LineElement,
   RectangleElement,
+  RectangleProperties,
   TextElement,
 } from "~/types";
 import { CreateElement } from "./createElement";
@@ -12,9 +13,7 @@ import { CreateElement } from "./createElement";
 interface RectangleElementProps
   extends Omit<Element<RectangleElement>, "element"> {
   index: number;
-  options?: {
-    color?: Partial<Color>;
-  };
+  options?: RectangleProperties;
 }
 
 interface LineElementProps extends Omit<Element<LineElement>, "element"> {

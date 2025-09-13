@@ -1,4 +1,4 @@
-export const DEFAULT_LINE_WIDTH = 1;
+export const DEFAULT_LINE_WIDTH = 2;
 
 export const HIGHLIGHT_PADDING = 4;
 export const HIGHLIGHT_CORNER_SIZE = 8;

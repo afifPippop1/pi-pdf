@@ -91,7 +91,7 @@ async function drawRectangle({
   pageIndex: number;
   coordinate: Coordinate2D;
 }) {
-  const { alpha, blue, green, red } = generateRGBColor(element.color);
+  const { alpha, blue, green, red } = generateRGBColor(element.options.color);
   const { x1, x2, y1, y2 } = coordinate;
   const height = Math.abs(y2 - y1);
   const width = Math.abs(x2 - x1);

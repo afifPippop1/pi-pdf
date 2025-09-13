@@ -1,29 +1,22 @@
 import { useMemo } from "react";
-import { type RgbColor } from "react-colorful";
+import { type RgbaColor, type RgbColor } from "react-colorful";
 import { toolTypes } from "~/constants";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, UpdateElement } from "~/utils";
 import { ColorPicker } from "../ColorPicker";
+import { useActiveElementIndex } from "~/hooks/useActiveElementIndex";
+import { useActivePageElements } from "~/hooks/useActivePageElements";
 
 export function RectangleBackgroundPickerTool() {
+  const color = useAppSelector((s) => s.editor.toolState.RECTANGLE.color);
   const toolType = useAppSelector((s) => s.editor.toolType);
-  const selectedElement = useAppSelector((s) => s.editor.selectedElement);
-  const els = useAppSelector((s) => s.editor.elements);
-  const activePageIndex = useAppSelector((s) => s.editor.activePageIndex);
-  const toolState = useAppSelector((s) => s.editor.toolState);
+  const selectedElementIndex = useActiveElementIndex();
+  const elements = useActivePageElements();
   const dispatch = useAppDispatch();
 
-  const elements = useMemo(
-    () => els[activePageIndex] || [],
-    [els, activePageIndex]
-  );
-  const selectedElementIndex = useMemo(
-    () => elements.findIndex((el) => el.id === selectedElement?.id),
-    [elements, selectedElement]
-  );
-
-  function handleChange(color: RgbColor) {
+  function handleChange(color: RgbaColor) {
+    const selectedElement = elements[selectedElementIndex];
     if (isRectangleTool(toolType)) {
       dispatch(setToolState({ type: toolTypes.RECTANGLE, value: { color } }));
     }
@@ -35,26 +28,21 @@ export function RectangleBackgroundPickerTool() {
     ) {
       return;
     }
+    const options = {
+      outlineColor: { ...selectedElement.element.options.outlineColor },
+      color,
+    };
 
     UpdateElement.new(elements).rectangle({
       ...selectedElement,
       index: selectedElementIndex,
-      options: { color },
+      options,
     });
-  }
-
-  const color = useMemo(() => {
-    if (!selectedElement || selectedElement.type !== toolTypes.RECTANGLE)
-      return toolState.RECTANGLE.color;
-    return selectedElement.element.color;
-  }, [selectedElement, toolState.RECTANGLE]);
-
-  if (!isRectangleTool(toolType) && !isRectangleTool(selectedElement?.type)) {
-    return null;
   }
 
   return (
     <ColorPicker
+      key="rectangle-background-color"
       color={color}
       onChange={handleChange}
       title="Background color"
