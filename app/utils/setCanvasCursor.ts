@@ -3,6 +3,7 @@ import { store } from "~/store/store";
 import type { BaseCoordinate } from "~/types";
 import { isPointInElement } from "./isPointInElement";
 import { isPointInText } from "./isPointInText";
+import { getActivePageElements } from "./getActivePageElements";
 
 export function setCanvasCursor({
   canvas,
@@ -13,13 +14,17 @@ export function setCanvasCursor({
   coordinate: BaseCoordinate;
   zoom: number;
 }) {
+  const context = canvas.getContext("2d")!;
+  const elements = getActivePageElements();
+  for (const element of elements) {
+    const isHovering =
+      isPointInElement({ coordinate, element, scale: zoom }) ||
+      isPointInText(element, coordinate, context);
+    canvas.style.cursor = isHovering ? "move" : "default";
+  }
+
   const element = store.getState().editor.selectedElement;
   if (!element) return;
-  const context = canvas.getContext("2d")!;
-  const isHovering =
-    isPointInElement({ coordinate, element, scale: zoom }) ||
-    isPointInText(element, coordinate, context);
-  canvas.style.cursor = isHovering ? "move" : "default";
 
   const onHighlight = ComponentHighlighter.new(context, element).isOnHighlight(
     coordinate

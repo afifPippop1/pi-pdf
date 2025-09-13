@@ -118,7 +118,7 @@ export class ComponentHighlighter {
   onHover(
     coordinate: BaseCoordinate,
     handler: (action: Action | null) => void
-  ) {
+  ): boolean {
     const hoverPosition = this.isOnHighlight(coordinate);
     if (hoverPosition.on) {
       if (hoverPosition.onTopRight) {
@@ -138,7 +138,9 @@ export class ComponentHighlighter {
       } else if (hoverPosition.onRight) {
         handler(actions.SCALING_RIGHT);
       }
+      return true;
     }
+    return false;
   }
 
   isOnHighlight(coordinate: BaseCoordinate) {

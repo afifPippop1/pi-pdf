@@ -33,7 +33,7 @@ import {
   normalizeCoordinate,
   ScaleElementOnWhiteboard,
   setCanvasCursor,
-  UpdateElement
+  UpdateElement,
 } from "~/utils";
 import { TextEditor } from "./TextEditor";
 
@@ -79,12 +79,14 @@ export function Whiteboard() {
     }
 
     if (!toolType && selectedElement) {
-      ComponentHighlighter.new(
-        canvas.getContext("2d")!,
-        selectedElement
-      ).onHover(normalizedCoordinate, setAction);
-
       if (
+        ComponentHighlighter.new(
+          canvas.getContext("2d")!,
+          selectedElement
+        ).onHover(normalizedCoordinate, setAction)
+      ) {
+        return;
+      } else if (
         isPointInElement({
           coordinate: normalizedCoordinate,
           element: selectedElement,
@@ -222,23 +224,17 @@ export function Whiteboard() {
       const canvas = event.currentTarget;
       const rect = canvas.getBoundingClientRect();
 
-      const coveringElements = elements.filter((el) => {
-        if (el.type === toolTypes.TEXT) {
-          const coordinate = normalizeCoordinate({
-            x: clientX,
-            y: clientY,
-            bounding: rect,
-            zoom,
-          });
-          return isPointInText(el, coordinate, canvas.getContext("2d")!);
-        }
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-        return isPointInElement({
-          coordinate: { x, y },
-          element: el,
-          scale: zoom,
+      const coveringElements = elements.filter((element) => {
+        const coordinate = normalizeCoordinate({
+          x: clientX,
+          y: clientY,
+          bounding: rect,
+          zoom,
         });
+        if (element.type === toolTypes.TEXT) {
+          return isPointInText(element, coordinate, canvas.getContext("2d")!);
+        }
+        return isPointInElement({ coordinate, element, scale: zoom });
       });
       if (coveringElements.length) {
         const lastElement = coveringElements[coveringElements.length - 1];
