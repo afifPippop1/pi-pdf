@@ -11,6 +11,7 @@ import { useActivePageElements } from "~/hooks/useActivePageElements";
 import { useDrag } from "~/hooks/useDrag";
 import { useDrawElementsOnCanvas } from "~/hooks/useDrawElementsOnCanvas";
 import { useZoom } from "~/hooks/useZoom";
+import { ComponentHighlighter } from "~/lib/highlight";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   setActivePageElements,
@@ -26,14 +27,13 @@ import {
   generateInitialElement,
   getActiveElementIndex,
   getDocumentSize,
-  isOnHighlight,
   isPointInElement,
   isPointInText,
   isShapeElement,
   normalizeCoordinate,
   ScaleElementOnWhiteboard,
   setCanvasCursor,
-  UpdateElement,
+  UpdateElement
 } from "~/utils";
 import { TextEditor } from "./TextEditor";
 
@@ -79,30 +79,12 @@ export function Whiteboard() {
     }
 
     if (!toolType && selectedElement) {
-      const onHighlight = isOnHighlight({
-        element: selectedElement,
-        coordinate: normalizedCoordinate,
-        context: canvas.getContext("2d"),
-      });
-      if (onHighlight.on) {
-        if (onHighlight.onTopRight) {
-          setAction(actions.SCALING_TOP_RIGHT);
-        } else if (onHighlight.onTopLeft) {
-          setAction(actions.SCALING_TOP_LEFT);
-        } else if (onHighlight.onBottomRight) {
-          setAction(actions.SCALING_BOTTOM_RIGHT);
-        } else if (onHighlight.onBottomLeft) {
-          setAction(actions.SCALING_BOTTOM_LEFT);
-        } else if (onHighlight.onTop) {
-          setAction(actions.SCALING_TOP);
-        } else if (onHighlight.onBottom) {
-          setAction(actions.SCALING_BOTTOM);
-        } else if (onHighlight.onLeft) {
-          setAction(actions.SCALING_LEFT);
-        } else if (onHighlight.onRight) {
-          setAction(actions.SCALING_RIGHT);
-        }
-      } else if (
+      ComponentHighlighter.new(
+        canvas.getContext("2d")!,
+        selectedElement
+      ).onHover(normalizedCoordinate, setAction);
+
+      if (
         isPointInElement({
           coordinate: normalizedCoordinate,
           element: selectedElement,

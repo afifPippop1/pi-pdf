@@ -1,8 +1,7 @@
+import { ComponentHighlighter } from "~/lib/highlight";
+import { store } from "~/store/store";
 import type { BaseCoordinate } from "~/types";
 import { isPointInElement } from "./isPointInElement";
-import { store } from "~/store/store";
-import { isOnHighlight } from "./isOnHighlight";
-import { toolTypes } from "~/constants";
 import { isPointInText } from "./isPointInText";
 
 export function setCanvasCursor({
@@ -22,7 +21,9 @@ export function setCanvasCursor({
     isPointInText(element, coordinate, context);
   canvas.style.cursor = isHovering ? "move" : "default";
 
-  const onHighlight = isOnHighlight({ element, coordinate, context });
+  const onHighlight = ComponentHighlighter.new(context, element).isOnHighlight(
+    coordinate
+  );
   if (onHighlight.on) {
     if (onHighlight.onTopRight || onHighlight.onBottomLeft) {
       canvas.style.cursor = "nesw-resize";

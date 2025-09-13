@@ -1,9 +1,9 @@
-import { store } from "~/store/store";
-import { drawElement } from "./drawElement";
-import { drawHighlight } from "./drawHighlight";
 import { actions } from "~/constants";
-import type { Action } from "~/types/action";
 import type { Canvas } from "~/lib/canvas";
+import { ComponentHighlighter } from "~/lib/highlight";
+import { store } from "~/store/store";
+import type { Action } from "~/types/action";
+import { drawElement } from "./drawElement";
 
 export function drawElementOnCanvas(
   canvasElement: HTMLCanvasElement,
@@ -36,7 +36,7 @@ export function drawElementOnCanvas(
     drawElement({ canvas, context: ctx, element });
 
     if (element.id === selectedElement?.id && action !== actions.DRAWING) {
-      drawHighlight(ctx, element);
+      ComponentHighlighter.new(ctx, element).drawHighlight();
     }
   });
 
