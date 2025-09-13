@@ -1,4 +1,4 @@
-import type { Color } from "~/types";
+import type { Color, RectangleProperties } from "~/types";
 
 export class Rectangle {
   public color: Color = {
@@ -13,7 +13,7 @@ export class Rectangle {
     public y: number,
     public width: number,
     public height: number,
-    option?: { color?: Partial<Color> }
+    option?: RectangleProperties
   ) {
     if (option) {
       if (option.color) {

@@ -1,4 +1,4 @@
-import { toolTypes } from "~/constants";
+import { HIGHLIGHT_PADDING, toolTypes } from "~/constants";
 import type { Element } from "~/types";
 import { isShapeElement } from "./isShapeElement";
 
@@ -7,8 +7,31 @@ export function drawHighlight(ctx: CanvasRenderingContext2D, element: Element) {
 
   const points = getHandlePoints(element);
   points?.forEach((pt) => {
-    drawBullet(ctx, pt.x, pt.y);
+    drawCorner(ctx, pt.x, pt.y);
   });
+}
+function drawELementHighlight(ctx: CanvasRenderingContext2D, element: Element) {
+  if (!isShapeElement(element)) return;
+  const x = Math.min(element.x1, element.x2) - HIGHLIGHT_PADDING;
+  const y = Math.min(element.y1, element.y2) - HIGHLIGHT_PADDING;
+  const width = Math.abs(element.x2 - element.x1) + HIGHLIGHT_PADDING * 2;
+  const height = Math.abs(element.y2 - element.y1) + HIGHLIGHT_PADDING * 2;
+  ctx.strokeRect(x, y, width, height);
+}
+
+function drawTextHighlight(ctx: CanvasRenderingContext2D, element: Element) {
+  if (isShapeElement(element)) return;
+  const width = ctx.measureText(element.text).width;
+  const height = element.properties.fontSize;
+  const x2 = element.x1 + width;
+  const y2 = element.y1 + height;
+
+  ctx.strokeRect(
+    Math.min(element.x1, x2),
+    Math.min(element.y1, y2),
+    Math.abs(x2 - element.x1),
+    Math.abs(y2 - element.y1)
+  );
 }
 
 function drawHighlightOutline(ctx: CanvasRenderingContext2D, element: Element) {
@@ -16,34 +39,20 @@ function drawHighlightOutline(ctx: CanvasRenderingContext2D, element: Element) {
   ctx.strokeStyle = "#007bff";
   ctx.lineWidth = 2;
   if (isShapeElement(element)) {
-    ctx.strokeRect(
-      Math.min(element.x1, element.x2),
-      Math.min(element.y1, element.y2),
-      Math.abs(element.x2 - element.x1),
-      Math.abs(element.y2 - element.y1)
-    );
+    drawELementHighlight(ctx, element);
   } else if (element.type === toolTypes.TEXT && element.text.length) {
-    const width = ctx.measureText(element.text).width;
-    const height = element.properties.fontSize;
-    const x2 = element.x1 + width;
-    const y2 = element.y1 + height;
-
-    ctx.strokeRect(
-      Math.min(element.x1, x2),
-      Math.min(element.y1, y2),
-      Math.abs(x2 - element.x1),
-      Math.abs(y2 - element.y1)
-    );
+    drawTextHighlight(ctx, element);
   }
   ctx.restore();
 }
 
 function getHandlePoints(el: Element) {
   if (isShapeElement(el)) {
-    const x1 = Math.min(el.x1, el.x2);
-    const y1 = Math.min(el.y1, el.y2);
-    const x2 = Math.max(el.x1, el.x2);
-    const y2 = Math.max(el.y1, el.y2);
+    const padding = 4;
+    const x1 = Math.min(el.x1, el.x2) - HIGHLIGHT_PADDING;
+    const y1 = Math.min(el.y1, el.y2) - HIGHLIGHT_PADDING;
+    const x2 = Math.max(el.x1, el.x2) + HIGHLIGHT_PADDING;
+    const y2 = Math.max(el.y1, el.y2) + HIGHLIGHT_PADDING;
 
     const cx = (x1 + x2) / 2;
     const cy = (y1 + y2) / 2;
@@ -61,17 +70,12 @@ function getHandlePoints(el: Element) {
   }
 }
 
-function drawBullet(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  const radius = 6;
-  const startAngle = 0; // 0deg
-  const endAngle = 2 * Math.PI; //so it will be 360deg
+function drawCorner(ctx: CanvasRenderingContext2D, x: number, y: number) {
   ctx.save();
-  ctx.fillStyle = "#007bff"; // blue
-  ctx.strokeStyle = "#fff"; // white border
+  ctx.strokeRect(x - 4, y - 4, 8, 8);
+  ctx.strokeStyle = "#007bff"; // blue
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(x - 4, y - 4, 8, 8);
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(x, y, radius, startAngle, endAngle);
-  ctx.fill();
-  ctx.stroke();
   ctx.restore();
 }

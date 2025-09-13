@@ -1,6 +1,7 @@
 import { rgbToString } from "~/utils";
 import type { Drawable } from "../shape";
 import { Line, Rectangle } from "../shape";
+import { DEFAULT_LINE_WIDTH } from "~/constants";
 
 export class Canvas {
   constructor(private canvas: HTMLCanvasElement) {}
@@ -38,6 +39,8 @@ export class Canvas {
 
     // Draw filled rectangle (x, y, width, height)
     this.ctx.fillRect(element.x, element.y, element.width, element.height);
+    this.ctx.strokeRect(element.x, element.y, element.width, element.height);
+    this.ctx.lineWidth = DEFAULT_LINE_WIDTH;
 
     // Set stroke color and line width (optional)
     // this.ctx.strokeStyle = "red";

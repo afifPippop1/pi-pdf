@@ -6,7 +6,13 @@ import {
 import { PDFDocument } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import { DEFAULT_FONT_SIZE } from "~/constants";
-import type { Element, Font, ToolType } from "~/types";
+import type {
+  Element,
+  Font,
+  RectangleProperties,
+  TextProperties,
+  ToolType,
+} from "~/types";
 import { swapArrayValue } from "~/utils";
 
 interface EditorState {
@@ -17,7 +23,11 @@ interface EditorState {
   thumbnails: string[];
   loadingTask: PDFDocumentLoadingTask | null;
   selectedElement: Element | null;
-  toolState: Record<ToolType, Record<string, any>>;
+  toolState: {
+    LINE: {};
+    RECTANGLE: RectangleProperties;
+    TEXT: TextProperties;
+  };
   fonts: Font[];
 }
 
@@ -31,7 +41,10 @@ const initialState: EditorState = {
   selectedElement: null,
   toolState: {
     LINE: {},
-    RECTANGLE: {},
+    RECTANGLE: {
+      color: { r: 255, g: 255, b: 255, a: 1 },
+      outlineColor: { r: 255, g: 255, b: 255, a: 1 },
+    },
     TEXT: {
       fontFamily: "Inter",
       bold: false,
