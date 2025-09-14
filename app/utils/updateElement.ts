@@ -38,6 +38,9 @@ export class UpdateElement {
   rectangle(element: RectangleElementProps) {
     const stateOptions = store.getState().editor.toolState.RECTANGLE;
     const { id, type, x1, x2, y1, y2, options } = element;
+    const optCopy = options ? { ...options } : stateOptions;
+    console.log(options);
+    console.log({ optCopy });
     const updateElement = CreateElement.rectangle({
       id,
       type,
@@ -45,7 +48,7 @@ export class UpdateElement {
       x2,
       y1,
       y2,
-      options: options || stateOptions,
+      options: optCopy,
     });
 
     this.elements[element.index] = updateElement;

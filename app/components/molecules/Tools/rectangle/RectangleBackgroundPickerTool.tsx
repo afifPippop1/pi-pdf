@@ -1,12 +1,11 @@
-import { useMemo } from "react";
-import { type RgbaColor, type RgbColor } from "react-colorful";
+import { type RgbaColor } from "react-colorful";
 import { toolTypes } from "~/constants";
+import { useActiveElementIndex } from "~/hooks/useActiveElementIndex";
+import { useActivePageElements } from "~/hooks/useActivePageElements";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, UpdateElement } from "~/utils";
 import { ColorPicker } from "../ColorPicker";
-import { useActiveElementIndex } from "~/hooks/useActiveElementIndex";
-import { useActivePageElements } from "~/hooks/useActivePageElements";
 
 export function RectangleBackgroundPickerTool() {
   const color = useAppSelector((s) => s.editor.toolState.RECTANGLE.color);

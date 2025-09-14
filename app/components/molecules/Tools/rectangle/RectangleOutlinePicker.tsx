@@ -6,15 +6,24 @@ import { setToolState } from "~/store/slices/editorSlice";
 import { toolTypes } from "~/constants";
 import { useActiveElementIndex } from "~/hooks/useActiveElementIndex";
 import { useActivePageElements } from "~/hooks/useActivePageElements";
+import { useMemo } from "react";
 
 export function RectangleOutlinePickerTool() {
-  const outlineColor = useAppSelector(
+  const defaultOutlineColor = useAppSelector(
     (s) => s.editor.toolState.RECTANGLE.outlineColor
   );
   const toolType = useAppSelector((s) => s.editor.toolType);
   const selectedElementIndex = useActiveElementIndex();
   const elements = useActivePageElements();
   const dispatch = useAppDispatch();
+  const outlineColor = useMemo(
+    () =>
+      selectedElementIndex !== -1 &&
+      elements[selectedElementIndex].type === toolTypes.RECTANGLE
+        ? elements[selectedElementIndex].element.options.outlineColor
+        : defaultOutlineColor,
+    [defaultOutlineColor, elements, selectedElementIndex]
+  );
 
   function handleChange(color: RgbaColor) {
     const selectedElement = elements[selectedElementIndex];
