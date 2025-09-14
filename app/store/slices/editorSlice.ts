@@ -42,8 +42,8 @@ const initialState: EditorState = {
   toolState: {
     LINE: {},
     RECTANGLE: {
-      color: { r: 255, g: 255, b: 255, a: 1 },
-      outlineColor: { r: 255, g: 255, b: 255, a: 1 },
+      color: { r: 255, g: 255, b: 255, a: 0 },
+      outlineColor: { r: 0, g: 0, b: 0, a: 1 },
       strokeWidth: 2,
     },
     TEXT: {
