@@ -22,6 +22,7 @@ export interface LineElement extends Coordinate2D {
 export type RectangleProperties = {
   color: Color;
   outlineColor: Color;
+  strokeWidth: number;
 };
 
 export interface RectangleElement extends Coordinate2D {

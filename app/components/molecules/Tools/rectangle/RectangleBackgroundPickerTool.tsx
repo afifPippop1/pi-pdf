@@ -27,15 +27,11 @@ export function RectangleBackgroundPickerTool() {
     ) {
       return;
     }
-    const options = {
-      outlineColor: { ...selectedElement.element.options.outlineColor },
-      color,
-    };
 
     UpdateElement.new(elements).rectangle({
       ...selectedElement,
       index: selectedElementIndex,
-      options,
+      options: { ...selectedElement.element.options, color },
     });
   }
 

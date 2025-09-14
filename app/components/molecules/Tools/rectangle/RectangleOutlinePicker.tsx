@@ -1,12 +1,12 @@
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { ColorPicker } from "../ColorPicker";
-import type { RgbaColor, RgbColor } from "react-colorful";
-import { isRectangleTool, UpdateElement } from "~/utils";
-import { setToolState } from "~/store/slices/editorSlice";
+import { useMemo } from "react";
+import type { RgbaColor } from "react-colorful";
 import { toolTypes } from "~/constants";
 import { useActiveElementIndex } from "~/hooks/useActiveElementIndex";
 import { useActivePageElements } from "~/hooks/useActivePageElements";
-import { useMemo } from "react";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { setToolState } from "~/store/slices/editorSlice";
+import { isRectangleTool, UpdateElement } from "~/utils";
+import { ColorPicker } from "../ColorPicker";
 
 export function RectangleOutlinePickerTool() {
   const defaultOutlineColor = useAppSelector(
@@ -44,14 +44,10 @@ export function RectangleOutlinePickerTool() {
       return;
     }
 
-    const options = {
-      color: { ...selectedElement.element.options.color },
-      outlineColor: color,
-    };
     UpdateElement.new(elements).rectangle({
       ...selectedElement,
       index: selectedElementIndex,
-      options,
+      options: { ...selectedElement.element.options, outlineColor: color },
     });
   }
 

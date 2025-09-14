@@ -34,7 +34,7 @@ export class Canvas {
 
   private drawRect(element: Rectangle) {
     this.ctx.save();
-    this.ctx.lineWidth = DEFAULT_LINE_WIDTH;
+    this.ctx.lineWidth = element.options.strokeWidth || DEFAULT_LINE_WIDTH;
     this.ctx.strokeStyle = rgbToString(element.options.outlineColor);
     this.ctx.fillStyle = rgbToString(element.options.color);
     this.ctx.strokeRect(element.x, element.y, element.width, element.height);

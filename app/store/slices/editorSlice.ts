@@ -44,6 +44,7 @@ const initialState: EditorState = {
     RECTANGLE: {
       color: { r: 255, g: 255, b: 255, a: 1 },
       outlineColor: { r: 255, g: 255, b: 255, a: 1 },
+      strokeWidth: 2,
     },
     TEXT: {
       fontFamily: "Inter",
