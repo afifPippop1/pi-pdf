@@ -38,7 +38,7 @@ export function draggingElementOnWhiteboard({
         x2: newX2,
         y2: newY2,
         index,
-        options: { color: element.element.color },
+        options: element.element.options,
       });
     } else {
       updateElement.line({

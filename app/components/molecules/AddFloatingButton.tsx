@@ -29,7 +29,7 @@ export function AddFloatingButton() {
 
       {/* Button */}
       <button
-        className="rounded-full p-2 md:p-4 bg-blue-500 shadow-lg cursor-pointer hover:bg-blue-500/90 transition"
+        className="btn btn-circle btn-primary"
         onClick={() => setShowMenu((s) => !s)}
       >
         <svg

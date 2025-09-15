@@ -1,0 +1,5 @@
+export const DEFAULT_LINE_WIDTH = 2;
+
+export const HIGHLIGHT_PADDING = 4;
+export const HIGHLIGHT_CORNER_SIZE = 8;
+export const HIGHLIGHT_CORNER_HALF_SIZE = HIGHLIGHT_CORNER_SIZE / 2;

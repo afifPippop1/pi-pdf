@@ -11,6 +11,7 @@ import { useActivePageElements } from "~/hooks/useActivePageElements";
 import { useDrag } from "~/hooks/useDrag";
 import { useDrawElementsOnCanvas } from "~/hooks/useDrawElementsOnCanvas";
 import { useZoom } from "~/hooks/useZoom";
+import { ComponentHighlighter } from "~/lib/highlight";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   setActivePageElements,
@@ -26,7 +27,6 @@ import {
   generateInitialElement,
   getActiveElementIndex,
   getDocumentSize,
-  isOnHighlight,
   isPointInElement,
   isPointInText,
   isShapeElement,
@@ -79,29 +79,13 @@ export function Whiteboard() {
     }
 
     if (!toolType && selectedElement) {
-      const onHighlight = isOnHighlight({
-        element: selectedElement,
-        coordinate: normalizedCoordinate,
-        context: canvas.getContext("2d"),
-      });
-      if (onHighlight.on) {
-        if (onHighlight.onTopRight) {
-          setAction(actions.SCALING_TOP_RIGHT);
-        } else if (onHighlight.onTopLeft) {
-          setAction(actions.SCALING_TOP_LEFT);
-        } else if (onHighlight.onBottomRight) {
-          setAction(actions.SCALING_BOTTOM_RIGHT);
-        } else if (onHighlight.onBottomLeft) {
-          setAction(actions.SCALING_BOTTOM_LEFT);
-        } else if (onHighlight.onTop) {
-          setAction(actions.SCALING_TOP);
-        } else if (onHighlight.onBottom) {
-          setAction(actions.SCALING_BOTTOM);
-        } else if (onHighlight.onLeft) {
-          setAction(actions.SCALING_LEFT);
-        } else if (onHighlight.onRight) {
-          setAction(actions.SCALING_RIGHT);
-        }
+      if (
+        ComponentHighlighter.new(
+          canvas.getContext("2d")!,
+          selectedElement
+        ).onHover(normalizedCoordinate, setAction)
+      ) {
+        return;
       } else if (
         isPointInElement({
           coordinate: normalizedCoordinate,
@@ -240,23 +224,17 @@ export function Whiteboard() {
       const canvas = event.currentTarget;
       const rect = canvas.getBoundingClientRect();
 
-      const coveringElements = elements.filter((el) => {
-        if (el.type === toolTypes.TEXT) {
-          const coordinate = normalizeCoordinate({
-            x: clientX,
-            y: clientY,
-            bounding: rect,
-            zoom,
-          });
-          return isPointInText(el, coordinate, canvas.getContext("2d")!);
-        }
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-        return isPointInElement({
-          coordinate: { x, y },
-          element: el,
-          scale: zoom,
+      const coveringElements = elements.filter((element) => {
+        const coordinate = normalizeCoordinate({
+          x: clientX,
+          y: clientY,
+          bounding: rect,
+          zoom,
         });
+        if (element.type === toolTypes.TEXT) {
+          return isPointInText(element, coordinate, canvas.getContext("2d")!);
+        }
+        return isPointInElement({ coordinate, element, scale: zoom });
       });
       if (coveringElements.length) {
         const lastElement = coveringElements[coveringElements.length - 1];

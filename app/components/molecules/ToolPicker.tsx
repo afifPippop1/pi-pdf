@@ -36,8 +36,8 @@ function ToolItem(props: ToolItemProps) {
   return (
     <button
       className={clsx(
-        "hover:text-blue-500 text-xl cursor-pointer",
-        isActive ? "text-blue-500" : "text-gray-400"
+        "btn btn-sm",
+        isActive ? "btn-primary btn-active btn-soft" : "btn-ghost"
       )}
       onClick={handleClick}
     >
