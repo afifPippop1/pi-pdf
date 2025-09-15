@@ -11,11 +11,19 @@ export function ZoomTool({ className }: { className?: string }) {
   const [inputValue, setInputValue] = useState((zoom * PERCENT).toFixed(2));
 
   function decrease() {
-    setZoom((z) => Math.max(z - TEN_PERCENT, PDFViewer.MIN_SCALE));
+    setZoom((z) => {
+      const value = Math.max(z - TEN_PERCENT, PDFViewer.MIN_SCALE);
+      setInputValue((value * PERCENT).toFixed(2));
+      return value;
+    });
   }
 
   function increase() {
-    setZoom((z) => Math.min(z + TEN_PERCENT, PDFViewer.MAX_SCALE));
+    setZoom((z) => {
+      const value = Math.min(z + TEN_PERCENT, PDFViewer.MAX_SCALE);
+      setInputValue((value * PERCENT).toFixed(2));
+      return value;
+    });
   }
 
   function commitValue() {
