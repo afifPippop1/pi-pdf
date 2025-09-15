@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, UpdateElement } from "~/utils";
 import { ColorPicker } from "../ColorPicker";
+import { PropertiesLabel } from "../PropertiesLabel";
 
 export function RectangleOutlinePickerTool() {
   const defaultOutlineColor = useAppSelector(
@@ -52,11 +53,13 @@ export function RectangleOutlinePickerTool() {
   }
 
   return (
-    <ColorPicker
-      key="rectangle-outline-color"
-      title="Outline color"
-      onChange={handleChange}
-      color={outlineColor}
-    />
+    <PropertiesLabel label="Stroke">
+      <ColorPicker
+        key="rectangle-outline-color"
+        title="Outline color"
+        onChange={handleChange}
+        color={outlineColor}
+      />
+    </PropertiesLabel>
   );
 }

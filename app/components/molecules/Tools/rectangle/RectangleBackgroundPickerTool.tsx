@@ -7,6 +7,7 @@ import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, UpdateElement } from "~/utils";
 import { ColorPicker } from "../ColorPicker";
 import { useMemo } from "react";
+import { PropertiesLabel } from "../PropertiesLabel";
 
 export function RectangleBackgroundPickerTool() {
   const defaultColor = useAppSelector(
@@ -48,11 +49,13 @@ export function RectangleBackgroundPickerTool() {
   }
 
   return (
-    <ColorPicker
-      key="rectangle-background-color"
-      color={color}
-      onChange={handleChange}
-      title="Background color"
-    />
+    <PropertiesLabel label="Background">
+      <ColorPicker
+        key="rectangle-background-color"
+        color={color}
+        onChange={handleChange}
+        title="Background color"
+      />
+    </PropertiesLabel>
   );
 }

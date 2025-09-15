@@ -7,6 +7,7 @@ import { useAppSelector, useAppDispatch } from "~/store/hooks";
 import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, UpdateElement } from "~/utils";
 import { StrokePicker } from "../StrokePicker";
+import { PropertiesLabel } from "../PropertiesLabel";
 
 export function RectangleStrokePicker() {
   const defaultStrokeWidth = useAppSelector(
@@ -51,9 +52,8 @@ export function RectangleStrokePicker() {
     });
   }
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-xs">Stroke width</p>
+    <PropertiesLabel label="Stroke width">
       <StrokePicker onChange={handleChange} width={strokeWidth} />
-    </div>
+    </PropertiesLabel>
   );
 }

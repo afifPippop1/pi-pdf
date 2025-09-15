@@ -7,6 +7,7 @@ import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, UpdateElement } from "~/utils";
 import { StrokeStylePicker } from "../StrokeStylePicker";
 import type { StrokeStyle } from "~/types";
+import { PropertiesLabel } from "../PropertiesLabel";
 
 export function RectangleStrokeStylePicker() {
   const defaultStrokeStyle = useAppSelector(
@@ -51,9 +52,8 @@ export function RectangleStrokeStylePicker() {
     });
   }
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-xs">Stroke style</p>
+    <PropertiesLabel label="Stroke style">
       <StrokeStylePicker onChange={handleChange} activeStyle={strokeStyle} />
-    </div>
+    </PropertiesLabel>
   );
 }
