@@ -1,6 +1,7 @@
-import { rgbToString } from "~/utils";
+import { getDashValue, rgbToString } from "~/utils";
 import type { Drawable } from "../shape";
 import { Line, Rectangle } from "../shape";
+import { DEFAULT_LINE_WIDTH, strokeStyle } from "~/constants";
 
 export class Canvas {
   constructor(private canvas: HTMLCanvasElement) {}
@@ -21,31 +22,30 @@ export class Canvas {
   }
 
   private drawLine(element: Line) {
+    this.ctx.save();
     this.ctx.beginPath();
-    // Set a start-point
     this.ctx.moveTo(element.x1, element.y1);
 
-    // Set an end-point
     this.ctx.lineTo(element.x2, element.y2);
 
-    // Stroke it (Do the Drawing)
     this.ctx.stroke();
+    this.ctx.restore();
   }
 
   private drawRect(element: Rectangle) {
-    // this.ctx.fillStyle = "#ffffff";
-    this.ctx.fillStyle = rgbToString(element.color);
+    this.ctx.save();
+    this.ctx.lineWidth = element.options.strokeWidth || DEFAULT_LINE_WIDTH;
+    this.ctx.strokeStyle = rgbToString(element.options.outlineColor);
+    this.ctx.fillStyle = rgbToString(element.options.color);
+    const dash = getDashValue(element.options.strokeStyle);
 
-    // Draw filled rectangle (x, y, width, height)
+    if (dash) {
+      this.ctx.setLineDash(dash);
+    }
+
+    this.ctx.strokeRect(element.x, element.y, element.width, element.height);
     this.ctx.fillRect(element.x, element.y, element.width, element.height);
-
-    // Set stroke color and line width (optional)
-    // this.ctx.strokeStyle = "red";
-    // this.ctx.lineWidth = 4;
-
-    // Draw rectangle outline (x, y, width, height)
-    // this.ctx.strokeRect(element.x1, element.y1, element.width, element.height);
-    // this.ctx.strokeRect(50, 50, 150, 100);
+    this.ctx.restore();
   }
 }
 

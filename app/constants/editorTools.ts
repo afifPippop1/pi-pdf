@@ -1,5 +1,5 @@
-const editorTools = {} as const;
-
-type EditorTools = typeof editorTools;
-
-export type EditorTool = EditorTools[keyof EditorTools];
+export const strokeStyle = {
+  LINE: "line",
+  DASHED: "dashed",
+  DOTTED: "dotted",
+} as const;

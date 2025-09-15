@@ -2,8 +2,13 @@ import { lazy, Suspense, useEffect } from "react";
 import { useLoaderData } from "react-router";
 import { useAppDispatch } from "~/store/hooks";
 import { setFonts } from "~/store/slices/editorSlice";
+import type { Route } from "./+types/editor";
 
 const EditorPage = lazy(() => import("~/components/pages/EditorPage"));
+
+export function meta({}: Route.MetaArgs) {
+  return [{ title: "Pi-DF | Editor" }, { name: "description", content: "Editing PDF" }];
+}
 
 export async function loader() {
   const apiKey = process.env.GOOGLE_API_KEY;

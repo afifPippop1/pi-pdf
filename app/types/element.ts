@@ -1,5 +1,6 @@
-import type { toolTypes } from "~/constants";
+import type { strokeStyle, toolTypes } from "~/constants";
 import type { Drawable, Line, Rectangle } from "~/lib/shape";
+import type { Color } from "./common";
 
 export interface BaseCoordinate {
   x: number;
@@ -17,6 +18,15 @@ export interface LineElement extends Coordinate2D {
   element: Line;
   type: typeof toolTypes.LINE;
 }
+
+export type StrokeStyle = (typeof strokeStyle)[keyof typeof strokeStyle];
+
+export type RectangleProperties = {
+  color: Color;
+  outlineColor: Color;
+  strokeWidth: number;
+  strokeStyle: StrokeStyle;
+};
 
 export interface RectangleElement extends Coordinate2D {
   element: Rectangle;

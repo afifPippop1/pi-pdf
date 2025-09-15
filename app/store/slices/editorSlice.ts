@@ -5,8 +5,14 @@ import {
 } from "@reduxjs/toolkit";
 import { PDFDocument } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
-import { DEFAULT_FONT_SIZE } from "~/constants";
-import type { Element, Font, ToolType } from "~/types";
+import { DEFAULT_FONT_SIZE, strokeStyle } from "~/constants";
+import type {
+  Element,
+  Font,
+  RectangleProperties,
+  TextProperties,
+  ToolType,
+} from "~/types";
 import { swapArrayValue } from "~/utils";
 
 interface EditorState {
@@ -17,7 +23,11 @@ interface EditorState {
   thumbnails: string[];
   loadingTask: PDFDocumentLoadingTask | null;
   selectedElement: Element | null;
-  toolState: Record<ToolType, Record<string, any>>;
+  toolState: {
+    LINE: {};
+    RECTANGLE: RectangleProperties;
+    TEXT: TextProperties;
+  };
   fonts: Font[];
 }
 
@@ -31,7 +41,12 @@ const initialState: EditorState = {
   selectedElement: null,
   toolState: {
     LINE: {},
-    RECTANGLE: {},
+    RECTANGLE: {
+      color: { r: 255, g: 255, b: 255, a: 0 },
+      outlineColor: { r: 0, g: 0, b: 0, a: 1 },
+      strokeWidth: 1,
+      strokeStyle: strokeStyle.LINE
+    },
     TEXT: {
       fontFamily: "Inter",
       bold: false,
@@ -123,6 +138,7 @@ const editorSlice = createSlice({
     },
     setToolState(state, action: PayloadAction<{ type: ToolType; value: any }>) {
       const { type, value } = action.payload;
+      if (!type) return;
       state.toolState[type] = {
         ...state.toolState[type],
         ...value,

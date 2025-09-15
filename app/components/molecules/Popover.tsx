@@ -64,7 +64,7 @@ export function PopoverTrigger({ children }: { children: ReactNode }) {
   return (
     <div
       onClick={handleClick}
-      className="flex items-center justify-center cursor-pointer text-primary select-none h-full"
+      className="flex items-center justify-center cursor-pointer select-none h-full"
     >
       {children}
     </div>

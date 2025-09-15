@@ -1,5 +1,6 @@
+import type { Color, RectangleProperties } from "~/types";
 import { Line } from "./line";
-import { Rectangle, type Color } from "./rectangle";
+import { Rectangle } from "./rectangle";
 
 export class ShapeGenerator {
   constructor() {}
@@ -9,7 +10,7 @@ export class ShapeGenerator {
     y: number,
     width: number,
     height: number,
-    options?: { color?: Partial<Color> }
+    options: RectangleProperties
   ): Rectangle {
     return new Rectangle(x, y, width, height, options);
   }

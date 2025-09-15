@@ -1,3 +1,4 @@
+import { toolTypes } from "~/constants";
 import { adjustElementCoordinates } from "./adjustElementCoordinates";
 import { adjustmentRequired } from "./adjustmentRequired";
 import { getActiveElementIndex } from "./getActiveElementIndex";
@@ -15,15 +16,28 @@ export function finishDrawingOnWhiteboard() {
       if (coordinates) {
         const { x1, x2, y1, y2 } = coordinates;
         const updateElement = UpdateElement.new(elements);
-        updateElement.update({
-          id: element.id,
-          index: selectedElementIndex,
-          type: element.type,
-          x1,
-          y1,
-          x2,
-          y2,
-        });
+        if (element.type === toolTypes.RECTANGLE) {
+          updateElement.update({
+            id: element.id,
+            index: selectedElementIndex,
+            type: element.type,
+            x1,
+            y1,
+            x2,
+            y2,
+            options: element.element.options,
+          });
+        } else if (element.type === toolTypes.LINE) {
+          updateElement.update({
+            id: element.id,
+            index: selectedElementIndex,
+            type: element.type,
+            x1,
+            y1,
+            x2,
+            y2,
+          });
+        }
       }
     }
   }
