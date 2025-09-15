@@ -54,11 +54,11 @@ export function ZoomTool({ className }: { className?: string }) {
 
   return (
     <div className={clsx("flex gap-4 items-center", className)}>
-      <button onClick={decrease} className="px-4">
+      <button onClick={decrease} className="btn btn-xs btn-ghost btn-primary">
         -
       </button>
-      <div className="flex">
-        {status === STATUS.idle ? (
+      <div className="flex items-center gap-1">
+        {/* {status === STATUS.idle ? (
           <p
             onClick={() => {
               setStatus(STATUS.editing);
@@ -67,19 +67,18 @@ export function ZoomTool({ className }: { className?: string }) {
           >
             {zoomStr}
           </p>
-        ) : (
-          <input
-            autoFocus
-            value={inputValue}
-            className="w-14 px-1"
-            onChange={onChange}
-            onBlur={commitValue}
-            onKeyDown={onKeyDown}
-          />
-        )}
+        ) : ( */}
+        <input
+          value={inputValue}
+          className="input input-ghost input-xs input-primary w-14 px-2"
+          onChange={onChange}
+          onBlur={commitValue}
+          onKeyDown={onKeyDown}
+        />
+        {/* )} */}
         <p>%</p>
       </div>
-      <button onClick={increase} className="px-4">
+      <button onClick={increase} className="btn btn-xs btn-ghost btn-primary">
         +
       </button>
     </div>
