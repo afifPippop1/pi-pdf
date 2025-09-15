@@ -44,7 +44,7 @@ const initialState: EditorState = {
     RECTANGLE: {
       color: { r: 255, g: 255, b: 255, a: 0 },
       outlineColor: { r: 0, g: 0, b: 0, a: 1 },
-      strokeWidth: 2,
+      strokeWidth: 1,
     },
     TEXT: {
       fontFamily: "Inter",
@@ -137,6 +137,7 @@ const editorSlice = createSlice({
     },
     setToolState(state, action: PayloadAction<{ type: ToolType; value: any }>) {
       const { type, value } = action.payload;
+      if (!type) return;
       state.toolState[type] = {
         ...state.toolState[type],
         ...value,

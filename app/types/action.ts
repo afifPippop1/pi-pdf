@@ -1,3 +1,3 @@
 import type { actions } from "~/constants";
 
-export type Action = (typeof actions)[keyof typeof actions];
+export type Action = (typeof actions)[keyof typeof actions] | null;

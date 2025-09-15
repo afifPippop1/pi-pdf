@@ -6,13 +6,25 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { setToolState } from "~/store/slices/editorSlice";
 import { isRectangleTool, UpdateElement } from "~/utils";
 import { ColorPicker } from "../ColorPicker";
+import { useMemo } from "react";
 
 export function RectangleBackgroundPickerTool() {
-  const color = useAppSelector((s) => s.editor.toolState.RECTANGLE.color);
+  const defaultColor = useAppSelector(
+    (s) => s.editor.toolState.RECTANGLE.color
+  );
   const toolType = useAppSelector((s) => s.editor.toolType);
   const selectedElementIndex = useActiveElementIndex();
   const elements = useActivePageElements();
   const dispatch = useAppDispatch();
+
+  const color = useMemo(
+    () =>
+      selectedElementIndex !== -1 &&
+      elements[selectedElementIndex].type === toolTypes.RECTANGLE
+        ? elements[selectedElementIndex].element.options.color
+        : defaultColor,
+    [defaultColor, elements, selectedElementIndex]
+  );
 
   function handleChange(color: RgbaColor) {
     const selectedElement = elements[selectedElementIndex];
