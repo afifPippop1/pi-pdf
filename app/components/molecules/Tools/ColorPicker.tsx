@@ -20,11 +20,16 @@ interface ColorPickerProps {
   title?: string;
 }
 
-export function ColorPicker({ color, onChange, title }: ColorPickerProps) {
+export function ColorPicker({ color, onChange }: ColorPickerProps) {
   return (
     <div className="flex gap-2 items-center px-2">
-      {defaultColorOptions.map((color, index) => (
-        <ColorItem color={color} key={index} onClick={onChange} />
+      {defaultColorOptions.map((colorOpt, index) => (
+        <div
+          key={index}
+          className={`${rgbToString(colorOpt) === rgbToString(color) && "outline outline-gray-400 rounded p-0.5"}`}
+        >
+          <ColorItem key={index} color={colorOpt} onClick={onChange} />
+        </div>
       ))}
       <span className="text-gray-300">|</span>
       <Popover>
