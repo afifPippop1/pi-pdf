@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/afifPippop1/pi-pdf/compare/v0.0.1...v0.0.2) (2025-09-15)
+
+
+### Bug Fixes
+
+* 🐛 zoom input value on button click ([c69b4d1](https://github.com/afifPippop1/pi-pdf/commit/c69b4d1c558884b2052a6fdedb79c41367472b5c))
+
 ### 0.0.1 (2025-09-15)
 
 
