@@ -313,7 +313,7 @@ export function Whiteboard() {
       <TextEditor action={action} onBlur={handleTextareaBlur} />
       <canvas
         ref={ref}
-        className="absolute top-0 left-0 right-0 focus:outline-0"
+        className="absolute top-0 left-0 right-0 focus:outline-0 origin-center"
         style={{
           touchAction: toolType || selectedElement ? "none" : "auto",
         }}

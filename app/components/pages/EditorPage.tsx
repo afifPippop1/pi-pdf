@@ -34,9 +34,7 @@ export default function EditorPage() {
           <div className="flex-1 flex flex-col min-h-0">
             <div className="bg-white flex items-center shrink-0">
               <ToolPicker />
-              <div className="flex-1 flex justify-center items-center">
-                <ZoomTool />
-              </div>
+              {/* <div className="flex-1 flex justify-end items-center"></div> */}
             </div>
             <div className="flex-1 flex gap-2 md:gap-4 flex-col-reverse md:flex-row min-h-0 p-2">
               {/* Left panel */}
@@ -47,11 +45,14 @@ export default function EditorPage() {
               </div>
 
               {/* Center panel */}
-              <div className="overflow-auto flex-1 min-w-0 md:min-h-0 rounded-lg bg-gray-300">
-                <div className="p-4 w-max mx-auto">
+              <div className="relative overflow-auto flex-1 min-w-0 md:min-h-0 rounded-lg bg-gray-300">
+                <div className="p-4 pb-10 flex justify-center items-center min-h-full">
                   <Suspense>
                     <EditorCanvas buffer={blob} />
                   </Suspense>
+                </div>
+                <div className="sticky bottom-4 left-4 bg-white rounded p-2 text-xs inline-block shadow-lg">
+                  <ZoomTool />
                 </div>
               </div>
 

@@ -69,6 +69,7 @@ export function PdfViewer({ pdfData, pageIndex = 0 }: PdfViewerProps) {
       style={{
         touchAction: toolType || selectedElement ? "none" : "auto",
       }}
+      className="origin-center"
     />
   );
 }
