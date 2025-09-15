@@ -6,18 +6,9 @@ import { useZoom } from "~/hooks/useZoom";
 const PERCENT = 100;
 const TEN_PERCENT = 0.1;
 
-const STATUS = {
-  idle: "idle",
-  editing: "editing",
-} as const;
-
 export function ZoomTool({ className }: { className?: string }) {
   const { zoom, setZoom } = useZoom();
-  const [status, setStatus] = useState<(typeof STATUS)[keyof typeof STATUS]>(
-    STATUS.idle
-  );
   const [inputValue, setInputValue] = useState((zoom * PERCENT).toFixed(2));
-  const zoomStr = (zoom * PERCENT).toFixed(2);
 
   function decrease() {
     setZoom((z) => Math.max(z - TEN_PERCENT, PDFViewer.MIN_SCALE));
@@ -39,7 +30,6 @@ export function ZoomTool({ className }: { className?: string }) {
     } else {
       setInputValue((zoom * PERCENT).toFixed(2));
     }
-    setStatus(STATUS.idle);
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
@@ -58,16 +48,6 @@ export function ZoomTool({ className }: { className?: string }) {
         -
       </button>
       <div className="flex items-center gap-1">
-        {/* {status === STATUS.idle ? (
-          <p
-            onClick={() => {
-              setStatus(STATUS.editing);
-              setInputValue((zoom * PERCENT).toFixed(2));
-            }}
-          >
-            {zoomStr}
-          </p>
-        ) : ( */}
         <input
           value={inputValue}
           className="input input-ghost input-xs input-primary w-14 px-2"
@@ -75,7 +55,6 @@ export function ZoomTool({ className }: { className?: string }) {
           onBlur={commitValue}
           onKeyDown={onKeyDown}
         />
-        {/* )} */}
         <p>%</p>
       </div>
       <button onClick={increase} className="btn btn-xs btn-ghost btn-primary">
