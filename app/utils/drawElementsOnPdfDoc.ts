@@ -3,11 +3,11 @@ import { ColorTypes, degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
 import { DEGREE, PDFViewer, toolTypes } from "~/constants";
 import { Line, Rectangle } from "~/lib/shape";
-import type { Coordinate2D, Element, TextElement } from "~/types";
+import type { Color, Coordinate2D, Element, TextElement } from "~/types";
+import { getDashValue } from "./getDashValue";
+import { getFontFile } from "./getFontFile";
 import { getPdfCoordinate } from "./getPdfCoordinate";
 import { isShapeElement } from "./isShapeElement";
-import { getFontFile } from "./getFontFile";
-import type { Color } from "~/types";
 
 export async function drawElementsOnPdfDoc(
   loadingTask: PDFDocumentLoadingTask,
@@ -91,18 +91,24 @@ async function drawRectangle({
   pageIndex: number;
   coordinate: Coordinate2D;
 }) {
-  const { alpha, blue, green, red } = generateRGBColor(element.options.color);
+  const bg = generateRGBColor(element.options.color);
+  const outline = generateRGBColor(element.options.outlineColor);
   const { x1, x2, y1, y2 } = coordinate;
   const height = Math.abs(y2 - y1);
   const width = Math.abs(x2 - x1);
+  const dash = getDashValue(element.options.strokeStyle);
 
   pdfDoc.getPage(pageIndex).drawRectangle({
     x: x1,
     y: y1,
     height,
     width,
-    color: rgb(red, green, blue),
-    opacity: alpha,
+    color: rgb(bg.red, bg.green, bg.blue),
+    opacity: bg.alpha,
+    borderColor: rgb(outline.red, outline.green, outline.blue),
+    borderOpacity: outline.alpha,
+    borderWidth: element.options.strokeWidth,
+    borderDashArray: dash,
   });
 }
 

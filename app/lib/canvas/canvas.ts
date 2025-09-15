@@ -1,7 +1,7 @@
-import { rgbToString } from "~/utils";
+import { getDashValue, rgbToString } from "~/utils";
 import type { Drawable } from "../shape";
 import { Line, Rectangle } from "../shape";
-import { DEFAULT_LINE_WIDTH } from "~/constants";
+import { DEFAULT_LINE_WIDTH, strokeStyle } from "~/constants";
 
 export class Canvas {
   constructor(private canvas: HTMLCanvasElement) {}
@@ -37,6 +37,12 @@ export class Canvas {
     this.ctx.lineWidth = element.options.strokeWidth || DEFAULT_LINE_WIDTH;
     this.ctx.strokeStyle = rgbToString(element.options.outlineColor);
     this.ctx.fillStyle = rgbToString(element.options.color);
+    const dash = getDashValue(element.options.strokeStyle);
+
+    if (dash) {
+      this.ctx.setLineDash(dash);
+    }
+
     this.ctx.strokeRect(element.x, element.y, element.width, element.height);
     this.ctx.fillRect(element.x, element.y, element.width, element.height);
     this.ctx.restore();

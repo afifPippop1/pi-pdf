@@ -29,4 +29,4 @@ export * from "./setPDFDoc";
 export * from "./swapArrayValue";
 export * from "./toolType";
 export * from "./updateElement";
-
+export * from "./getDashValue";

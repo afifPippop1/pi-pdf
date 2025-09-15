@@ -1,6 +1,7 @@
 import { RectangleBackgroundPickerTool } from "./RectangleBackgroundPickerTool";
 import { RectangleOutlinePickerTool } from "./RectangleOutlinePicker";
 import { RectangleStrokePicker } from "./RectangleStrokePicker";
+import { RectangleStrokeStylePicker } from "./RectangleStrokeStylePicker";
 
 export function RectangleTool() {
   return (
@@ -8,6 +9,7 @@ export function RectangleTool() {
       <RectangleBackgroundPickerTool />
       <RectangleOutlinePickerTool />
       <RectangleStrokePicker />
+      <RectangleStrokeStylePicker />
     </div>
   );
 }

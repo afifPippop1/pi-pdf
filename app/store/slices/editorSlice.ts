@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { PDFDocument } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
-import { DEFAULT_FONT_SIZE } from "~/constants";
+import { DEFAULT_FONT_SIZE, strokeStyle } from "~/constants";
 import type {
   Element,
   Font,
@@ -45,6 +45,7 @@ const initialState: EditorState = {
       color: { r: 255, g: 255, b: 255, a: 0 },
       outlineColor: { r: 0, g: 0, b: 0, a: 1 },
       strokeWidth: 1,
+      strokeStyle: strokeStyle.LINE
     },
     TEXT: {
       fontFamily: "Inter",
