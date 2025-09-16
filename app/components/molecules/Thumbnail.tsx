@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { reorderPage, setActivePageIndex } from "~/store/slices/editorSlice";
 import { getPdfPageThumbnail } from "~/utils/getPdfThumbnail";
 import { ThumbnailItem } from "./ThumbnailItem";
+import { NewPage } from "./NewPage";
 
 interface ThumbnailProps {
   buffer: Uint8Array;
@@ -90,6 +91,7 @@ export function Thumbnail(props: ThumbnailProps) {
               onRemove={props.onRemove}
             />
           ))}
+          <NewPage />
         </div>
       </SortableContext>
     </DndContext>
