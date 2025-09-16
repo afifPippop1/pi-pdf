@@ -7,7 +7,7 @@ import {
 } from "~/constants";
 import type { BaseCoordinate, Coordinate2D, Element } from "~/types";
 import type { Action } from "~/types/action";
-import { isShapeElement } from "~/utils";
+import { computeTextDimensions, isShapeElement } from "~/utils";
 
 const hoverPositionDefaultValue = {
   on: false,
@@ -49,17 +49,18 @@ export class ComponentHighlighter {
 
   private drawTextHighlight() {
     if (isShapeElement(this.element)) return;
-    const width = this.ctx.measureText(this.element.text).width;
-    const height = this.element.properties.fontSize;
-    const x2 = this.element.x1 + width;
-    const y2 = this.element.y1 + height;
+    const textDimensions = computeTextDimensions({
+      element: this.element,
+      ctx: this.ctx,
+    });
+    const x2 = this.element.x1 + textDimensions.width;
+    const y2 = this.element.y1 + textDimensions.height;
+    const x = Math.min(this.element.x1, x2) - HIGHLIGHT_PADDING;
+    const y = Math.min(this.element.y1, y2) - HIGHLIGHT_PADDING;
+    const width = Math.abs(x2 - this.element.x1) + HIGHLIGHT_PADDING * 2;
+    const height = Math.abs(y2 - this.element.y1) + HIGHLIGHT_PADDING * 2;
 
-    this.ctx.strokeRect(
-      Math.min(this.element.x1, x2),
-      Math.min(this.element.y1, y2),
-      Math.abs(x2 - this.element.x1),
-      Math.abs(y2 - this.element.y1)
-    );
+    this.ctx.strokeRect(x, y, width, height);
   }
 
   private drawHighlightOutline() {
@@ -83,6 +84,31 @@ export class ComponentHighlighter {
       const y1 = Math.min(this.element.y1, this.element.y2) - HIGHLIGHT_PADDING;
       const x2 = Math.max(this.element.x1, this.element.x2) + HIGHLIGHT_PADDING;
       const y2 = Math.max(this.element.y1, this.element.y2) + HIGHLIGHT_PADDING;
+
+      const cx = (x1 + x2) / 2;
+      const cy = (y1 + y2) / 2;
+
+      return [
+        { x: x1, y: y1 }, // top-left
+        { x: cx, y: y1 }, // top-center
+        { x: x2, y: y1 }, // top-right
+        { x: x2, y: cy }, // right-center
+        { x: x2, y: y2 }, // bottom-right
+        { x: cx, y: y2 }, // bottom-center
+        { x: x1, y: y2 }, // bottom-left
+        { x: x1, y: cy }, // left-center
+      ];
+    } else if (this.element.type === toolTypes.TEXT) {
+      if (!this.element.text.length) return;
+      const { height, width } = computeTextDimensions({
+        element: this.element,
+        ctx: this.ctx,
+      });
+
+      const x1 = this.element.x1 - HIGHLIGHT_PADDING;
+      const y1 = this.element.y1 - HIGHLIGHT_PADDING;
+      const x2 = this.element.x1 + width + HIGHLIGHT_PADDING;
+      const y2 = this.element.y1 + height + HIGHLIGHT_PADDING;
 
       const cx = (x1 + x2) / 2;
       const cy = (y1 + y2) / 2;
@@ -147,15 +173,17 @@ export class ComponentHighlighter {
     if (isShapeElement(this.element)) {
       return this.hoverPosition(coordinate, this.element);
     } else if (this.element.type === toolTypes.TEXT) {
-      const width = this.ctx?.measureText(this.element.text).width;
-      const height = this.element.properties.fontSize;
-      const x2 = this.element.x1 + width;
-      const y2 = this.element.y1 + height;
+      const { height, width } = computeTextDimensions({
+        ctx: this.ctx,
+        element: this.element,
+      });
+      const x2 = this.element.x1 + height;
+      const y2 = this.element.y1 + width;
       const elementCoordinate = {
-        x1: this.element.x1,
-        x2,
-        y1: this.element.y1,
-        y2,
+        x1: this.element.x1 - HIGHLIGHT_PADDING,
+        x2: x2 + HIGHLIGHT_PADDING,
+        y1: this.element.y1 - HIGHLIGHT_PADDING,
+        y2: y2 + HIGHLIGHT_PADDING,
       };
       return this.hoverPosition(coordinate, elementCoordinate);
     }

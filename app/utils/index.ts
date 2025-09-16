@@ -1,6 +1,8 @@
+export * from "./addPage";
 export * from "./adjustElementCoordinates";
 export * from "./adjustmentRequired";
 export * from "./classes";
+export * from "./computeTextDimensions";
 export * from "./createElement";
 export * from "./draggingElementOnWhiteboard";
 export * from "./drawElement";
@@ -11,6 +13,7 @@ export * from "./finishDrawingOnWhiteboard";
 export * from "./generateInitialElement";
 export * from "./getActiveElementIndex";
 export * from "./getActivePageElements";
+export * from "./getDashValue";
 export * from "./getDocumentSize";
 export * from "./getFontFile";
 export * from "./getPageFromIndex";
@@ -29,4 +32,4 @@ export * from "./setPDFDoc";
 export * from "./swapArrayValue";
 export * from "./toolType";
 export * from "./updateElement";
-export * from "./getDashValue";
+

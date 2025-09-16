@@ -12,10 +12,25 @@ function drawText(
   ctx: CanvasRenderingContext2D,
   element: Element<TextElement>
 ) {
+  const texts = element.text.split("\n");
   ctx.textBaseline = "top";
   ctx.font = `${element.properties.fontSize}px ${element.properties.fontFamily}, sans-serif`;
   ctx.fillStyle = "black";
-  ctx.fillText(element.text, Math.round(element.x1), Math.round(element.y1));
+  let yOffset = 0;
+  texts.forEach((text) => {
+    const metrics = ctx.measureText(element.text);
+    const lineHeight =
+      metrics.actualBoundingBoxAscent && metrics.actualBoundingBoxDescent
+        ? (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) *
+          1.2
+        : element.properties.fontSize * 1.2;
+    ctx.fillText(
+      text,
+      Math.round(element.x1),
+      Math.round(element.y1 + yOffset)
+    );
+    yOffset += lineHeight;
+  });
 }
 
 export function drawElement({ element, canvas }: DrawElementProps) {
