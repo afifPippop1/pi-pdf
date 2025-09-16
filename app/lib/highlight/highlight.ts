@@ -7,7 +7,7 @@ import {
 } from "~/constants";
 import type { BaseCoordinate, Coordinate2D, Element } from "~/types";
 import type { Action } from "~/types/action";
-import { isShapeElement } from "~/utils";
+import { computeTextDimensions, isShapeElement } from "~/utils";
 
 const hoverPositionDefaultValue = {
   on: false,
@@ -49,24 +49,12 @@ export class ComponentHighlighter {
 
   private drawTextHighlight() {
     if (isShapeElement(this.element)) return;
-    const lines = this.element.text.split(/\r?\n/);
-    let maxWidth = 0;
-    lines.forEach((line) => {
-      const lineWidth = this.ctx?.measureText(line).width || 0;
-      if (lineWidth > maxWidth) maxWidth = lineWidth;
+    const textDimensions = computeTextDimensions({
+      element: this.element,
+      ctx: this.ctx,
     });
-    const fontSize = this.element.properties.fontSize;
-    const metrics = this.ctx?.measureText(lines[0] || "") || {
-      actualBoundingBoxAscent: 0,
-      actualBoundingBoxDescent: 0,
-    };
-    const ascent = metrics.actualBoundingBoxAscent || 0;
-    const descent = metrics.actualBoundingBoxDescent || 0;
-    const lineHeight =
-      ascent + descent > 0 ? (ascent + descent) * 1.2 : fontSize * 1.2;
-    const blockHeight = lineHeight * lines.length;
-    const x2 = this.element.x1 + maxWidth;
-    const y2 = this.element.y1 + blockHeight;
+    const x2 = this.element.x1 + textDimensions.width;
+    const y2 = this.element.y1 + textDimensions.height;
     const x = Math.min(this.element.x1, x2) - HIGHLIGHT_PADDING;
     const y = Math.min(this.element.y1, y2) - HIGHLIGHT_PADDING;
     const width = Math.abs(x2 - this.element.x1) + HIGHLIGHT_PADDING * 2;
@@ -111,28 +99,16 @@ export class ComponentHighlighter {
         { x: x1, y: cy }, // left-center
       ];
     } else if (this.element.type === toolTypes.TEXT) {
-      if(!this.element.text.length) return
-      const lines = this.element.text.split(/\r?\n/);
-      let maxWidth = 0;
-      lines.forEach((line) => {
-        const lineWidth = this.ctx?.measureText(line).width || 0;
-        if (lineWidth > maxWidth) maxWidth = lineWidth;
+      if (!this.element.text.length) return;
+      const { height, width } = computeTextDimensions({
+        element: this.element,
+        ctx: this.ctx,
       });
-      const fontSize = this.element.properties.fontSize;
-      const metrics = this.ctx?.measureText(lines[0] || "") || {
-        actualBoundingBoxAscent: 0,
-        actualBoundingBoxDescent: 0,
-      };
-      const ascent = metrics.actualBoundingBoxAscent || 0;
-      const descent = metrics.actualBoundingBoxDescent || 0;
-      const lineHeight =
-        ascent + descent > 0 ? (ascent + descent) * 1.2 : fontSize * 1.2;
-      const blockHeight = lineHeight * lines.length;
 
       const x1 = this.element.x1 - HIGHLIGHT_PADDING;
       const y1 = this.element.y1 - HIGHLIGHT_PADDING;
-      const x2 = this.element.x1 + maxWidth + HIGHLIGHT_PADDING;
-      const y2 = this.element.y1 + blockHeight + HIGHLIGHT_PADDING;
+      const x2 = this.element.x1 + width + HIGHLIGHT_PADDING;
+      const y2 = this.element.y1 + height + HIGHLIGHT_PADDING;
 
       const cx = (x1 + x2) / 2;
       const cy = (y1 + y2) / 2;
@@ -197,24 +173,12 @@ export class ComponentHighlighter {
     if (isShapeElement(this.element)) {
       return this.hoverPosition(coordinate, this.element);
     } else if (this.element.type === toolTypes.TEXT) {
-      const lines = this.element.text.split(/\r?\n/);
-      let maxWidth = 0;
-      lines.forEach((line) => {
-        const lineWidth = this.ctx?.measureText(line).width || 0;
-        if (lineWidth > maxWidth) maxWidth = lineWidth;
+      const { height, width } = computeTextDimensions({
+        ctx: this.ctx,
+        element: this.element,
       });
-      const fontSize = this.element.properties.fontSize;
-      const metrics = this.ctx?.measureText(lines[0] || "") || {
-        actualBoundingBoxAscent: 0,
-        actualBoundingBoxDescent: 0,
-      };
-      const ascent = metrics.actualBoundingBoxAscent || 0;
-      const descent = metrics.actualBoundingBoxDescent || 0;
-      const lineHeight =
-        ascent + descent > 0 ? (ascent + descent) * 1.2 : fontSize * 1.2;
-      const blockHeight = lineHeight * lines.length;
-      const x2 = this.element.x1 + maxWidth;
-      const y2 = this.element.y1 + blockHeight;
+      const x2 = this.element.x1 + height;
+      const y2 = this.element.y1 + width;
       const elementCoordinate = {
         x1: this.element.x1 - HIGHLIGHT_PADDING,
         x2: x2 + HIGHLIGHT_PADDING,
