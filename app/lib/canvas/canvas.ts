@@ -28,6 +28,15 @@ export class Canvas {
 
     this.ctx.lineTo(element.x2, element.y2);
 
+    this.ctx.lineWidth = element.options.strokeWidth || DEFAULT_LINE_WIDTH;
+    this.ctx.strokeStyle = rgbToString(element.options.color);
+
+    const dash = getDashValue(element.options.strokeStyle);
+
+    if (dash) {
+      this.ctx.setLineDash(dash);
+    }
+
     this.ctx.stroke();
     this.ctx.restore();
   }

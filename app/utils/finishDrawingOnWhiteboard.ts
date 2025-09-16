@@ -36,6 +36,7 @@ export function finishDrawingOnWhiteboard() {
             y1,
             x2,
             y2,
+            options: element.element.options,
           });
         }
       }

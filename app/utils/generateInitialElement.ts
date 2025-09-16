@@ -41,6 +41,7 @@ export function generateInitialElement({
         y2: y,
         type: toolType,
         id: uuid(),
+        options: toolState.LINE,
       });
     } else if (toolType === toolTypes.RECTANGLE) {
       setAction(actions.DRAWING);
