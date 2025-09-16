@@ -67,13 +67,12 @@ export class ComponentHighlighter {
     const blockHeight = lineHeight * lines.length;
     const x2 = this.element.x1 + maxWidth;
     const y2 = this.element.y1 + blockHeight;
+    const x = Math.min(this.element.x1, x2) - HIGHLIGHT_PADDING;
+    const y = Math.min(this.element.y1, y2) - HIGHLIGHT_PADDING;
+    const width = Math.abs(x2 - this.element.x1) + HIGHLIGHT_PADDING * 2;
+    const height = Math.abs(y2 - this.element.y1) + HIGHLIGHT_PADDING * 2;
 
-    this.ctx.strokeRect(
-      Math.min(this.element.x1, x2),
-      Math.min(this.element.y1, y2),
-      Math.abs(x2 - this.element.x1),
-      Math.abs(y2 - this.element.y1)
-    );
+    this.ctx.strokeRect(x, y, width, height);
   }
 
   private drawHighlightOutline() {
@@ -97,6 +96,43 @@ export class ComponentHighlighter {
       const y1 = Math.min(this.element.y1, this.element.y2) - HIGHLIGHT_PADDING;
       const x2 = Math.max(this.element.x1, this.element.x2) + HIGHLIGHT_PADDING;
       const y2 = Math.max(this.element.y1, this.element.y2) + HIGHLIGHT_PADDING;
+
+      const cx = (x1 + x2) / 2;
+      const cy = (y1 + y2) / 2;
+
+      return [
+        { x: x1, y: y1 }, // top-left
+        { x: cx, y: y1 }, // top-center
+        { x: x2, y: y1 }, // top-right
+        { x: x2, y: cy }, // right-center
+        { x: x2, y: y2 }, // bottom-right
+        { x: cx, y: y2 }, // bottom-center
+        { x: x1, y: y2 }, // bottom-left
+        { x: x1, y: cy }, // left-center
+      ];
+    } else if (this.element.type === toolTypes.TEXT) {
+      if(!this.element.text.length) return
+      const lines = this.element.text.split(/\r?\n/);
+      let maxWidth = 0;
+      lines.forEach((line) => {
+        const lineWidth = this.ctx?.measureText(line).width || 0;
+        if (lineWidth > maxWidth) maxWidth = lineWidth;
+      });
+      const fontSize = this.element.properties.fontSize;
+      const metrics = this.ctx?.measureText(lines[0] || "") || {
+        actualBoundingBoxAscent: 0,
+        actualBoundingBoxDescent: 0,
+      };
+      const ascent = metrics.actualBoundingBoxAscent || 0;
+      const descent = metrics.actualBoundingBoxDescent || 0;
+      const lineHeight =
+        ascent + descent > 0 ? (ascent + descent) * 1.2 : fontSize * 1.2;
+      const blockHeight = lineHeight * lines.length;
+
+      const x1 = this.element.x1 - HIGHLIGHT_PADDING;
+      const y1 = this.element.y1 - HIGHLIGHT_PADDING;
+      const x2 = this.element.x1 + maxWidth + HIGHLIGHT_PADDING;
+      const y2 = this.element.y1 + blockHeight + HIGHLIGHT_PADDING;
 
       const cx = (x1 + x2) / 2;
       const cy = (y1 + y2) / 2;
