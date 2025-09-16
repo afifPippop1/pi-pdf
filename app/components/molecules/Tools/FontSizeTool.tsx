@@ -1,5 +1,6 @@
 import { ToolTitle } from "~/components/atoms/ToolTitle";
 import React, { useState, useRef, useEffect } from "react";
+import { PropertiesLabel } from "./PropertiesLabel";
 
 const COMMON_FONT_SIZES = [8, 10, 12, 14, 16, 18, 24, 32, 48, 72];
 
@@ -8,8 +9,7 @@ interface FontSizeToolProps {
   onChange: (fontSize: number | string) => void;
 }
 
-export function FontSizeTool({fontSize, onChange}: FontSizeToolProps) {
-  // const [fontSize, setFontSize] = useState<number | string>(12);
+export function FontSizeTool({ fontSize, onChange }: FontSizeToolProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -54,8 +54,7 @@ export function FontSizeTool({fontSize, onChange}: FontSizeToolProps) {
   }, []);
 
   return (
-    <div>
-      <ToolTitle>FontSize</ToolTitle>
+    <PropertiesLabel label="Font size">
       <div
         ref={containerRef}
         className="relative inline-flex items-center w-20 text-sm bg-white border border-gray-300 rounded"
@@ -94,6 +93,6 @@ export function FontSizeTool({fontSize, onChange}: FontSizeToolProps) {
           </ul>
         )}
       </div>
-    </div>
+    </PropertiesLabel>
   );
 }
