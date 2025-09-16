@@ -49,10 +49,24 @@ export class ComponentHighlighter {
 
   private drawTextHighlight() {
     if (isShapeElement(this.element)) return;
-    const width = this.ctx.measureText(this.element.text).width;
-    const height = this.element.properties.fontSize;
-    const x2 = this.element.x1 + width;
-    const y2 = this.element.y1 + height;
+    const lines = this.element.text.split(/\r?\n/);
+    let maxWidth = 0;
+    lines.forEach((line) => {
+      const lineWidth = this.ctx?.measureText(line).width || 0;
+      if (lineWidth > maxWidth) maxWidth = lineWidth;
+    });
+    const fontSize = this.element.properties.fontSize;
+    const metrics = this.ctx?.measureText(lines[0] || "") || {
+      actualBoundingBoxAscent: 0,
+      actualBoundingBoxDescent: 0,
+    };
+    const ascent = metrics.actualBoundingBoxAscent || 0;
+    const descent = metrics.actualBoundingBoxDescent || 0;
+    const lineHeight =
+      ascent + descent > 0 ? (ascent + descent) * 1.2 : fontSize * 1.2;
+    const blockHeight = lineHeight * lines.length;
+    const x2 = this.element.x1 + maxWidth;
+    const y2 = this.element.y1 + blockHeight;
 
     this.ctx.strokeRect(
       Math.min(this.element.x1, x2),
@@ -147,15 +161,29 @@ export class ComponentHighlighter {
     if (isShapeElement(this.element)) {
       return this.hoverPosition(coordinate, this.element);
     } else if (this.element.type === toolTypes.TEXT) {
-      const width = this.ctx?.measureText(this.element.text).width;
-      const height = this.element.properties.fontSize;
-      const x2 = this.element.x1 + width;
-      const y2 = this.element.y1 + height;
+      const lines = this.element.text.split(/\r?\n/);
+      let maxWidth = 0;
+      lines.forEach((line) => {
+        const lineWidth = this.ctx?.measureText(line).width || 0;
+        if (lineWidth > maxWidth) maxWidth = lineWidth;
+      });
+      const fontSize = this.element.properties.fontSize;
+      const metrics = this.ctx?.measureText(lines[0] || "") || {
+        actualBoundingBoxAscent: 0,
+        actualBoundingBoxDescent: 0,
+      };
+      const ascent = metrics.actualBoundingBoxAscent || 0;
+      const descent = metrics.actualBoundingBoxDescent || 0;
+      const lineHeight =
+        ascent + descent > 0 ? (ascent + descent) * 1.2 : fontSize * 1.2;
+      const blockHeight = lineHeight * lines.length;
+      const x2 = this.element.x1 + maxWidth;
+      const y2 = this.element.y1 + blockHeight;
       const elementCoordinate = {
-        x1: this.element.x1,
-        x2,
-        y1: this.element.y1,
-        y2,
+        x1: this.element.x1 - HIGHLIGHT_PADDING,
+        x2: x2 + HIGHLIGHT_PADDING,
+        y1: this.element.y1 - HIGHLIGHT_PADDING,
+        y2: y2 + HIGHLIGHT_PADDING,
       };
       return this.hoverPosition(coordinate, elementCoordinate);
     }
