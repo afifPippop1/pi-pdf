@@ -267,6 +267,7 @@ export function Whiteboard() {
 
   function handleTextareaBlur(event: FocusEvent<HTMLTextAreaElement>) {
     const text = event.target.value;
+    console.log(text);
     const selectedElementIndex = getActiveElementIndex();
     if (selectedElementIndex !== -1) {
       const element = elements[selectedElementIndex] as Element<TextElement>;

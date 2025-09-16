@@ -56,6 +56,7 @@ export function TextEditor({ action, onBlur }: TextEditorProps) {
         resize: "none",
         fontSize: fontSize * zoom,
         fontFamily,
+        lineHeight: 1,
       }}
       onBlur={onBlur}
     />
