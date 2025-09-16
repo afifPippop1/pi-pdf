@@ -4,6 +4,7 @@ import type {
   Color,
   Element,
   LineElement,
+  LineProperties,
   RectangleElement,
   RectangleProperties,
   TextElement,
@@ -18,6 +19,7 @@ interface RectangleElementProps
 
 interface LineElementProps extends Omit<Element<LineElement>, "element"> {
   index: number;
+  options?: LineProperties;
 }
 
 interface TextElementProps extends Element<TextElement> {
@@ -55,7 +57,9 @@ export class UpdateElement {
   }
 
   line(element: LineElementProps) {
-    const { id, type, x1, x2, y1, y2 } = element;
+    const stateOptions = store.getState().editor.toolState.LINE;
+    const { id, type, x1, x2, y1, y2, options } = element;
+    const optCopy = options ? { ...options } : stateOptions;
     const updateElement = CreateElement.line({
       id,
       type,
@@ -63,6 +67,7 @@ export class UpdateElement {
       x2,
       y1,
       y2,
+      options: optCopy,
     });
 
     this.elements[element.index] = updateElement;

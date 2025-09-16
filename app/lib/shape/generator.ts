@@ -1,4 +1,4 @@
-import type { Color, RectangleProperties } from "~/types";
+import type { Color, LineProperties, RectangleProperties } from "~/types";
 import { Line } from "./line";
 import { Rectangle } from "./rectangle";
 
@@ -14,8 +14,14 @@ export class ShapeGenerator {
   ): Rectangle {
     return new Rectangle(x, y, width, height, options);
   }
-  line(x1: number, y1: number, x2: number, y2: number): Line {
-    return new Line(x1, y1, x2, y2);
+  line(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    options: LineProperties
+  ): Line {
+    return new Line(x1, y1, x2, y2, options);
   }
 }
 

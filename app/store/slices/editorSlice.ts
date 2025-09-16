@@ -9,6 +9,7 @@ import { DEFAULT_FONT_SIZE, strokeStyle } from "~/constants";
 import type {
   Element,
   Font,
+  LineProperties,
   RectangleProperties,
   TextProperties,
   ToolType,
@@ -24,7 +25,7 @@ interface EditorState {
   loadingTask: PDFDocumentLoadingTask | null;
   selectedElement: Element | null;
   toolState: {
-    LINE: {};
+    LINE: LineProperties;
     RECTANGLE: RectangleProperties;
     TEXT: TextProperties;
   };
@@ -40,12 +41,16 @@ const initialState: EditorState = {
   loadingTask: null,
   selectedElement: null,
   toolState: {
-    LINE: {},
+    LINE: {
+      color: { r: 0, g: 0, b: 0, a: 1 },
+      strokeWidth: 1,
+      strokeStyle: strokeStyle.LINE,
+    },
     RECTANGLE: {
       color: { r: 255, g: 255, b: 255, a: 0 },
       outlineColor: { r: 0, g: 0, b: 0, a: 1 },
       strokeWidth: 1,
-      strokeStyle: strokeStyle.LINE
+      strokeStyle: strokeStyle.LINE,
     },
     TEXT: {
       fontFamily: "Inter",

@@ -1,9 +1,8 @@
+import { toolTypes } from "~/constants";
 import { store } from "~/store/store";
-import { getActiveElementIndex } from "./getActiveElementIndex";
+import type { BaseCoordinate } from "~/types";
 import { getActivePageElements } from "./getActivePageElements";
 import { UpdateElement } from "./updateElement";
-import { toolTypes } from "~/constants";
-import type { BaseCoordinate } from "~/types";
 
 export function draggingElementOnWhiteboard({
   coordinate: { x, y },
@@ -48,6 +47,7 @@ export function draggingElementOnWhiteboard({
         x2: newX2,
         y2: newY2,
         index,
+        options: element.element.options,
       });
     }
   } else if (element.type === toolTypes.TEXT) {

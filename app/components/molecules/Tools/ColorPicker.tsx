@@ -1,4 +1,4 @@
-import { RgbaColorPicker, type RgbaColor } from "react-colorful";
+import { RgbaColorPicker } from "react-colorful";
 import type { Color } from "~/types";
 import { rgbToString } from "~/utils";
 import Popover, { PopoverContent, PopoverTrigger } from "../Popover";
@@ -16,7 +16,7 @@ const defaultColorOptions: Color[] = [
 
 interface ColorPickerProps {
   color: Color;
-  onChange: (color: RgbaColor) => void;
+  onChange: (color: Color) => void;
   title?: string;
 }
 
@@ -57,9 +57,12 @@ function ColorItem({
   onClick?: (color: Color) => void;
 }) {
   const backgroundColor = rgbToString(color);
+  function handleClick() {
+    onClick?.(color);
+  }
   return (
     <div
-      onClick={() => onClick?.(color)}
+      onClick={handleClick}
       className={`${!custom ? "w-6 h-6" : "w-7 h-7"} ${
         !custom && "transition-transform hover:scale-125"
       } rounded cursor-pointer ${

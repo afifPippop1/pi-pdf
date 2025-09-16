@@ -8,14 +8,14 @@ export function isRectangleTool(toolType?: string | null) {
   return store.getState().editor.toolType === toolTypes.RECTANGLE;
 }
 
-export function isLineTool(toolType?: string) {
+export function isLineTool(toolType?: string | null) {
   if (toolType) {
     return toolType === toolTypes.LINE;
   }
   return store.getState().editor.toolType === toolTypes.LINE;
 }
 
-export function isTextTool(toolType?: string) {
+export function isTextTool(toolType?: string | null) {
   if (toolType) {
     return toolType === toolTypes.TEXT;
   }

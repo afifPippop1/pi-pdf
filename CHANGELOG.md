@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/afifPippop1/pi-pdf/compare/v0.0.2...v0.0.3) (2025-09-16)
+
+
+### Features
+
+* 🎸 draw line properties on pdf ([fa8ebac](https://github.com/afifPippop1/pi-pdf/commit/fa8ebac44628646b7690d7ccf70675a236aa4a29))
+* 🎸 Line tools ([416391e](https://github.com/afifPippop1/pi-pdf/commit/416391eb7cc3d570ef005f5311a846ad21d0b0d0))
+
 ### [0.0.2](https://github.com/afifPippop1/pi-pdf/compare/v0.0.1...v0.0.2) (2025-09-15)
 
 

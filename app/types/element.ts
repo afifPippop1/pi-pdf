@@ -21,6 +21,12 @@ export interface LineElement extends Coordinate2D {
 
 export type StrokeStyle = (typeof strokeStyle)[keyof typeof strokeStyle];
 
+export type LineProperties = {
+  color: Color;
+  strokeWidth: number;
+  strokeStyle: StrokeStyle;
+};
+
 export type RectangleProperties = {
   color: Color;
   outlineColor: Color;

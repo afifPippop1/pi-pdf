@@ -34,6 +34,7 @@ export function drawElementOnWhiteboard({
       x2: x2 || element.x2,
       y2: y2 || element.y2,
       index: activeElementIndex,
+      options: element.element.options,
     });
   }
 }
