@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/afifPippop1/pi-pdf/compare/v0.0.3...v0.0.4) (2025-09-16)
+
+
+### Features
+
+* 🎸 new page ([8a48ee1](https://github.com/afifPippop1/pi-pdf/commit/8a48ee174c494cc10a98ccb8ccd19e5ae003dfc9))
+
+
+### Bug Fixes
+
+* 🐛 multi line text rendered on canvas ([4e0b8c6](https://github.com/afifPippop1/pi-pdf/commit/4e0b8c651016cced18532bc9255b8b863e8d55db))
+* 🐛 text multiline hover hit point ([d0b9060](https://github.com/afifPippop1/pi-pdf/commit/d0b9060c59c25bc04167cd11498a6a03e7ac90dd))
+* 🐛 text-highlight ([1661d0d](https://github.com/afifPippop1/pi-pdf/commit/1661d0d37d078a53c98b10f41764a6dd5a952c2d))
+
 ### [0.0.3](https://github.com/afifPippop1/pi-pdf/compare/v0.0.2...v0.0.3) (2025-09-16)
 
 
