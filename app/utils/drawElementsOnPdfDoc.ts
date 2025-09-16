@@ -123,6 +123,8 @@ function drawLine({
   pageIndex: number;
   coordinate: Coordinate2D;
 }) {
+  const color = generateRGBColor(element.options.color);
+  const dash = getDashValue(element.options.strokeStyle);
   pdfDoc.getPage(pageIndex).drawLine({
     start: {
       x: coordinate.x1,
@@ -132,12 +134,10 @@ function drawLine({
       x: coordinate.x2,
       y: coordinate.y2,
     },
-    color: {
-      type: ColorTypes.RGB,
-      blue: 0,
-      green: 0,
-      red: 0,
-    },
+    color: rgb(color.red, color.green, color.blue),
+    opacity: color.alpha,
+    thickness: element.options.strokeWidth,
+    dashArray: dash,
   });
 }
 
