@@ -1,5 +1,4 @@
-import { ToolTitle } from "~/components/atoms/ToolTitle";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PropertiesLabel } from "./PropertiesLabel";
 
 const COMMON_FONT_SIZES = [8, 10, 12, 14, 16, 18, 24, 32, 48, 72];

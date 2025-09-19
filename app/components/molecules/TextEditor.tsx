@@ -59,6 +59,14 @@ export function TextEditor({ action, onBlur }: TextEditorProps) {
         lineHeight: 1,
       }}
       onBlur={onBlur}
+      // @ts-ignore
+      defaultValue={selectedElement?.text || ""}
+      onFocus={(e) =>
+        e.currentTarget.setSelectionRange(
+          e.currentTarget.value.length,
+          e.currentTarget.value.length
+        )
+      }
     />
   );
 }

@@ -308,6 +308,29 @@ export function Whiteboard() {
     };
   }
 
+  function handleDoubleClick(e: MouseEvent<HTMLCanvasElement>) {
+    e.preventDefault();
+    if (selectedElement?.type === toolTypes.TEXT) {
+      setAction(actions.WRITING);
+    }
+    // if (toolType === toolTypes.TEXT) {
+    //   const { clientX, clientY } = e;
+    //   const canvas = e.currentTarget;
+    //   const rect = canvas.getBoundingClientRect();
+    //   const normalizedCoordinate = normalizeCoordinate({
+    //     x: clientX,
+    //     y: clientY,
+    //     bounding: rect,
+    //     zoom,
+    //   });
+    //   generateInitialElement({
+    //     canvas,
+    //     coordinate: normalizedCoordinate,
+    //     setAction,
+    //   });
+    // }
+  }
+
   return (
     <>
       <TextEditor action={action} onBlur={handleTextareaBlur} />
@@ -328,6 +351,7 @@ export function Whiteboard() {
         tabIndex={0}
         onTouchMove={handleTouchEvent(handleMouseMove)}
         onTouchEnd={handleMouseUp}
+        onDoubleClick={handleDoubleClick}
       />
     </>
   );

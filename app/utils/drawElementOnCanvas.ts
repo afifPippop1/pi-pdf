@@ -33,6 +33,9 @@ export function drawElementOnCanvas(
   ctx.scale(dpr * scale, dpr * scale);
 
   elements?.forEach((element) => {
+    if (action === actions.WRITING && element.id === selectedElement?.id) {
+      return;
+    }
     drawElement({ canvas, context: ctx, element });
 
     if (element.id === selectedElement?.id && action !== actions.DRAWING) {
