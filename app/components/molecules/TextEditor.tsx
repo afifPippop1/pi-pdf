@@ -26,7 +26,7 @@ export function TextEditor({ action, onBlur }: TextEditorProps) {
     }
     return toolState.TEXT.fontSize;
   }, [selectedElement, toolState]);
-  const verticalOffset = useMemo(() => -0.3 * fontSize, [fontSize]);
+  const verticalOffset = useMemo(() => -0.15 * fontSize, [fontSize]);
 
   useEffect(() => {
     if (action === actions.WRITING) {
@@ -49,16 +49,25 @@ export function TextEditor({ action, onBlur }: TextEditorProps) {
         margin: 0,
         padding: 0,
         border: 0,
-        outline: 0,
+        outline: "none",
         overflow: "hidden",
         whiteSpace: "pre",
         background: "transparent",
         resize: "none",
         fontSize: fontSize * zoom,
         fontFamily,
-        lineHeight: 1,
+        letterSpacing: 1,
+        lineHeight: 1.2,
       }}
       onBlur={onBlur}
+      // @ts-ignore
+      defaultValue={selectedElement?.text || ""}
+      onFocus={(e) =>
+        e.currentTarget.setSelectionRange(
+          e.currentTarget.value.length,
+          e.currentTarget.value.length
+        )
+      }
     />
   );
 }

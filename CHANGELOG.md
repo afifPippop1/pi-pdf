@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/afifPippop1/pi-pdf/compare/v0.0.5...v0.0.6) (2025-09-19)
+
+
+### Features
+
+* 🎸 edit text ([2fb8072](https://github.com/afifPippop1/pi-pdf/commit/2fb80721c9fad5c91684b27e6e522ebda03421d2))
+
+
+### Bug Fixes
+
+* 🐛 textarea position ([11691be](https://github.com/afifPippop1/pi-pdf/commit/11691beecc0b815309de007f0720cd944ff1f4ca))
+
 ### [0.0.5](https://github.com/afifPippop1/pi-pdf/compare/v0.0.4...v0.0.5) (2025-09-16)
 
 ### [0.0.4](https://github.com/afifPippop1/pi-pdf/compare/v0.0.3...v0.0.4) (2025-09-16)
