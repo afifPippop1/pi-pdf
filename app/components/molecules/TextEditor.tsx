@@ -43,7 +43,6 @@ export function TextEditor({ action, onBlur }: TextEditorProps) {
       className="absolute z-50"
       ref={textareaRef}
       style={{
-        // TODO: Fix this - 7.3
         top: ((selectedElement?.y1 || 0) + verticalOffset) * zoom,
         left: (selectedElement?.x1 || 0) * zoom,
         margin: 0,
