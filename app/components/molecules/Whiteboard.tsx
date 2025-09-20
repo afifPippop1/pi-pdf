@@ -36,6 +36,7 @@ import {
   UpdateElement,
 } from "~/utils";
 import { TextEditor } from "./TextEditor";
+import { useShortcut } from "~/hooks/useShortcut";
 
 export function Whiteboard() {
   const { zoom } = useZoom();
@@ -51,6 +52,8 @@ export function Whiteboard() {
   const dispatch = useAppDispatch();
 
   useDrawElementsOnCanvas({ ref, action, docSize, zoom });
+
+  useShortcut();
 
   function handleMouseDown(event: {
     clientX: number;
