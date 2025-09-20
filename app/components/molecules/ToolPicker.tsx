@@ -13,9 +13,9 @@ export function ToolPicker() {
   return (
     <div className="flex gap-4 p-4">
       <ToolItem type={null} icon={LuMousePointer2} />
-      <ToolItem type={toolTypes.RECTANGLE} icon={FaRegSquare} />
-      <ToolItem type={toolTypes.LINE} icon={TbLine} />
-      <ToolItem type={toolTypes.TEXT} icon={BiText} />
+      <ToolItem type={toolTypes.RECTANGLE} icon={FaRegSquare} shortcut="r" />
+      <ToolItem type={toolTypes.LINE} icon={TbLine} shortcut="l" />
+      <ToolItem type={toolTypes.TEXT} icon={BiText} shortcut="t" />
     </div>
   );
 }
@@ -23,6 +23,7 @@ export function ToolPicker() {
 interface ToolItemProps {
   type: ToolType | null;
   icon: IconType;
+  shortcut?: string;
 }
 
 function ToolItem(props: ToolItemProps) {
@@ -36,12 +37,13 @@ function ToolItem(props: ToolItemProps) {
   return (
     <button
       className={clsx(
-        "btn btn-sm",
+        "btn btn-sm relative",
         isActive ? "btn-primary btn-active btn-soft" : "btn-ghost"
       )}
       onClick={handleClick}
     >
       <props.icon />
+      <span className="absolute bottom-0 right-1 italic">{props.shortcut}</span>
     </button>
   );
 }
