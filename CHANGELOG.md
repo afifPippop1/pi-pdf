@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/afifPippop1/pi-pdf/compare/v0.0.6...v0.0.8) (2025-09-20)
+
+
+### Features
+
+* 🎸 shortcut ([#22](https://github.com/afifPippop1/pi-pdf/issues/22)) ([6c5ee85](https://github.com/afifPippop1/pi-pdf/commit/6c5ee85b7fa2fd570463c277bf2e1c4a7c3ceb1b))
+
 ### [0.0.7](https://github.com/afifPippop1/pi-pdf/compare/v0.0.6...v0.0.7) (2025-09-20)
 
 
