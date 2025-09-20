@@ -98,13 +98,7 @@ const editorSlice = createSlice({
     },
     setPDFDoc(state, action: PayloadAction<PDFDocument | null>) {
       state.pdfDoc = action.payload;
-      if (action.payload) {
-        const length = action.payload?.getPageIndices().length;
-        if (length) {
-          const elements = Array(length).fill([] as Element[]);
-          state.elements = elements;
-        }
-      } else {
+      if (!action.payload) {
         state.elements = [];
         state.thumbnails = [];
       }
