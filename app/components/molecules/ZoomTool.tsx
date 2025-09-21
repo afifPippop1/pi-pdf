@@ -1,5 +1,10 @@
 import clsx from "clsx";
-import { useState, type ChangeEvent, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from "react";
 import { PDFViewer } from "~/constants";
 import { useZoom } from "~/hooks/useZoom";
 
@@ -9,6 +14,10 @@ const TEN_PERCENT = 0.1;
 export function ZoomTool({ className }: { className?: string }) {
   const { zoom, setZoom } = useZoom();
   const [inputValue, setInputValue] = useState((zoom * PERCENT).toFixed(2));
+
+  useEffect(() => {
+    setInputValue((zoom * PERCENT).toFixed(2));
+  }, [zoom]);
 
   function decrease() {
     setZoom((z) => {
@@ -29,7 +38,7 @@ export function ZoomTool({ className }: { className?: string }) {
   function commitValue() {
     const value = parseFloat(inputValue);
     if (!isNaN(value)) {
-      setZoom(
+      setZoom(() =>
         Math.min(
           Math.max(value / PERCENT, PDFViewer.MIN_SCALE),
           PDFViewer.MAX_SCALE

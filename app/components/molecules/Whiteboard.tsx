@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useRef,
   useState,
   type FocusEvent,
@@ -10,13 +11,16 @@ import { actions, scalingActions, toolTypes } from "~/constants";
 import { useActivePageElements } from "~/hooks/useActivePageElements";
 import { useDrag } from "~/hooks/useDrag";
 import { useDrawElementsOnCanvas } from "~/hooks/useDrawElementsOnCanvas";
+import { useShortcut } from "~/hooks/useShortcut";
 import { useZoom } from "~/hooks/useZoom";
 import { ComponentHighlighter } from "~/lib/highlight";
+import { DrawHandler } from "~/lib/whiteboard/draw-handler";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   setActivePageElements,
   setSelectedElement,
   setToolType,
+  setAction as setActionSlice,
 } from "~/store/slices/editorSlice";
 import type { Element, TextElement } from "~/types";
 import type { Action } from "~/types/action";
@@ -36,24 +40,56 @@ import {
   UpdateElement,
 } from "~/utils";
 import { TextEditor } from "./TextEditor";
-import { useShortcut } from "~/hooks/useShortcut";
+import { DragHandler } from "~/lib/whiteboard/drag-handler";
 
 export function Whiteboard() {
   const { zoom } = useZoom();
-  const [action, setAction] = useState<Action | null>(null);
+  // const [action, setAction] = useState<Action | null>(null);
+  const action = useAppSelector((s) => s.editor.action);
   const ref = useRef<HTMLCanvasElement>(null);
   const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
   const toolType = useAppSelector((s) => s.editor.toolType);
   const selectedElement = useAppSelector((s) => s.editor.selectedElement);
   const docSize = getDocumentSize(pdfDoc, zoom);
-  const { dragOffset, setDragOffset, reset: resetDrag } = useDrag();
+  const {
+    ref: dragOffsetRef,
+    dragOffset,
+    setDragOffset,
+    reset: resetDrag,
+  } = useDrag();
   const elements = useActivePageElements();
 
   const dispatch = useAppDispatch();
 
+  const setAction = (action: Action | null) => setActionSlice(action);
+
   useDrawElementsOnCanvas({ ref, action, docSize, zoom });
 
   useShortcut();
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const drawHandler = new DrawHandler({
+      canvas: ref,
+      dragHandler: { setDragOffset, reset: resetDrag },
+    });
+    const dragHandler = new DragHandler({
+      canvas: ref,
+      dragHandler: {
+        setDragOffset,
+        reset: resetDrag,
+        getDragOffset: () => dragOffsetRef.current,
+      },
+    });
+
+    drawHandler.listen();
+    dragHandler.listen();
+
+    return () => {
+      drawHandler.unlisten();
+      dragHandler.unlisten();
+    };
+  }, []);
 
   function handleMouseDown(event: {
     clientX: number;
@@ -71,15 +107,6 @@ export function Whiteboard() {
       bounding: rect,
       zoom,
     });
-
-    if (toolType) {
-      canvas.style.cursor = "default";
-      generateInitialElement({
-        canvas,
-        coordinate: normalizedCoordinate,
-        setAction,
-      });
-    }
 
     if (!toolType && selectedElement) {
       if (
@@ -101,12 +128,12 @@ export function Whiteboard() {
           canvas.getContext("2d")!
         )
       ) {
-        setAction(actions.DRAGGING);
+        // setAction(actions.DRAGGING);
 
-        const offsetX = normalizedCoordinate.x - selectedElement.x1;
-        const offsetY = normalizedCoordinate.y - selectedElement.y1;
+        // const offsetX = normalizedCoordinate.x - selectedElement.x1;
+        // const offsetY = normalizedCoordinate.y - selectedElement.y1;
 
-        setDragOffset({ x: offsetX, y: offsetY });
+        // setDragOffset({ x: offsetX, y: offsetY });
       }
     }
   }
@@ -114,11 +141,11 @@ export function Whiteboard() {
   function handleMouseUp() {
     const selectedElementIndex = getActiveElementIndex();
     if (selectedElementIndex !== -1) {
-      if (action === actions.DRAWING || scalingActions.has(action)) {
+      if (scalingActions.has(action)) {
         finishDrawingOnWhiteboard();
         reset();
       } else if (action === actions.DRAGGING) {
-        reset();
+        // reset();
       }
     }
   }
@@ -139,16 +166,11 @@ export function Whiteboard() {
       zoom,
     });
 
-    if (action === actions.DRAWING) {
-      drawElementOnWhiteboard({
-        x2: normalizedCoordinate.x,
-        y2: normalizedCoordinate.y,
-      });
-    } else if (action === actions.DRAGGING) {
-      draggingElementOnWhiteboard({
-        coordinate: normalizedCoordinate,
-        dragOffset,
-      });
+    if (action === actions.DRAGGING) {
+      // draggingElementOnWhiteboard({
+      //   coordinate: normalizedCoordinate,
+      //   dragOffset,
+      // });
     } else if (scalingActions.has(action)) {
       if (selectedElement && isShapeElement(selectedElement)) {
         switch (action) {

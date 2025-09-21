@@ -1,20 +1,34 @@
-import { createContext, useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import {
+  createContext,
+  useEffect,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 import { PDFViewer } from "~/constants";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { setZoom as setZoomSlice } from "~/store/slices/editorSlice";
 
 interface ZoomContextType {
   zoom: number;
-  setZoom: Dispatch<SetStateAction<number>>
+  setZoom: (_: (zoom: number) => number) => void;
 }
 
 const ZoomContext = createContext<ZoomContextType>({
   zoom: PDFViewer.SCALE,
-  setZoom() {},
+  setZoom: () => {},
 });
 
 const WHEEL_EVENT = "wheel";
 
 export function ZoomProvider({ children }: { children: ReactNode }) {
-  const [zoom, setZoom] = useState<number>(PDFViewer.SCALE);
+  const zoom = useAppSelector((s) => s.editor.zoom);
+  const dispatch = useAppDispatch();
+
+  function setZoom(cb: (zoom: number) => number) {
+    dispatch(setZoomSlice(cb));
+  }
 
   useEffect(() => {
     function handleWheel(event: WheelEvent) {
@@ -40,7 +54,9 @@ export function ZoomProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ZoomContext.Provider value={{ zoom, setZoom }}>{children}</ZoomContext.Provider>
+    <ZoomContext.Provider value={{ zoom, setZoom }}>
+      {children}
+    </ZoomContext.Provider>
   );
 }
 
