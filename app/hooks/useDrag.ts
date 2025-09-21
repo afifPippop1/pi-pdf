@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BaseCoordinate } from "~/types";
 
 const defaultCoordinate: BaseCoordinate = {
@@ -9,8 +9,13 @@ const defaultCoordinate: BaseCoordinate = {
 export function useDrag() {
   const [dragOffset, setDragOffset] =
     useState<BaseCoordinate>(defaultCoordinate);
+  const ref = useRef(dragOffset);
   function reset() {
     setDragOffset(defaultCoordinate);
   }
-  return { dragOffset, setDragOffset, reset };
+  useEffect(() => {
+    ref.current = dragOffset;
+  }, [dragOffset]);
+
+  return { ref, dragOffset, setDragOffset, reset };
 }

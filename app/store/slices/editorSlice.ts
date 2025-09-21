@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { PDFDocument } from "pdf-lib";
 import type { PDFDocumentLoadingTask } from "pdfjs-dist";
-import { DEFAULT_FONT_SIZE, strokeStyle } from "~/constants";
+import { DEFAULT_FONT_SIZE, PDFViewer, strokeStyle } from "~/constants";
 import type {
   Element,
   Font,
@@ -14,6 +14,7 @@ import type {
   TextProperties,
   ToolType,
 } from "~/types";
+import type { Action } from "~/types/action";
 import { swapArrayValue } from "~/utils";
 
 interface EditorState {
@@ -21,6 +22,7 @@ interface EditorState {
   pdfDoc: PDFDocument | null;
   elements: Element[][];
   toolType: ToolType | null;
+  action: Action | null;
   thumbnails: string[];
   loadingTask: PDFDocumentLoadingTask | null;
   selectedElement: Element | null;
@@ -30,6 +32,7 @@ interface EditorState {
     TEXT: TextProperties;
   };
   fonts: Font[];
+  zoom: number;
 }
 
 const initialState: EditorState = {
@@ -37,6 +40,7 @@ const initialState: EditorState = {
   pdfDoc: null,
   elements: [],
   toolType: null,
+  action: null,
   thumbnails: [],
   loadingTask: null,
   selectedElement: null,
@@ -60,6 +64,7 @@ const initialState: EditorState = {
     },
   },
   fonts: [],
+  zoom: PDFViewer.SCALE,
 };
 
 export const reorderPage = createAsyncThunk<
@@ -146,6 +151,12 @@ const editorSlice = createSlice({
     setFonts(state, action: PayloadAction<Font[]>) {
       state.fonts = action.payload;
     },
+    setZoom(state, action: PayloadAction<(currentZoom: number) => number>) {
+      state.zoom = action.payload(state.zoom);
+    },
+    setAction(state, action: PayloadAction<Action | null>) {
+      state.action = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(reorderPage.fulfilled, (state, action) => {
@@ -166,5 +177,7 @@ export const {
   setSelectedElement,
   setToolState,
   setFonts,
+  setZoom,
+  setAction,
 } = editorSlice.actions;
 export default editorSlice;
