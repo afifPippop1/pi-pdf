@@ -1,5 +1,5 @@
 import { HomePage } from "~/components/pages/HomePage";
-import type { Route } from "./+types/home";
+import type { Route } from "../+types/root";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Pi-DF" }, { name: "description", content: "Editing PDF" }];
