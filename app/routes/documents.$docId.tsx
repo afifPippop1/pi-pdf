@@ -11,8 +11,8 @@ export default function DocumentDetail() {
   const { data, error, isLoading } = useDocument(params.docId);
 
   useEffect(() => {
-    if (data?.data) {
-      const file = new File([data.data.blob], data.data.name, {
+    if (data?.data.blob) {
+      const file = new File([data.data.blob], data.data.name || "", {
         type: data.data.blob.type,
       });
 

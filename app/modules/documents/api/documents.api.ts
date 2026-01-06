@@ -1,4 +1,9 @@
-import type { InsertDocument, UpdateDocument } from "~/types/documents.type";
+import type { PostgrestSingleResponse } from "@supabase/supabase-js";
+import type {
+  Document,
+  InsertDocument,
+  UpdateDocument,
+} from "~/types/documents.type";
 import { supabase } from "~/utils/supabase";
 
 const TABLE = "documents";
@@ -8,7 +13,9 @@ export async function getDocuments() {
   return res.data || [];
 }
 
-export async function getDocument(id: string) {
+export async function getDocument(
+  id: string
+): Promise<PostgrestSingleResponse<Document>> {
   return await supabase.from(TABLE).select("*").eq("id", id).single();
 }
 
