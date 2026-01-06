@@ -48,7 +48,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>

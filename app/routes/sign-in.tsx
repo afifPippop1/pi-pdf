@@ -41,7 +41,6 @@ export default function SignInPage() {
         setErrorMessage(res.error.message);
       }
     }
-    console.log(res.data.session?.access_token)
   }
 
   return (

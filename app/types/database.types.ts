@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      documents: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          path: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          path: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          path?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       workspaces: {
         Row: {
           created_at: string
