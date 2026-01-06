@@ -8,7 +8,7 @@ import { supabase } from "~/utils/supabase";
 
 const TABLE = "documents";
 
-export async function getDocuments() {
+export async function getDocuments(): Promise<Document[]> {
   const res = await supabase.from(TABLE).select("*");
   return res.data || [];
 }
