@@ -4,9 +4,9 @@ import { getDocumentUrl } from "../api/document-storage.api";
 import { getDocument } from "../api/documents.api";
 
 export function useDocument(id?: string) {
-  const db = useOpenDb()
+  const db = useOpenDb();
   async function loadFromIndexDb() {
-    const data = await db?.get("documents", id!);
+    const data = await db!.get("documents", id!);
     return data;
   }
 
