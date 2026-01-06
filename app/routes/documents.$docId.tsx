@@ -12,7 +12,9 @@ export default function DocumentDetail() {
 
   useEffect(() => {
     if (data?.data) {
-      const file = new File([data.data], "test.pdf", { type: data.data.type });
+      const file = new File([data.data.blob], data.data.name, {
+        type: data.data.blob.type,
+      });
 
       setPDFDoc([file]);
     }

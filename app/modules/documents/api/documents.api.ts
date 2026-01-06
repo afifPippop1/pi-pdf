@@ -8,6 +8,10 @@ export async function getDocuments() {
   return res.data || [];
 }
 
+export async function getDocument(id: string) {
+  return await supabase.from(TABLE).select("*").eq("id", id).single();
+}
+
 export async function insertDocument({
   id,
   name,
