@@ -10,7 +10,7 @@ export function LoaderScreen({
 }) {
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-dvh w-dvw">
+      <div className="flex justify-center items-center h-full w-full">
         <Spinner />
       </div>
     );

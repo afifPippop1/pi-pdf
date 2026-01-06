@@ -22,9 +22,11 @@ export default function DocumentDetail() {
 
   return (
     <Suspense>
-      <LoaderScreen isLoading={isLoading}>
-        <EditorPage />
-      </LoaderScreen>
+      <div className="h-dvh w-dvw">
+        <LoaderScreen isLoading={isLoading}>
+          <EditorPage />
+        </LoaderScreen>
+      </div>
     </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { AddDocumentButton } from "~/modules/documents/components/AddDocumentButton";
-import { DocumentList } from "~/modules/documents/components/DocumentLIst";
+import { DocumentList } from "~/modules/documents/components/DocumentList";
 
 export default function DocumentsPage() {
   return (
