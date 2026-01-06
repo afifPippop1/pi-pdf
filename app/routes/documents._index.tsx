@@ -5,7 +5,7 @@ import { DocumentList } from "~/modules/documents/components/DocumentList";
 export default function DocumentsPage() {
   return (
     <Suspense fallback={<></>}>
-      <div className="space-y-3">
+      <div className="space-y-3 p-4">
         <div className="flex justify-between">
           <h1 className="text-xl font-bold">Documents</h1>
           <AddDocumentButton />
