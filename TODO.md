@@ -2,7 +2,7 @@
 
 ## P0 — Core UX (Unify existing logic)
 
-- [X] Centralize max file size check (> 2MB)
+- [x] Centralize max file size check (> 2MB)
 - [ ] Show a single max-file-size alert modal
 - [ ] Unify upload flow (cloud save vs local-only)
 - [ ] Ensure one clear outcome after upload:
@@ -13,9 +13,9 @@
 
 ## P1 — Local-only document experience
 
-- [ ] Load local (IndexedDB) documents in `/documents` list
-- [ ] Merge cloud + local documents into one list
-- [ ] Mark local-only documents clearly (badge / label)
+- [x] Load local (IndexedDB) documents in `/documents` list
+- [x] Merge cloud + local documents into one list
+- [x] Mark local-only documents clearly (badge / label)
 - [ ] Save edits to IndexedDB for local-only documents
 - [ ] Add explicit “Export / Download” action for local-only docs
 
