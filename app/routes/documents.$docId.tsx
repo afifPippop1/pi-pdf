@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import { useParams } from "react-router";
-import { Spinner } from "~/components/ui/spinner";
+import { LoaderScreen } from "~/components/pages/Loader";
 import { useDocument } from "~/modules/documents/hooks/useDocument";
 import { setPDFDoc } from "~/utils";
 
@@ -20,17 +20,11 @@ export default function DocumentDetail() {
     }
   }, [data?.data]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-dvh w-dvw">
-        <Spinner />
-      </div>
-    );
-  }
-
   return (
     <Suspense>
-      <EditorPage />
+      <LoaderScreen isLoading={isLoading}>
+        <EditorPage />
+      </LoaderScreen>
     </Suspense>
   );
 }
