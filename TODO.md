@@ -3,9 +3,9 @@
 ## P0 — Core UX (Unify existing logic)
 
 - [x] Centralize max file size check (> 2MB)
-- [ ] Show a single max-file-size alert modal
-- [ ] Unify upload flow (cloud save vs local-only)
-- [ ] Ensure one clear outcome after upload:
+- [x] Show a single max-file-size alert modal
+- [x] Unify upload flow (cloud save vs local-only)
+- [x] Ensure one clear outcome after upload:
   - Cloud saved **or**
   - Local-only with explanation
 
