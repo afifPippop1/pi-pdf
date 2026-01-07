@@ -17,6 +17,7 @@ export type Database = {
       documents: {
         Row: {
           created_at: string
+          elements: Json
           id: string
           name: string
           path: string
@@ -25,6 +26,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          elements?: Json
           id?: string
           name: string
           path: string
@@ -33,6 +35,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          elements?: Json
           id?: string
           name?: string
           path?: string
