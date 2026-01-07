@@ -19,11 +19,11 @@ export function AddDocumentButton() {
   const navigate = useNavigate();
   const db = useOpenDb();
   async function handleChange(files: FileList | null) {
-    let totlalSize = 0;
+    let totalSize = 0;
     for (const file of files || []) {
-      totlalSize += file.size;
+      totalSize += file.size;
     }
-    const { error } = checkSize(totlalSize);
+    const { error } = checkSize(totalSize);
     if (error) {
       setMaxFileSizeStatus("open");
       setFiles(files);
@@ -73,7 +73,6 @@ export function AddDocumentButton() {
   }
 
   useEffect(() => {
-    console.log("HELLO", maxFileSizeStatus);
     if (maxFileSizeStatus === "continue") {
       onContinueWithLocalSave();
     }
@@ -81,7 +80,7 @@ export function AddDocumentButton() {
 
   return (
     <>
-      <FileUpload onChange={handleChange}>
+      <FileUpload onChange={handleChange} resetOnChange>
         <Button size={"sm"}>
           <FaPlus />
           Add Document
