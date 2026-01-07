@@ -10,13 +10,17 @@ const TABLE = "documents";
 
 export async function getDocuments(): Promise<Document[]> {
   const res = await supabase.from(TABLE).select("*");
-  return res.data || [];
+  return (res.data || []).map((doc) => ({ ...doc, label: "cloud" }));
 }
 
 export async function getDocument(
   id: string
 ): Promise<PostgrestSingleResponse<Document>> {
-  return await supabase.from(TABLE).select("*").eq("id", id).single();
+  const res = await supabase.from(TABLE).select("*").eq("id", id).single();
+  if (res.data) {
+    return { ...res, data: { ...res.data, label: "cloud" } };
+  }
+  return res;
 }
 
 export async function insertDocument({

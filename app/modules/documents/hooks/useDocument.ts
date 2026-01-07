@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useOpenDb } from "~/hooks/useOpenDb";
+import type { Document } from "~/types/documents.type";
 import { getDocumentUrl } from "../api/document-storage.api";
 import { getDocument } from "../api/documents.api";
-import type { Document } from "~/types/documents.type";
 
 export function useDocument(id?: string) {
   const db = useOpenDb();
@@ -29,7 +29,7 @@ export function useDocument(id?: string) {
       ]);
       const data =
         doc.data && url.data
-          ? ({ ...doc.data, blob: url.data, label: "cloud" } as Document & {
+          ? ({ ...doc.data, blob: url.data } as Document & {
               blob: Blob;
             })
           : indexedDbDoc;

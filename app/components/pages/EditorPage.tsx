@@ -34,7 +34,6 @@ export default function EditorPage() {
           <div className="flex-1 flex flex-col min-h-0">
             <div className="bg-white flex items-center shrink-0">
               <ToolPicker />
-              {/* <div className="flex-1 flex justify-end items-center"></div> */}
             </div>
             <div className="flex-1 flex gap-2 md:gap-4 flex-col-reverse md:flex-row min-h-0 p-2">
               {/* Left panel */}

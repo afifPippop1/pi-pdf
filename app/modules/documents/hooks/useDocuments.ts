@@ -7,7 +7,7 @@ export function useDocuments() {
 
   async function loadFromIndexDb() {
     const data = await db!.getAll("documents");
-    return data;
+    return (data || []).map((doc) => ({ ...doc, label: "local" }));
   }
 
   const { data, isLoading, error } = useQuery({
@@ -17,10 +17,8 @@ export function useDocuments() {
         getDocuments(),
         loadFromIndexDb(),
       ]);
-      return [
-        ...cloud.map((doc) => ({ ...doc, label: "cloud" })),
-        ...local.map((doc) => ({ ...doc, label: "local" })),
-      ];
+
+      return [...cloud, ...local].sort((a, b) => b.created_at - a.created_at);
     },
   });
 
