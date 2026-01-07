@@ -1,8 +1,9 @@
 import { Suspense, useState } from "react";
+import { FaRegSave } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { BurgerIcon } from "~/components/atoms/BurgerIcon";
 import { Drawer, DrawerContent } from "~/components/molecules/Drawer";
-import { normalizeFileList, setPDFDoc } from "~/utils";
+import { drawElementsOnPdfDoc, normalizeFileList, setPDFDoc } from "~/utils";
 import FileUpload from "../FileUpload";
 import Popover, {
   PopoverContent,
@@ -10,6 +11,9 @@ import Popover, {
   PopoverTrigger,
 } from "../Popover";
 import { SavePDFButton } from "./SavePDFButton";
+import { useAppSelector } from "~/store/hooks";
+import { useOpenDb } from "~/hooks/useOpenDb";
+import { uploadDocument } from "~/modules/documents/api/document-storage.api";
 
 interface NavbarProps {}
 
@@ -65,6 +69,12 @@ interface FileMenuContentProps {
 }
 
 function FileMenuContent(props: FileMenuContentProps) {
+  const db = useOpenDb();
+  const document = useAppSelector((s) => s.editor.document);
+  const pdfDoc = useAppSelector((s) => s.editor.pdfDoc);
+  const elements = useAppSelector((s) => s.editor.elements);
+  const loadingTask = useAppSelector((s) => s.editor.loadingTask);
+
   function handleChange(files: FileList | null) {
     const f = normalizeFileList(files);
     if (f.length) {
@@ -73,11 +83,50 @@ function FileMenuContent(props: FileMenuContentProps) {
     props.onFileAdded?.();
   }
   return (
-    <FileUpload onChange={handleChange} multiple>
-      <PopoverItem>
-        <FaPlus />
-        Add file
+    <div className="flex flex-col gap-2">
+      <FileUpload onChange={handleChange} multiple>
+        <PopoverItem>
+          <FaPlus />
+          Add file
+        </PopoverItem>
+      </FileUpload>
+      <PopoverItem
+        onClick={async () => {
+          if (!loadingTask || !pdfDoc) return;
+          const drawedDoc = await drawElementsOnPdfDoc(
+            loadingTask,
+            elements,
+            pdfDoc
+          );
+          const pdfBytes = await drawedDoc?.save();
+          if (!pdfBytes) return;
+          const blob = new Blob([new Uint8Array(pdfBytes)], {
+            type: "application/pdf",
+          });
+          if (!blob) return;
+          if (document?.label === "local") {
+            const res = await db?.put(
+              "documents",
+              {
+                id: document.id,
+                blob,
+                created_at: Date.now(),
+                updated_at: Date.now(),
+                name: document.name,
+                path: "",
+              },
+              document.id
+            );
+            return;
+          }
+          if (document?.label === "cloud") {
+            await uploadDocument({ id: document.id, file: blob });
+          }
+        }}
+      >
+        <FaRegSave />
+        Save
       </PopoverItem>
-    </FileUpload>
+    </div>
   );
 }

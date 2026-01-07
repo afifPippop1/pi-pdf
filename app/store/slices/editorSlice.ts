@@ -14,6 +14,7 @@ import type {
   TextProperties,
   ToolType,
 } from "~/types";
+import type { Document } from "~/types/documents.type";
 import { swapArrayValue } from "~/utils";
 
 interface EditorState {
@@ -30,6 +31,7 @@ interface EditorState {
     TEXT: TextProperties;
   };
   fonts: Font[];
+  document: Document | null;
 }
 
 const initialState: EditorState = {
@@ -60,6 +62,7 @@ const initialState: EditorState = {
     },
   },
   fonts: [],
+  document: null,
 };
 
 export const reorderPage = createAsyncThunk<
@@ -146,6 +149,9 @@ const editorSlice = createSlice({
     setFonts(state, action: PayloadAction<Font[]>) {
       state.fonts = action.payload;
     },
+    setDocument(state, action: PayloadAction<Document | null>) {
+      state.document = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(reorderPage.fulfilled, (state, action) => {
@@ -166,5 +172,6 @@ export const {
   setSelectedElement,
   setToolState,
   setFonts,
+  setDocument,
 } = editorSlice.actions;
 export default editorSlice;

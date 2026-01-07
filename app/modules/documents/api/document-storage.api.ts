@@ -1,16 +1,25 @@
 import { supabase } from "~/utils/supabase";
 import { v4 as uuid } from "uuid";
 
-export async function uploadDocument({ file }: { id?: string; file: File }) {
+export async function uploadDocument({
+  id,
+  file,
+}: {
+  id?: string;
+  file: Blob;
+}) {
   const user = await supabase.auth.getUser();
   if (!user.data.user) {
     throw new Error("Unauthorized");
   }
-  const id = uuid();
+  id = id || uuid();
   const path = `${user.data.user?.id}/${id}.pdf`;
   const { data, error } = await supabase.storage
     .from("documents")
-    .upload(path, file);
+    .upload(path, file, {
+      contentType: "application/pdf",
+      upsert: true,
+    });
   return { data: { ...data, id }, error: error };
 }
 

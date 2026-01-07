@@ -8,6 +8,7 @@
 - [x] Ensure one clear outcome after upload:
   - Cloud saved **or**
   - Local-only with explanation
+- [ ] Separate PDF content and annotations (do not overwrite PDF on edit)
 
 ---
 
@@ -16,8 +17,9 @@
 - [x] Load local (IndexedDB) documents in `/documents` list
 - [x] Merge cloud + local documents into one list
 - [x] Mark local-only documents clearly (badge / label)
-- [ ] Save edits to IndexedDB for local-only documents
+- [ ] Save annotation/shapes data to IndexedDB for local-only documents (explicit save)
 - [ ] Add explicit “Export / Download” action for local-only docs
+- [ ] Update PDF blob in storage only on explicit export / finalize
 
 ---
 
@@ -47,6 +49,7 @@
 - [ ] Merge PDFs on first add
 - [ ] Local → cloud migration flow
 - [ ] Delete document (cloud + local)
+- [ ] Persist annotation/shapes JSON in `documents` table for cloud docs
 
 ---
 
@@ -56,3 +59,4 @@
 - [ ] Users always know where a document is stored
 - [ ] Saving behavior is explicit and predictable
 - [ ] App feels intentional, not accidental
+- [ ] Editing does not overwrite stored PDF until export/finalize

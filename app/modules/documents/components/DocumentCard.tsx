@@ -4,11 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import type { Document } from "~/types/documents.type";
 import { timeToNow } from "~/utils/time";
 
-export function DocumentCard({
-  doc,
-}: {
-  doc: Document & { label: "local" | "cloud" };
-}) {
+export function DocumentCard({ doc }: { doc: Document }) {
   const navigate = useNavigate();
   function handleClick() {
     navigate(`/documents/${doc.id}`);
