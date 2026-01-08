@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useOpenDb } from "~/hooks/useOpenDb";
-import type { Document } from "~/types/documents.type";
+import type { DocumentWithBlob } from "~/types/documents.type";
 import { getDocumentUrl } from "../api/document-storage.api";
 import { getDocument } from "../api/documents.api";
 
 export function useDocument(id?: string) {
   const db = useOpenDb();
-  async function loadFromIndexDb(): Promise<
-    (Document & { blob: Blob }) | null
-  > {
+  async function loadFromIndexDb(): Promise<DocumentWithBlob | null> {
     const data = await db!.get("documents", id!);
     if (!data) {
       return null;
@@ -29,9 +27,7 @@ export function useDocument(id?: string) {
       ]);
       const data =
         doc.data && url.data
-          ? ({ ...doc.data, blob: url.data } as Document & {
-              blob: Blob;
-            })
+          ? ({ ...doc.data, blob: url.data } as DocumentWithBlob)
           : indexedDbDoc;
       const error = !indexedDbDoc ? url.error || doc.error : null;
       return {

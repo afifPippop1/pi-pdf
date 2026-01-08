@@ -2,26 +2,30 @@ import { lazy, Suspense, useEffect } from "react";
 import { useParams } from "react-router";
 import { LoaderScreen } from "~/components/pages/Loader";
 import { useDocument } from "~/modules/documents/hooks/useDocument";
-import { useAppDispatch } from "~/store/hooks";
-import { setDocument } from "~/store/slices/editorSlice";
+import { useEditorStore } from "~/store/editorStore";
 import { setPDFDoc } from "~/utils";
 
-const EditorPage = lazy(() => import("~/components/pages/EditorPage"));
+const DocumentEditor = lazy(
+  () => import("~/modules/documents/components/DocumentEditor")
+);
+const PdfProvider = lazy(
+  () => import("~/modules/documents/providers/PdfProviders")
+);
 
 export default function DocumentDetail() {
   const params = useParams<{ docId: string }>();
   const { data, error, isLoading } = useDocument(params.docId);
-  const dispatch = useAppDispatch();
+  const setDocument = useEditorStore((s) => s.setDocument);
 
   useEffect(() => {
     if (data?.data?.blob) {
-      const { blob, ...doc } = data.data;
-      const file = new File([blob], doc.name || "", {
+      const doc = data.data;
+      const file = new File([doc.blob], doc.name || "", {
         type: data.data.blob.type,
       });
 
       setPDFDoc([file]);
-      dispatch(setDocument(doc));
+      setDocument(doc);
     }
   }, [data?.data]);
 
@@ -29,7 +33,9 @@ export default function DocumentDetail() {
     <Suspense>
       <div className="h-dvh w-dvw">
         <LoaderScreen isLoading={isLoading}>
-          <EditorPage />
+          <PdfProvider>
+            <DocumentEditor />
+          </PdfProvider>
         </LoaderScreen>
       </div>
     </Suspense>

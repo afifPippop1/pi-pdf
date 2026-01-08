@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { Whiteboard } from "~/components/molecules/Whiteboard";
-import { useZoom } from "~/hooks/useZoom";
 import { useAppSelector } from "~/store/hooks";
-import { PdfViewer } from "./PDFViewer";
+import { PdfViewer } from "../../modules/documents/components/PDFViewer";
 
 interface EditorCanvasProps {
   buffer: Uint8Array;
