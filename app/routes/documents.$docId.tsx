@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useLayoutEffect } from "react";
 import { useParams } from "react-router";
 import { LoaderScreen } from "~/components/pages/Loader";
 import { useDocument } from "~/modules/documents/hooks/useDocument";
@@ -17,7 +17,7 @@ export default function DocumentDetail() {
   const { data, error, isLoading } = useDocument(params.docId);
   const setDocument = useEditorStore((s) => s.setDocument);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (data?.data?.blob) {
       const doc = data.data;
       const file = new File([doc.blob], doc.name || "", {

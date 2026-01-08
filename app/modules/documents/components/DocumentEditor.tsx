@@ -2,6 +2,7 @@ import * as pdfjsLib from "pdfjs-dist";
 import { useEditorStore } from "~/store/editorStore";
 import { PdfViewer } from "./PDFViewer";
 import { useEffect, useMemo, useState } from "react";
+import PDFRenderer from "./PDFRenderer";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -36,7 +37,7 @@ export default function DocumentEditor() {
 
   return (
     <div className="relative">
-      <PdfViewer pageIndex={activePageIndex} pdfData={buffer} />
+      <PDFRenderer />
     </div>
   );
 }
