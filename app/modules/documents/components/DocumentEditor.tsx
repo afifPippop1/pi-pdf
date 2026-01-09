@@ -1,5 +1,5 @@
 import * as pdfjsLib from "pdfjs-dist";
-import { useEditorStore } from "~/store/editorStore";
+import { useEditorStore } from "~/modules/documents/stores/editorStore";
 import { PdfViewer } from "./PDFViewer";
 import { useEffect, useMemo, useState } from "react";
 import PDFRenderer from "./PDFRenderer";

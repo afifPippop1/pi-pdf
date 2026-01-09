@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { useEditorStore } from "~/store/editorStore";
-import { usePdfStore } from "~/store/pdfStore";
+import { useEditorStore } from "~/modules/documents/stores/editorStore";
+import { usePdfStore } from "~/modules/documents/stores/pdfStore";
 import { getPageFromIndex } from "~/utils";
 import { PDFPageRenderer } from "./PDFPageRenderer";
 

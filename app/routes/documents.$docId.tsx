@@ -1,8 +1,9 @@
 import { lazy, Suspense, useLayoutEffect } from "react";
 import { useParams } from "react-router";
 import { LoaderScreen } from "~/components/pages/Loader";
+import { Toolbar } from "~/modules/documents/components/Toolbar";
 import { useDocument } from "~/modules/documents/hooks/useDocument";
-import { useEditorStore } from "~/store/editorStore";
+import { useEditorStore } from "~/modules/documents/stores/editorStore";
 import { setPDFDoc } from "~/utils";
 
 const DocumentEditor = lazy(
@@ -34,6 +35,7 @@ export default function DocumentDetail() {
       <div className="h-dvh w-dvw">
         <LoaderScreen isLoading={isLoading}>
           <PdfProvider>
+            <Toolbar />
             <DocumentEditor />
           </PdfProvider>
         </LoaderScreen>

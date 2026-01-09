@@ -1,6 +1,6 @@
 import { useLayoutEffect, type ReactNode } from "react";
-import { useEditorStore } from "~/store/editorStore";
-import { usePdfStore } from "~/store/pdfStore";
+import { useEditorStore } from "~/modules/documents/stores/editorStore";
+import { usePdfStore } from "~/modules/documents/stores/pdfStore";
 import { blobToUint8Array } from "../utils/blobToUint8Array";
 
 export default function PdfProvider({ children }: { children: ReactNode }) {
