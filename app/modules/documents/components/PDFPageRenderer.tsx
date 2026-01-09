@@ -1,4 +1,4 @@
-import type { RenderTask } from "pdfjs-dist";
+import type { PDFPageProxy, RenderTask } from "pdfjs-dist";
 
 export class PDFPageRenderer {
   private renderTask: RenderTask | null = null;
@@ -8,7 +8,7 @@ export class PDFPageRenderer {
     canvas,
     scale,
   }: {
-    page: any;
+    page: PDFPageProxy;
     canvas: HTMLCanvasElement;
     scale: number;
   }) {

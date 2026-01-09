@@ -10,11 +10,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 export default function DocumentEditor() {
-  /**
-   * TODO:
-   * 1. Load Document
-   * 2. Render Document
-   */
   const document = useEditorStore((s) => s.document);
   const activePageIndex = useEditorStore((s) => s.activePageIndex);
   const [buffer, setBuffer] = useState<Uint8Array<ArrayBufferLike> | null>(
@@ -36,7 +31,7 @@ export default function DocumentEditor() {
   if (!buffer) return null;
 
   return (
-    <div className="relative">
+    <div className="relative w-max">
       <PDFRenderer />
     </div>
   );
