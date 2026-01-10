@@ -1,15 +1,15 @@
-import { useEffect, type ReactNode } from "react";
+import type { IconType } from "react-icons";
 import { FaRegSquare } from "react-icons/fa";
+import { PiCursor } from "react-icons/pi";
+import { TbLine } from "react-icons/tb";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
-import { TbLine } from "react-icons/tb";
-import { useEditorStore } from "../stores/editorStore";
-import type { IconType } from "react-icons";
-import type { ToolType } from "../types/tooltype";
 import { Tool } from "../constant/tooltype";
+import { useEditorStore } from "../stores/editorStore";
+import type { ToolType } from "../types/tooltype";
 
 function ToolbarItem({
   label,
@@ -29,7 +29,12 @@ function ToolbarItem({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Icon onClick={handleClick} />
+        <div
+          onClick={handleClick}
+          className={activeTool === tool ? "bg-blue-300 p-2 text-white" : "p-2"}
+        >
+          <Icon />
+        </div>
       </TooltipTrigger>
       <TooltipContent>
         <p>{label}</p>
@@ -41,6 +46,8 @@ function ToolbarItem({
 export function Toolbar() {
   return (
     <div className="flex items-center gap-2">
+      <ToolbarItem label="Select tool" Icon={PiCursor} tool={Tool.SELECT} />
+
       <ToolbarItem
         label="Rectangle tool"
         Icon={FaRegSquare}
