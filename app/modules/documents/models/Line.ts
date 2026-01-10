@@ -94,4 +94,6 @@ export class LineElement extends Element {
   }
 
   drawHighlight(ctx: CanvasRenderingContext2D): void {}
+
+  normalize(x: number, y: number): void {}
 }

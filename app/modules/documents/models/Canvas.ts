@@ -1,9 +1,12 @@
+import { INTERACTION } from "../constant/interaction";
+import type { Interaction } from "../types/interaction.type";
 import { Element } from "./Element";
 
 type RenderContext = {
   activeElement: Element | null;
   scale: number;
   dpr: number;
+  interaction: Interaction;
 };
 
 export class Canvas {
@@ -24,7 +27,10 @@ export class Canvas {
 
     elements?.forEach((element) => {
       element.draw(this.ctx);
-      if (element.id === ctx.activeElement?.id) {
+      if (
+        element.id === ctx.activeElement?.id &&
+        ctx.interaction === INTERACTION.Dragging
+      ) {
         element.drawHighlight(this.ctx);
       }
     });

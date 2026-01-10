@@ -1,24 +1,20 @@
 import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { INTERACTION } from "../constant/interaction";
 import { Tool } from "../constant/tooltype";
 import { Canvas } from "../models/Canvas";
 import { useEditorStore } from "../stores/editorStore";
 import { usePdfStore } from "../stores/pdfStore";
+import type { Interaction } from "../types/interaction.type";
 import { createElement } from "../utils/createElement";
 import { getCanvasCoordinate } from "../utils/getCanvasCoordinate";
 import { getPageSize } from "../utils/getPageSize";
-
-const INTERACTION = {
-  Drawing: "drawing",
-  Dragging: "dragging",
-  Iddle: "iddle",
-} as const;
-
-type Interaction = (typeof INTERACTION)[keyof typeof INTERACTION];
 
 export default function Whiteboard() {
   const [interaction, setInteraction] = useState<Interaction>(
     INTERACTION.Iddle
   );
+  const mouseRef = useRef<{ x: number; y: number }>(null);
+
   const elements = useEditorStore((s) => s.elements);
   const page = useEditorStore((s) => s.activePageIndex);
   const zoomLevel = useEditorStore((s) => s.zoomLevel);
@@ -39,7 +35,10 @@ export default function Whiteboard() {
       const element =
         elements[page].find((element) => element.containPoint(x, y)) || null;
       setActiveElement(element);
-      setInteraction(INTERACTION.Dragging);
+      if (element) {
+        mouseRef.current = { x, y };
+        setInteraction(INTERACTION.Dragging);
+      }
     } else {
       setInteraction(INTERACTION.Drawing);
       const element = createElement(tool, x, y);
@@ -51,9 +50,17 @@ export default function Whiteboard() {
   function onMouseUp(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     if (interaction === INTERACTION.Drawing) {
+      const { x, y } = getCanvasCoordinate(e, zoomLevel);
+      const element = elements[page].find(
+        (element) => element.id === activeElement?.id
+      );
+      if (!element) return;
+      element.normalize(x, y);
+      updateElement(element, page);
       setActiveElement(null);
     }
     setInteraction(INTERACTION.Iddle);
+    mouseRef.current = null;
   }
 
   function onMouseMove(e: MouseEvent<HTMLCanvasElement>) {
@@ -71,6 +78,9 @@ export default function Whiteboard() {
         (element) => element.id === activeElement?.id
       );
       if (!element) return;
+      const dx = x - (mouseRef.current?.x || 0);
+      const dy = y - (mouseRef.current?.y || 0);
+
       element.moveTo(x, y);
       updateElement(element, page);
     }
@@ -91,9 +101,10 @@ export default function Whiteboard() {
     canvas.draw(pageElements, {
       activeElement,
       dpr,
+      interaction,
       scale: zoomLevel,
     });
-  }, [elements, page, pageSize, zoomLevel, activeElement]);
+  }, [elements, page, pageSize, zoomLevel, activeElement, interaction]);
 
   return (
     <canvas

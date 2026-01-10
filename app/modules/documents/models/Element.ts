@@ -23,4 +23,6 @@ export abstract class Element {
   ): void;
 
   abstract containPoint(x: number, y: number): boolean;
+
+  abstract normalize(x: number, y: number): void;
 }

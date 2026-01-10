@@ -98,4 +98,15 @@ export class RectangleElement extends Element {
     ctx.strokeRect(x, y, width, height);
     ctx.restore();
   }
+
+  normalize(x: number, y: number): void {
+    if (this.x > x) {
+      this.x = x;
+      this.width = Math.abs(this.width);
+    }
+    if (this.y > y) {
+      this.y = y;
+      this.height = Math.abs(this.height);
+    }
+  }
 }
