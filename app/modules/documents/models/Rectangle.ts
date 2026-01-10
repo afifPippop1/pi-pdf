@@ -1,8 +1,8 @@
+import { DEFAULT_LINE_WIDTH } from "~/constants";
 import type { Color, StrokeStyle } from "~/types";
+import { getDashValue, rgbToString } from "~/utils";
 import { Shape } from "../constant/shape";
 import { Element } from "./Element";
-import { DEFAULT_LINE_WIDTH } from "~/constants";
-import { getDashValue, rgbToString } from "~/utils";
 
 class RectangleStyle {
   public color?: Color;
@@ -86,13 +86,12 @@ export class RectangleElement extends Element {
   }
 
   drawHighlight(ctx: CanvasRenderingContext2D): void {
-    const padding = 8;
     ctx.save();
-    const x = this.x - padding;
-    const y = this.y - padding;
-    const width = this.width + padding * 2;
-    const height = this.height + padding * 2;
-    ctx.lineWidth = this.style.strokeWidth || DEFAULT_LINE_WIDTH;
+    const x = this.x - this.PADDING;
+    const y = this.y - this.PADDING;
+    const width = this.width + this.PADDING * 2;
+    const height = this.height + this.PADDING * 2;
+    ctx.lineWidth = DEFAULT_LINE_WIDTH;
     ctx.strokeStyle = "#007bff";
 
     ctx.strokeRect(x, y, width, height);
@@ -130,5 +129,21 @@ export class RectangleElement extends Element {
       json.height,
       json.width
     );
+  }
+
+  getBounds() {
+    return {
+      left: this.x,
+      top: this.y,
+      right: this.x + this.width,
+      bottom: this.y + this.height,
+    };
+  }
+
+  resizeFromAnchor(ax: number, ay: number, mx: number, my: number): void {
+    this.x = ax;
+    this.y = ay;
+    this.width = mx - ax;
+    this.height = my - ay;
   }
 }

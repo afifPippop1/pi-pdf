@@ -115,4 +115,20 @@ export class EllipseElement extends Element {
   static fromJson(json: any): Element {
     return new EllipseElement(json.id, json.x1, json.y1, json.x2, json.y2);
   }
+
+  getBounds() {
+    return {
+      left: this.x - this.radiusX,
+      top: this.y - this.radiusY,
+      right: this.x + this.radiusX,
+      bottom: this.y + this.radiusY,
+    };
+  }
+
+  resizeFromAnchor(ax: number, ay: number, mx: number, my: number): void {
+    this.x1 = ax;
+    this.y1 = ay;
+    this.x2 = mx;
+    this.y2 = my;
+  }
 }

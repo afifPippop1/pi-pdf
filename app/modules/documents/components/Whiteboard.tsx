@@ -4,15 +4,21 @@ import { Tool } from "../constant/tooltype";
 import { Canvas } from "../models/Canvas";
 import { useEditorStore } from "../stores/editorStore";
 import { usePdfStore } from "../stores/pdfStore";
-import type { Interaction } from "../types/interaction.type";
+import type { Interaction, ResizeHandle } from "../types/interaction.type";
 import { createElement } from "../utils/createElement";
 import { getCanvasCoordinate } from "../utils/getCanvasCoordinate";
 import { getPageSize } from "../utils/getPageSize";
+import { getResizeHandles } from "../utils/getResizeHandles";
+import { hitHandle } from "../utils/hitHandle";
+import { getAnchorFromHandle } from "../utils/getAnchorFromHandle";
+
+const HANDLE_SIZE = 8;
+const HALF = HANDLE_SIZE / 2;
 
 export default function Whiteboard() {
-  const [interaction, setInteraction] = useState<Interaction>(
-    INTERACTION.Iddle
-  );
+  const [interaction, setInteraction] = useState<Interaction>({
+    type: INTERACTION.Iddle,
+  });
   const mouseRef = useRef<{ x: number; y: number } | null>(null);
 
   const elements = useEditorStore((s) => s.elements);
@@ -31,16 +37,49 @@ export default function Whiteboard() {
   function onMouseDown(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
+    console.log(interaction, tool);
     if (tool === Tool.SELECT) {
+      // 1. If there is an active element, check resize handles first
+      if (activeElement) {
+        const bounds = activeElement.getBounds();
+        const handles = getResizeHandles(bounds, activeElement.PADDING);
+
+        for (const [type, pos] of Object.entries(handles)) {
+          if (hitHandle(x, y, pos.x, pos.y, HANDLE_SIZE)) {
+            setInteraction({
+              type: INTERACTION.Scaling,
+              handle: type as ResizeHandle,
+              bounds,
+            });
+            return;
+          }
+        }
+
+        // 2. If not hitting a handle but still inside the active element → drag
+        if (activeElement.containPoint(x, y)) {
+          mouseRef.current = activeElement.getLocalPosition(x, y);
+          setInteraction({ type: INTERACTION.Dragging });
+          return;
+        }
+      }
+
+      // 3. Otherwise try selecting a new element
       const element =
-        elements[page].find((element) => element.containPoint(x, y)) || null;
+        elements[page].find((el) => el.containPoint(x, y)) || null;
+
       setActiveElement(element);
+
       if (element) {
         mouseRef.current = element.getLocalPosition(x, y);
-        setInteraction(INTERACTION.Dragging);
+        setInteraction({ type: INTERACTION.Dragging });
+      } else {
+        // 4. Clicked empty canvas → clear selection
+        setInteraction({ type: INTERACTION.Iddle });
       }
+
+      return;
     } else {
-      setInteraction(INTERACTION.Drawing);
+      setInteraction({ type: INTERACTION.Drawing });
       const element = createElement(tool, x, y);
       if (!element) return;
       addElement(element, page);
@@ -49,8 +88,7 @@ export default function Whiteboard() {
 
   function onMouseUp(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
-    if (interaction === INTERACTION.Drawing) {
-      const { x, y } = getCanvasCoordinate(e, zoomLevel);
+    if (interaction.type === INTERACTION.Drawing) {
       const element = elements[page].find(
         (element) => element.id === activeElement?.id
       );
@@ -58,7 +96,11 @@ export default function Whiteboard() {
       element.normalize();
       updateElement(element, page);
       setActiveElement(null);
-      setInteraction(INTERACTION.Iddle);
+      setInteraction({ type: INTERACTION.Iddle });
+    } else if (interaction.type === INTERACTION.Scaling) {
+      activeElement?.normalize();
+      updateElement(activeElement!, page);
+      setInteraction({ type: INTERACTION.Iddle });
     }
     mouseRef.current = null;
   }
@@ -66,14 +108,14 @@ export default function Whiteboard() {
   function onMouseMove(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
-    if (interaction === INTERACTION.Drawing) {
+    if (interaction.type === INTERACTION.Drawing) {
       const element = elements[page].find(
         (element) => element.id === activeElement?.id
       );
       if (!element) return;
       element.resizeTo(x, y);
       updateElement(element, page);
-    } else if (interaction === INTERACTION.Dragging) {
+    } else if (interaction.type === INTERACTION.Dragging) {
       const element = elements[page].find(
         (element) => element.id === activeElement?.id
       );
@@ -82,6 +124,17 @@ export default function Whiteboard() {
 
       const { x: offsetX, y: offsetY } = mouseRef.current;
       element.moveTo(x - offsetX, y - offsetY);
+      updateElement(element, page);
+    } else if (interaction.type === INTERACTION.Scaling) {
+      const element = activeElement;
+      if (!element) return;
+
+      const { bounds, handle } = interaction;
+
+      // fixed corner depends on handle
+      const anchor = getAnchorFromHandle(bounds, handle);
+
+      element.resizeFromAnchor(anchor.x, anchor.y, x, y);
       updateElement(element, page);
     }
   }

@@ -1,6 +1,7 @@
 import type { ShapeType } from "../types/shape.type";
 
 export abstract class Element {
+  PADDING = 8;
   id: string;
   type: ShapeType;
 
@@ -29,4 +30,16 @@ export abstract class Element {
   abstract getLocalPosition(x: number, y: number): { x: number; y: number };
 
   abstract toJson(): any;
+  abstract getBounds(): {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  };
+  abstract resizeFromAnchor(
+    ax: number,
+    ay: number,
+    mx: number,
+    my: number
+  ): void;
 }

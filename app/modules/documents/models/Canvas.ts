@@ -29,7 +29,7 @@ export class Canvas {
       element.draw(this.ctx);
       if (
         element.id === ctx.activeElement?.id &&
-        ctx.interaction === INTERACTION.Dragging
+        ctx.interaction.type === INTERACTION.Dragging
       ) {
         element.drawHighlight(this.ctx);
       }

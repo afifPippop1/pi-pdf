@@ -154,4 +154,19 @@ export class LineElement extends Element {
   fromJson(json: any): Element {
     return new LineElement(json.id, json.x1, json.y1, json.x2, json.y2);
   }
+
+  getBounds() {
+    return {
+      left: Math.min(this.x1, this.x2),
+      top: Math.min(this.y1, this.y2),
+      right: Math.max(this.x1, this.x2),
+      bottom: Math.max(this.y1, this.y2),
+    };
+  }
+  resizeFromAnchor(ax: number, ay: number, mx: number, my: number): void {
+    this.x1 = ax;
+    this.y1 = ay;
+    this.x2 = mx;
+    this.y2 = my;
+  }
 }
