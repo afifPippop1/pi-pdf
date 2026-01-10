@@ -14,7 +14,7 @@ export abstract class Element {
 
   abstract resizeTo(x: number, y: number): void;
 
-  abstract translate(dx: number, dy: number): void;
+  abstract moveTo(x: number, y: number): void;
   abstract scaleBy(
     sx: number,
     sy: number,

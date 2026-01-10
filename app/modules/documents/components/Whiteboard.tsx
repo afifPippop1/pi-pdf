@@ -39,6 +39,7 @@ export default function Whiteboard() {
       const element =
         elements[page].find((element) => element.containPoint(x, y)) || null;
       setActiveElement(element);
+      setInteraction(INTERACTION.Dragging);
     } else {
       setInteraction(INTERACTION.Drawing);
       const element = createElement(tool, x, y);
@@ -66,6 +67,12 @@ export default function Whiteboard() {
       element.resizeTo(x, y);
       updateElement(element, page);
     } else if (interaction === INTERACTION.Dragging) {
+      const element = elements[page].find(
+        (element) => element.id === activeElement?.id
+      );
+      if (!element) return;
+      element.moveTo(x, y);
+      updateElement(element, page);
     }
   }
 

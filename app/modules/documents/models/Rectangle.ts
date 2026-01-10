@@ -69,7 +69,10 @@ export class RectangleElement extends Element {
     this.height = y - this.y;
   }
 
-  translate(dx: number, dy: number): void {}
+  moveTo(x: number, y: number): void {
+    this.x = x;
+    this.y = y;
+  }
 
   scaleBy(sx: number, sy: number, originX: number, originY: number): void {}
 

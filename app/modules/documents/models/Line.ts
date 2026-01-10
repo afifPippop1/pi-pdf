@@ -58,7 +58,7 @@ export class LineElement extends Element {
     this.y2 = y;
   }
 
-  translate(dx: number, dy: number): void {}
+  moveTo(dx: number, dy: number): void {}
 
   scaleBy(sx: number, sy: number, originX: number, originY: number): void {}
 
