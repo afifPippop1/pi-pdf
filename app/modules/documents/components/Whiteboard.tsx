@@ -1,13 +1,13 @@
-import { use, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { v4 as uuid } from "uuid";
+import { Tool } from "../constant/tooltype";
 import { Canvas } from "../models/Canvas";
 import { LineElement } from "../models/Line";
+import { RectangleElement } from "../models/Rectangle";
 import { useEditorStore } from "../stores/editorStore";
 import { usePdfStore } from "../stores/pdfStore";
+import { getCanvasCoordinate } from "../utils/getCanvasCoordinate";
 import { getPageSize } from "../utils/getPageSize";
-import { RectangleElement } from "../models/Rectangle";
-import { Tool } from "../constant/tooltype";
-import { normalizeCoordinate } from "~/utils";
 
 const ACTION = {
   Drawing: "drawing",
@@ -32,21 +32,9 @@ export default function Whiteboard() {
   const doc = usePdfStore((s) => s.doc);
   const pageSize = getPageSize(doc, page, zoomLevel);
 
-  function getCanvasCoordinate(e: MouseEvent<HTMLCanvasElement>) {
-    const canvas = e.currentTarget;
-    const rect = canvas.getBoundingClientRect();
-
-    return normalizeCoordinate({
-      x: e.clientX,
-      y: e.clientY,
-      bounding: rect,
-      zoom: zoomLevel,
-    });
-  }
-
   function onMouseDown(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
-    const { x, y } = getCanvasCoordinate(e);
+    const { x, y } = getCanvasCoordinate(e, zoomLevel);
     if (tool === Tool.SELECT) return;
     setAction(ACTION.Drawing);
     if (tool === Tool.LINE) {
@@ -68,7 +56,7 @@ export default function Whiteboard() {
   function onMouseMove(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     const { clientX, clientY } = e;
-    const { x, y } = getCanvasCoordinate(e);
+    const { x, y } = getCanvasCoordinate(e, zoomLevel);
     if (action === ACTION.Drawing) {
       const element = elements[page].find(
         (element) => element.id === activeElement?.id
