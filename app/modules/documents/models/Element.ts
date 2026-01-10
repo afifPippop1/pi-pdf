@@ -10,4 +10,5 @@ export abstract class Element {
   }
 
   abstract draw(ctx: CanvasRenderingContext2D): void;
+  abstract resizeTo(x: number, y: number): void;
 }

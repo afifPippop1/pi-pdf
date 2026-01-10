@@ -52,4 +52,9 @@ export class LineElement extends Element {
 
     ctx.stroke();
   }
+
+  resizeTo(x: number, y: number): void {
+    this.x2 = x;
+    this.y2 = y;
+  }
 }

@@ -1,25 +1,22 @@
 import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
-import { v4 as uuid } from "uuid";
 import { Tool } from "../constant/tooltype";
 import { Canvas } from "../models/Canvas";
-import { LineElement } from "../models/Line";
-import { RectangleElement } from "../models/Rectangle";
 import { useEditorStore } from "../stores/editorStore";
 import { usePdfStore } from "../stores/pdfStore";
+import { createElement } from "../utils/createElement";
 import { getCanvasCoordinate } from "../utils/getCanvasCoordinate";
 import { getPageSize } from "../utils/getPageSize";
-import { EllipseElement } from "../models/Ellipse";
 
-const ACTION = {
+const INTERACTION = {
   Drawing: "drawing",
   Dragging: "dragging",
   Iddle: "iddle",
 } as const;
 
-type Action = (typeof ACTION)[keyof typeof ACTION];
+type Interaction = (typeof INTERACTION)[keyof typeof INTERACTION];
 
 export default function Whiteboard() {
-  const [action, setAction] = useState<Action>(ACTION.Iddle);
+  const [action, setAction] = useState<Interaction>(INTERACTION.Iddle);
   const elements = useEditorStore((s) => s.elements);
   const page = useEditorStore((s) => s.activePageIndex);
   const zoomLevel = useEditorStore((s) => s.zoomLevel);
@@ -37,43 +34,27 @@ export default function Whiteboard() {
     e.preventDefault();
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
     if (tool === Tool.SELECT) return;
-    setAction(ACTION.Drawing);
-    if (tool === Tool.LINE) {
-      const element = new LineElement(uuid(), x, y, x, y);
-      addElement(element, page);
-    } else if (tool === Tool.RECTANGLE) {
-      const element = new RectangleElement(uuid(), x, y, 0, 0);
-      addElement(element, page);
-    } else if (tool === Tool.ELLIPSE) {
-      const element = new EllipseElement(uuid(), x, y, x, y);
-      addElement(element, page);
-    }
+    setAction(INTERACTION.Drawing);
+    const element = createElement(tool, x, y);
+    if (!element) return;
+    addElement(element, page);
   }
 
   function onMouseUp(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
-    setAction(ACTION.Iddle);
+    setAction(INTERACTION.Iddle);
     setActiveElement(null);
   }
 
   function onMouseMove(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
-    if (action === ACTION.Drawing) {
+    if (action === INTERACTION.Drawing) {
       const element = elements[page].find(
         (element) => element.id === activeElement?.id
       );
       if (!element) return;
-      if (element instanceof LineElement) {
-        element.x2 = x;
-        element.y2 = y;
-      } else if (element instanceof RectangleElement) {
-        element.width = x - element.x;
-        element.height = y - element.y;
-      } else if (element instanceof EllipseElement) {
-        element.x2 = x;
-        element.y2 = y;
-      }
+      element.resizeTo(x, y);
       updateElement(element, page);
     }
   }

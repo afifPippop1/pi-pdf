@@ -63,4 +63,9 @@ export class RectangleElement extends Element {
     }
     ctx.restore();
   }
+
+  resizeTo(x: number, y: number): void {
+    this.width = x - this.x;
+    this.height = y - this.y;
+  }
 }

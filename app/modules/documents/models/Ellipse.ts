@@ -41,4 +41,9 @@ export class EllipseElement extends Element {
     ctx.ellipse(this.x, this.y, this.radiusX, this.radiusY, 0, 0, Math.PI * 2);
     ctx.stroke();
   }
+
+  resizeTo(x: number, y: number): void {
+    this.x2 = x;
+    this.y2 = y;
+  }
 }
