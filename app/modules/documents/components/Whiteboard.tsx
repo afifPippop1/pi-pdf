@@ -48,7 +48,6 @@ export default function Whiteboard() {
 
   function onMouseUp(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
-    const { clientX, clientY } = e;
     setAction(ACTION.Iddle);
     setActiveElement(null);
   }
@@ -66,8 +65,8 @@ export default function Whiteboard() {
         element.x2 = x;
         element.y2 = y;
       } else if (element instanceof RectangleElement) {
-        element.width = clientX - element.x;
-        element.height = clientY - element.y;
+        element.width = x - element.x;
+        element.height = y - element.y;
       }
       updateElement(element, page);
     }
