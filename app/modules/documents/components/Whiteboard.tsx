@@ -13,7 +13,7 @@ export default function Whiteboard() {
   const [interaction, setInteraction] = useState<Interaction>(
     INTERACTION.Iddle
   );
-  const mouseRef = useRef<{ x: number; y: number }>(null);
+  const mouseRef = useRef<{ x: number; y: number } | null>(null);
 
   const elements = useEditorStore((s) => s.elements);
   const page = useEditorStore((s) => s.activePageIndex);
@@ -36,7 +36,7 @@ export default function Whiteboard() {
         elements[page].find((element) => element.containPoint(x, y)) || null;
       setActiveElement(element);
       if (element) {
-        mouseRef.current = { x, y };
+        mouseRef.current = element.getPosition(x, y);
         setInteraction(INTERACTION.Dragging);
       }
     } else {
@@ -78,10 +78,10 @@ export default function Whiteboard() {
         (element) => element.id === activeElement?.id
       );
       if (!element) return;
-      const dx = x - (mouseRef.current?.x || 0);
-      const dy = y - (mouseRef.current?.y || 0);
+      if (!mouseRef.current) return;
 
-      element.moveTo(x, y);
+      const { x: offsetX, y: offsetY } = mouseRef.current;
+      element.moveTo(x - offsetX, y - offsetY);
       updateElement(element, page);
     }
   }

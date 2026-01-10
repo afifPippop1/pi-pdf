@@ -109,4 +109,11 @@ export class RectangleElement extends Element {
       this.height = Math.abs(this.height);
     }
   }
+
+  getPosition(x: number, y: number): { x: number; y: number } {
+    // Get Position based on top left
+    x = x - this.x;
+    y = y - this.y;
+    return { x, y };
+  }
 }

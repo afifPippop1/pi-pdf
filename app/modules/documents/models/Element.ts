@@ -25,4 +25,6 @@ export abstract class Element {
   abstract containPoint(x: number, y: number): boolean;
 
   abstract normalize(x: number, y: number): void;
+
+  abstract getPosition(x: number, y: number): { x: number; y: number };
 }

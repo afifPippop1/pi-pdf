@@ -58,4 +58,8 @@ export class EllipseElement extends Element {
   drawHighlight(ctx: CanvasRenderingContext2D): void {}
 
   normalize(x: number, y: number): void {}
+
+  getPosition(x: number, y: number): { x: number; y: number } {
+    return { x, y };
+  }
 }
