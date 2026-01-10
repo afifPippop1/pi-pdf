@@ -55,7 +55,7 @@ export default function Whiteboard() {
         (element) => element.id === activeElement?.id
       );
       if (!element) return;
-      element.normalize(x, y);
+      element.normalize();
       updateElement(element, page);
       setActiveElement(null);
       setInteraction(INTERACTION.Iddle);

@@ -99,14 +99,14 @@ export class RectangleElement extends Element {
     ctx.restore();
   }
 
-  normalize(x: number, y: number): void {
-    if (this.x > x) {
-      this.x = x;
+  normalize(): void {
+    if (this.width < 0) {
       this.width = Math.abs(this.width);
+      this.x -= this.width;
     }
-    if (this.y > y) {
-      this.y = y;
+    if (this.height < 0) {
       this.height = Math.abs(this.height);
+      this.y -= this.height;
     }
   }
 

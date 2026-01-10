@@ -81,7 +81,17 @@ export class EllipseElement extends Element {
     ctx.restore();
   }
 
-  normalize(x: number, y: number): void {}
+  normalize(): void {
+    const minX = Math.min(this.x1, this.x2);
+    const maxX = Math.max(this.x1, this.x2);
+    const minY = Math.min(this.y1, this.y2);
+    const maxY = Math.max(this.y1, this.y2);
+
+    this.x1 = minX;
+    this.x2 = maxX;
+    this.y1 = minY;
+    this.y2 = maxY;
+  }
 
   getLocalPosition(x: number, y: number): { x: number; y: number } {
     // Get Position based on center

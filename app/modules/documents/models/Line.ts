@@ -128,7 +128,16 @@ export class LineElement extends Element {
     ctx.restore();
   }
 
-  normalize(x: number, y: number): void {}
+  normalize(): void {
+    if (this.x1 > this.x2 || (this.x1 === this.x2 && this.y1 > this.y2)) {
+      const tx = this.x1;
+      const ty = this.y1;
+      this.x1 = this.x2;
+      this.y1 = this.y2;
+      this.x2 = tx;
+      this.y2 = ty;
+    }
+  }
 
   toJson() {
     return {
