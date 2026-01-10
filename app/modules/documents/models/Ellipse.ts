@@ -46,4 +46,14 @@ export class EllipseElement extends Element {
     this.x2 = x;
     this.y2 = y;
   }
+
+  translate(dx: number, dy: number): void {}
+
+  scaleBy(sx: number, sy: number, originX: number, originY: number): void {}
+
+  containPoint(x: number, y: number): boolean {
+    return x >= this.x1 && x <= this.x2 && y >= this.y1 && y <= this.y2;
+  }
+
+  drawHighlight(ctx: CanvasRenderingContext2D): void {}
 }

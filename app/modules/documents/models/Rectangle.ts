@@ -68,4 +68,31 @@ export class RectangleElement extends Element {
     this.width = x - this.x;
     this.height = y - this.y;
   }
+
+  translate(dx: number, dy: number): void {}
+
+  scaleBy(sx: number, sy: number, originX: number, originY: number): void {}
+
+  containPoint(x: number, y: number): boolean {
+    return (
+      x >= this.x &&
+      x <= this.x + this.width &&
+      y >= this.y &&
+      y <= this.y + this.height
+    );
+  }
+
+  drawHighlight(ctx: CanvasRenderingContext2D): void {
+    const padding = 8;
+    ctx.save();
+    const x = this.x - padding;
+    const y = this.y - padding;
+    const width = this.width + padding * 2;
+    const height = this.height + padding * 2;
+    ctx.lineWidth = this.style.strokeWidth || DEFAULT_LINE_WIDTH;
+    ctx.strokeStyle = "#007bff";
+
+    ctx.strokeRect(x, y, width, height);
+    ctx.restore();
+  }
 }

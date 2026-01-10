@@ -16,7 +16,9 @@ const INTERACTION = {
 type Interaction = (typeof INTERACTION)[keyof typeof INTERACTION];
 
 export default function Whiteboard() {
-  const [action, setAction] = useState<Interaction>(INTERACTION.Iddle);
+  const [interaction, setInteraction] = useState<Interaction>(
+    INTERACTION.Iddle
+  );
   const elements = useEditorStore((s) => s.elements);
   const page = useEditorStore((s) => s.activePageIndex);
   const zoomLevel = useEditorStore((s) => s.zoomLevel);
@@ -33,29 +35,37 @@ export default function Whiteboard() {
   function onMouseDown(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
-    if (tool === Tool.SELECT) return;
-    setAction(INTERACTION.Drawing);
-    const element = createElement(tool, x, y);
-    if (!element) return;
-    addElement(element, page);
+    if (tool === Tool.SELECT) {
+      const element =
+        elements[page].find((element) => element.containPoint(x, y)) || null;
+      setActiveElement(element);
+    } else {
+      setInteraction(INTERACTION.Drawing);
+      const element = createElement(tool, x, y);
+      if (!element) return;
+      addElement(element, page);
+    }
   }
 
   function onMouseUp(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
-    setAction(INTERACTION.Iddle);
-    setActiveElement(null);
+    if (interaction === INTERACTION.Drawing) {
+      setActiveElement(null);
+    }
+    setInteraction(INTERACTION.Iddle);
   }
 
   function onMouseMove(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
-    if (action === INTERACTION.Drawing) {
+    if (interaction === INTERACTION.Drawing) {
       const element = elements[page].find(
         (element) => element.id === activeElement?.id
       );
       if (!element) return;
       element.resizeTo(x, y);
       updateElement(element, page);
+    } else if (interaction === INTERACTION.Dragging) {
     }
   }
 
@@ -71,8 +81,12 @@ export default function Whiteboard() {
     canvasElement.style.height = `${pageSize.height}px`;
 
     const pageElements = elements[page];
-    canvas.draw(pageElements, zoomLevel, dpr);
-  }, [elements, page, pageSize, zoomLevel]);
+    canvas.draw(pageElements, {
+      activeElement,
+      dpr,
+      scale: zoomLevel,
+    });
+  }, [elements, page, pageSize, zoomLevel, activeElement]);
 
   return (
     <canvas

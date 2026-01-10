@@ -1,5 +1,11 @@
 import { Element } from "./Element";
 
+type RenderContext = {
+  activeElement: Element | null;
+  scale: number;
+  dpr: number;
+};
+
 export class Canvas {
   private ctx: CanvasRenderingContext2D;
 
@@ -9,15 +15,18 @@ export class Canvas {
     this.ctx = c;
   }
 
-  draw(elements: Element[], scale: number, dpr: number = 1) {
+  draw(elements: Element[], ctx: RenderContext) {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0); // reset
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.ctx.save();
-    this.ctx.scale(dpr * scale, dpr * scale);
+    this.ctx.scale(ctx.dpr * ctx.scale, ctx.dpr * ctx.scale);
 
     elements?.forEach((element) => {
       element.draw(this.ctx);
+      if (element.id === ctx.activeElement?.id) {
+        element.drawHighlight(this.ctx);
+      }
     });
 
     this.ctx.restore();
