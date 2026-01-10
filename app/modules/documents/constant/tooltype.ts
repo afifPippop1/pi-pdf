@@ -3,4 +3,4 @@ export const Tool = {
   RECTANGLE: "rectangle",
   TEXT: "text",
   SELECT: "select",
-};
+} as const;

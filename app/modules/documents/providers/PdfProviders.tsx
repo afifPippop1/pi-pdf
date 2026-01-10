@@ -12,7 +12,7 @@ export default function PdfProvider({ children }: { children: ReactNode }) {
     (async function () {
       console.log("loading document...");
       const buffer = await blobToUint8Array(document.blob);
-      setBuffer(buffer);
+      await setBuffer(buffer);
       console.log("Document loaded");
     })();
   }, [document]);

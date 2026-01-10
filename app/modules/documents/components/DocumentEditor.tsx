@@ -3,6 +3,7 @@ import { useEditorStore } from "~/modules/documents/stores/editorStore";
 import { PdfViewer } from "./PDFViewer";
 import { useEffect, useMemo, useState } from "react";
 import PDFRenderer from "./PDFRenderer";
+import Whiteboard from "./Whiteboard";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -32,6 +33,7 @@ export default function DocumentEditor() {
 
   return (
     <div className="relative w-max">
+      <Whiteboard />
       <PDFRenderer />
     </div>
   );
