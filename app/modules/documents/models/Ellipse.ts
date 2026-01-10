@@ -1,3 +1,4 @@
+import { DEFAULT_LINE_WIDTH } from "~/constants";
 import { Shape } from "../constant/shape";
 import { Element } from "./Element";
 
@@ -47,7 +48,18 @@ export class EllipseElement extends Element {
     this.y2 = y;
   }
 
-  moveTo(dx: number, dy: number): void {}
+  moveTo(x: number, y: number): void {
+    const cx = this.x;
+    const cy = this.y;
+
+    const dx = x - cx;
+    const dy = y - cy;
+
+    this.x1 += dx;
+    this.y1 += dy;
+    this.x2 += dx;
+    this.y2 += dy;
+  }
 
   scaleBy(sx: number, sy: number, originX: number, originY: number): void {}
 
@@ -55,11 +67,27 @@ export class EllipseElement extends Element {
     return x >= this.x1 && x <= this.x2 && y >= this.y1 && y <= this.y2;
   }
 
-  drawHighlight(ctx: CanvasRenderingContext2D): void {}
+  drawHighlight(ctx: CanvasRenderingContext2D): void {
+    const padding = 8;
+    ctx.save();
+    const x = this.x1 - padding;
+    const y = this.y1 - padding;
+    const width = this.x2 - this.x1 + padding * 2;
+    const height = this.y2 - this.y1 + padding * 2;
+    ctx.lineWidth = DEFAULT_LINE_WIDTH;
+    ctx.strokeStyle = "#007bff";
+
+    ctx.strokeRect(x, y, width, height);
+    ctx.restore();
+  }
 
   normalize(x: number, y: number): void {}
 
   getLocalPosition(x: number, y: number): { x: number; y: number } {
+    // Get Position based on center
+    x = x - this.x;
+    y = y - this.y;
+
     return { x, y };
   }
 

@@ -58,8 +58,8 @@ export default function Whiteboard() {
       element.normalize(x, y);
       updateElement(element, page);
       setActiveElement(null);
+      setInteraction(INTERACTION.Iddle);
     }
-    setInteraction(INTERACTION.Iddle);
     mouseRef.current = null;
   }
 
