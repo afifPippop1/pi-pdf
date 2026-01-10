@@ -65,7 +65,7 @@ export default function Whiteboard() {
 
       // 3. Otherwise try selecting a new element
       const element =
-        elements[page].find((el) => el.containPoint(x, y)) || null;
+        elements[page]?.reverse().find((el) => el.containPoint(x, y)) || null;
 
       setActiveElement(element);
 
