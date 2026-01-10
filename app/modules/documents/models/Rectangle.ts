@@ -116,4 +116,19 @@ export class RectangleElement extends Element {
     y = y - this.y;
     return { x, y };
   }
+
+  toJson() {
+    const { x, y, width, height, style } = this;
+    return { x, y, width, height, style };
+  }
+
+  fromJson(json: any): Element {
+    return new RectangleElement(
+      json.id,
+      json.x,
+      json.y,
+      json.height,
+      json.width
+    );
+  }
 }

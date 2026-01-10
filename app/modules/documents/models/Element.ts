@@ -27,4 +27,6 @@ export abstract class Element {
   abstract normalize(x: number, y: number): void;
 
   abstract getLocalPosition(x: number, y: number): { x: number; y: number };
+
+  abstract toJson(): any;
 }

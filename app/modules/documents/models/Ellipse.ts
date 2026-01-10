@@ -62,4 +62,19 @@ export class EllipseElement extends Element {
   getLocalPosition(x: number, y: number): { x: number; y: number } {
     return { x, y };
   }
+
+  toJson() {
+    return {
+      id: this.id,
+      type: this.type,
+      x1: this.x1,
+      y1: this.y1,
+      x2: this.x2,
+      y2: this.y2,
+    };
+  }
+
+  static fromJson(json: any): Element {
+    return new EllipseElement(json.id, json.x1, json.y1, json.x2, json.y2);
+  }
 }
