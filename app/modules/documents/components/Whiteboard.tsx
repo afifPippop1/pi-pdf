@@ -37,7 +37,6 @@ export default function Whiteboard() {
   function onMouseDown(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
-    console.log(interaction, tool);
     if (tool === Tool.SELECT) {
       // 1. If there is an active element, check resize handles first
       if (activeElement) {
