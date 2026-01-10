@@ -7,6 +7,7 @@ import { usePdfStore } from "../stores/pdfStore";
 import { getPageSize } from "../utils/getPageSize";
 import { RectangleElement } from "../models/Rectangle";
 import { Tool } from "../constant/tooltype";
+import { normalizeCoordinate } from "~/utils";
 
 const ACTION = {
   Drawing: "drawing",
@@ -31,22 +32,28 @@ export default function Whiteboard() {
   const doc = usePdfStore((s) => s.doc);
   const pageSize = getPageSize(doc, page, zoomLevel);
 
+  function getCanvasCoordinate(e: MouseEvent<HTMLCanvasElement>) {
+    const canvas = e.currentTarget;
+    const rect = canvas.getBoundingClientRect();
+
+    return normalizeCoordinate({
+      x: e.clientX,
+      y: e.clientY,
+      bounding: rect,
+      zoom: zoomLevel,
+    });
+  }
+
   function onMouseDown(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
-    const { clientX, clientY } = e;
+    const { x, y } = getCanvasCoordinate(e);
     if (tool === Tool.SELECT) return;
     setAction(ACTION.Drawing);
     if (tool === Tool.LINE) {
-      const element = new LineElement(
-        uuid(),
-        clientX,
-        clientY,
-        clientX,
-        clientY
-      );
+      const element = new LineElement(uuid(), x, y, x, y);
       addElement(element, page);
     } else if (tool === Tool.RECTANGLE) {
-      const element = new RectangleElement(uuid(), clientX, clientY, 0, 0);
+      const element = new RectangleElement(uuid(), x, y, 0, 0);
       addElement(element, page);
     }
   }
@@ -61,17 +68,18 @@ export default function Whiteboard() {
   function onMouseMove(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
     const { clientX, clientY } = e;
+    const { x, y } = getCanvasCoordinate(e);
     if (action === ACTION.Drawing) {
       const element = elements[page].find(
         (element) => element.id === activeElement?.id
       );
       if (!element) return;
       if (element instanceof LineElement) {
-        element.x2 = clientX;
-        element.y2 = clientY;
+        element.x2 = x;
+        element.y2 = y;
       } else if (element instanceof RectangleElement) {
         element.width = clientX - element.x;
-        element.height = clientX - element.y;
+        element.height = clientY - element.y;
       }
       updateElement(element, page);
     }

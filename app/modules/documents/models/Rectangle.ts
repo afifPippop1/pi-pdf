@@ -5,7 +5,7 @@ import { DEFAULT_LINE_WIDTH } from "~/constants";
 import { getDashValue, rgbToString } from "~/utils";
 
 class RectangleStyle {
-  public color: Color;
+  public color?: Color;
   public outlineColor: Color;
   public strokeWidth: number;
   public strokeStyle: StrokeStyle;
@@ -16,7 +16,7 @@ class RectangleStyle {
     strokeWidth,
     strokeStyle,
   }: {
-    color: Color;
+    color?: Color;
     outlineColor: Color;
     strokeWidth: number;
     strokeStyle: StrokeStyle;
@@ -30,7 +30,6 @@ class RectangleStyle {
 
 export class RectangleElement extends Element {
   public style = new RectangleStyle({
-    color: { r: 0, g: 0, b: 0, a: 1 },
     outlineColor: { r: 0, g: 0, b: 0, a: 1 },
     strokeWidth: 1,
     strokeStyle: "line",
@@ -49,7 +48,9 @@ export class RectangleElement extends Element {
     ctx.save();
     ctx.lineWidth = this.style.strokeWidth || DEFAULT_LINE_WIDTH;
     ctx.strokeStyle = rgbToString(this.style.outlineColor);
-    ctx.fillStyle = rgbToString(this.style.color);
+    if (this.style.color) {
+      ctx.fillStyle = rgbToString(this.style.color);
+    }
     const dash = getDashValue(this.style.strokeStyle);
 
     if (dash) {
@@ -57,7 +58,9 @@ export class RectangleElement extends Element {
     }
 
     ctx.strokeRect(this.x, this.y, this.width, this.height);
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    if (this.style.color) {
+      ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
     ctx.restore();
   }
 }
