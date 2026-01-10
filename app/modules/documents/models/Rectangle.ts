@@ -110,7 +110,7 @@ export class RectangleElement extends Element {
     }
   }
 
-  getPosition(x: number, y: number): { x: number; y: number } {
+  getLocalPosition(x: number, y: number): { x: number; y: number } {
     // Get Position based on top left
     x = x - this.x;
     y = y - this.y;

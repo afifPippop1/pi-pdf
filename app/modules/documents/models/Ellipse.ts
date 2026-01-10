@@ -59,7 +59,7 @@ export class EllipseElement extends Element {
 
   normalize(x: number, y: number): void {}
 
-  getPosition(x: number, y: number): { x: number; y: number } {
+  getLocalPosition(x: number, y: number): { x: number; y: number } {
     return { x, y };
   }
 }

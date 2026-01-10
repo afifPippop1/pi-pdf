@@ -36,7 +36,7 @@ export default function Whiteboard() {
         elements[page].find((element) => element.containPoint(x, y)) || null;
       setActiveElement(element);
       if (element) {
-        mouseRef.current = element.getPosition(x, y);
+        mouseRef.current = element.getLocalPosition(x, y);
         setInteraction(INTERACTION.Dragging);
       }
     } else {

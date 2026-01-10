@@ -26,5 +26,5 @@ export abstract class Element {
 
   abstract normalize(x: number, y: number): void;
 
-  abstract getPosition(x: number, y: number): { x: number; y: number };
+  abstract getLocalPosition(x: number, y: number): { x: number; y: number };
 }
