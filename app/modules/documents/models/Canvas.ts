@@ -1,7 +1,4 @@
-import { DEFAULT_LINE_WIDTH } from "~/constants";
 import { Element } from "./Element";
-import { getDashValue, rgbToString } from "~/utils";
-import type { LineElement } from "./Line";
 
 export class Canvas {
   private ctx: CanvasRenderingContext2D;
@@ -21,25 +18,8 @@ export class Canvas {
 
     elements?.forEach((element) => {
       element.draw(this.ctx);
-      // if (element instanceof LineElement) {
-      //   this.drawLine(element);
-      // }
     });
 
     this.ctx.restore();
-  }
-
-  drawLine(element: LineElement) {
-    this.ctx.beginPath();
-    this.ctx.moveTo(element.x1, element.y1);
-    this.ctx.lineTo(element.x2, element.y2);
-
-    this.ctx.lineWidth = element.style.strokeWidth || DEFAULT_LINE_WIDTH;
-    this.ctx.strokeStyle = rgbToString(element.style.color);
-
-    const dash = getDashValue(element.style.strokeStyle);
-    this.ctx.setLineDash(dash ?? []);
-
-    this.ctx.stroke();
   }
 }

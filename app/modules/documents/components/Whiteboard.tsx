@@ -8,6 +8,7 @@ import { useEditorStore } from "../stores/editorStore";
 import { usePdfStore } from "../stores/pdfStore";
 import { getCanvasCoordinate } from "../utils/getCanvasCoordinate";
 import { getPageSize } from "../utils/getPageSize";
+import { EllipseElement } from "../models/Ellipse";
 
 const ACTION = {
   Drawing: "drawing",
@@ -43,6 +44,9 @@ export default function Whiteboard() {
     } else if (tool === Tool.RECTANGLE) {
       const element = new RectangleElement(uuid(), x, y, 0, 0);
       addElement(element, page);
+    } else if (tool === Tool.ELLIPSE) {
+      const element = new EllipseElement(uuid(), x, y, x, y);
+      addElement(element, page);
     }
   }
 
@@ -54,7 +58,6 @@ export default function Whiteboard() {
 
   function onMouseMove(e: MouseEvent<HTMLCanvasElement>) {
     e.preventDefault();
-    const { clientX, clientY } = e;
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
     if (action === ACTION.Drawing) {
       const element = elements[page].find(
@@ -67,6 +70,9 @@ export default function Whiteboard() {
       } else if (element instanceof RectangleElement) {
         element.width = x - element.x;
         element.height = y - element.y;
+      } else if (element instanceof EllipseElement) {
+        element.x2 = x;
+        element.y2 = y;
       }
       updateElement(element, page);
     }

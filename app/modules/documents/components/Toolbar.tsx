@@ -10,6 +10,7 @@ import {
 import { Tool } from "../constant/tooltype";
 import { useEditorStore } from "../stores/editorStore";
 import type { ToolType } from "../types/tooltype";
+import { IoEllipseOutline } from "react-icons/io5";
 
 function ToolbarItem({
   label,
@@ -54,6 +55,11 @@ export function Toolbar() {
         tool={Tool.RECTANGLE}
       />
       <ToolbarItem label="Line tool" Icon={TbLine} tool={Tool.LINE} />
+      <ToolbarItem
+        label="Ellipse tool"
+        Icon={IoEllipseOutline}
+        tool={Tool.ELLIPSE}
+      />
     </div>
   );
 }
