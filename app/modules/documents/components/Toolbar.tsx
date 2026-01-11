@@ -11,6 +11,9 @@ import {
 import { Tool } from "../constant/tooltype";
 import { useEditorStore } from "../stores/editorStore";
 import type { ToolType } from "../types/tooltype";
+import { cva } from "class-variance-authority";
+import { cn } from "~/lib/utils";
+import type { ComponentProps } from "react";
 
 function ToolbarItem({
   label,
@@ -32,7 +35,10 @@ function ToolbarItem({
       <TooltipTrigger asChild>
         <div
           onClick={handleClick}
-          className={activeTool === tool ? "bg-blue-300 p-2 text-white" : "p-2"}
+          className={cn(
+            "p-2",
+            activeTool === tool && "bg-blue-300 text-white rounded-md",
+          )}
         >
           <Icon />
         </div>
@@ -44,9 +50,17 @@ function ToolbarItem({
   );
 }
 
-export function Toolbar() {
+const toolBarVariants = cva(
+  "flex flex-col items-center justify-start gap-2 border border-gray-200 rounded-md p-2",
+  {
+    variants: {},
+    defaultVariants: {},
+  },
+);
+
+export function Toolbar({ className }: ComponentProps<"div">) {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn(toolBarVariants({ className }))}>
       <ToolbarItem label="Select tool" Icon={PiCursor} tool={Tool.SELECT} />
 
       <ToolbarItem

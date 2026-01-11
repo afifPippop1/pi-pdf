@@ -1,20 +1,25 @@
+import { cva } from "class-variance-authority";
 import * as pdfjsLib from "pdfjs-dist";
+import { useEffect, useState, type ComponentProps } from "react";
 import { useEditorStore } from "~/modules/documents/stores/editorStore";
-import { PdfViewer } from "./PDFViewer";
-import { useEffect, useMemo, useState } from "react";
 import PDFRenderer from "./PDFRenderer";
 import Whiteboard from "./Whiteboard";
+import { cn } from "~/lib/utils";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
+  import.meta.url,
 ).toString();
 
-export default function DocumentEditor() {
+const DocumentEditorVariants = cva("relative w-max", {
+  variants: {},
+  defaultVariants: {},
+});
+
+export default function DocumentEditor({ className }: ComponentProps<"div">) {
   const document = useEditorStore((s) => s.document);
-  const activePageIndex = useEditorStore((s) => s.activePageIndex);
   const [buffer, setBuffer] = useState<Uint8Array<ArrayBufferLike> | null>(
-    null
+    null,
   );
   useEffect(() => {
     // Use the arrayBuffer() method of the Blob API to get an ArrayBuffer
@@ -32,7 +37,7 @@ export default function DocumentEditor() {
   if (!buffer) return null;
 
   return (
-    <div className="relative w-max">
+    <div className={cn(DocumentEditorVariants({ className }))}>
       <Whiteboard />
       <PDFRenderer />
     </div>

@@ -7,10 +7,10 @@ import { useEditorStore } from "~/modules/documents/stores/editorStore";
 import { setPDFDoc } from "~/utils";
 
 const DocumentEditor = lazy(
-  () => import("~/modules/documents/components/DocumentEditor")
+  () => import("~/modules/documents/components/DocumentEditor"),
 );
 const PdfProvider = lazy(
-  () => import("~/modules/documents/providers/PdfProviders")
+  () => import("~/modules/documents/providers/PdfProviders"),
 );
 
 export default function DocumentDetail() {
@@ -35,8 +35,10 @@ export default function DocumentDetail() {
       <div className="h-dvh w-dvw">
         <LoaderScreen isLoading={isLoading}>
           <PdfProvider>
-            <Toolbar />
-            <DocumentEditor />
+            <div className="flex h-full p-2">
+              <DocumentEditor />
+              <Toolbar className="self-start h-full" />
+            </div>
           </PdfProvider>
         </LoaderScreen>
       </div>
