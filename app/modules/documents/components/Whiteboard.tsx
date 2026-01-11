@@ -13,7 +13,6 @@ import { hitHandle } from "../utils/hitHandle";
 import { getAnchorFromHandle } from "../utils/getAnchorFromHandle";
 
 const HANDLE_SIZE = 8;
-const HALF = HANDLE_SIZE / 2;
 
 export default function Whiteboard() {
   const [interaction, setInteraction] = useState<Interaction>({
@@ -89,7 +88,7 @@ export default function Whiteboard() {
     e.preventDefault();
     if (interaction.type === INTERACTION.Drawing) {
       const element = elements[page].find(
-        (element) => element.id === activeElement?.id
+        (element) => element.id === activeElement?.id,
       );
       if (!element) return;
       element.normalize();
@@ -109,14 +108,14 @@ export default function Whiteboard() {
     const { x, y } = getCanvasCoordinate(e, zoomLevel);
     if (interaction.type === INTERACTION.Drawing) {
       const element = elements[page].find(
-        (element) => element.id === activeElement?.id
+        (element) => element.id === activeElement?.id,
       );
       if (!element) return;
       element.resizeTo(x, y);
       updateElement(element, page);
     } else if (interaction.type === INTERACTION.Dragging) {
       const element = elements[page].find(
-        (element) => element.id === activeElement?.id
+        (element) => element.id === activeElement?.id,
       );
       if (!element) return;
       if (!mouseRef.current) return;

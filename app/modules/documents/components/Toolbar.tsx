@@ -63,7 +63,7 @@ export function Toolbar() {
         tool={Tool.ELLIPSE}
       />
 
-      <ToolbarItem label="Text tool" Icon={FaFont} tool={Tool.TEXT} />
+      {/* <ToolbarItem label="Text tool" Icon={FaFont} tool={Tool.TEXT} /> */}
     </div>
   );
 }
